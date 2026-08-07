@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEI 2026-2027 | Liceo TP Gonzalo Guglielmi Montiel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Deep Blue */
+            --primary-light: #3b82f6;
+            --bg-color: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --accent: #10b981; /* Emerald */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.7;
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        /* Layout */
+        .layout {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Sidebar / Index */
+        .sidebar {
+            width: 300px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .sidebar h3 {
+            font-size: 1.25rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .sidebar ul {
+            list-style: none;
+        }
+
+        .sidebar li {
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: block;
+            padding: 0.5rem;
+            border-radius: 6px;
+        }
+
+        .sidebar a:hover {
+            color: var(--primary);
+            background: #eff6ff;
+            transform: translateX(5px);
+        }
+
+        /* Main Content */
+        .content {
+            flex: 1;
+            padding: 3rem 4rem;
+            max-width: 900px;
+            background: var(--surface);
+            min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.02);
+        }
+
+        /* Typography */
+        h1, h2, h3, h4 {
+            color: #0f172a;
+            line-height: 1.3;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 { font-size: 2.5rem; font-weight: 800; color: var(--primary); text-align: center; margin-bottom: 3rem; }
+        h2 { font-size: 1.8rem; font-weight: 700; border-bottom: 2px solid #eff6ff; padding-bottom: 0.5rem; }
+        h3 { font-size: 1.3rem; font-weight: 600; color: var(--primary-light); }
+        
+        p { margin-bottom: 1.25rem; text-align: justify; }
+        
+        ul, ol { margin-bottom: 1.5rem; padding-left: 2rem; }
+        li { margin-bottom: 0.5rem; text-align: justify; }
+
+        strong { color: #1e293b; }
+        em { color: var(--primary-light); font-style: italic; }
+
+        /* Images */
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            display: block;
+        }
+
+        .cover-logos {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .cover-logos img {
+            max-width: 150px;
+            box-shadow: none;
+        }
+
+        /* Tables */
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+
+        .info-table th, .info-table td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        .info-table td:first-child {
+            font-weight: 600;
+            background-color: #f1f5f9;
+            width: 35%;
+            color: #475569;
+        }
+
+        .info-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Specific Sections */
+        .signature {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .signature p {
+            text-align: center;
+        }
+
+        .mision-vision-card {
+            background: linear-gradient(135deg, #eff6ff, #ffffff);
+            border: 1px solid #bfdbfe;
+            border-left: 4px solid var(--primary-light);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .mision-vision-card p {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 0;
+            color: #1e293b;
+        }
+
+        .lema {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            padding: 2rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .layout { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 1.5rem;
+            }
+            .content {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="layout">
+        <!-- Barra de Navegación Lateral (Índice) -->
+        <aside class="sidebar">
+            <h3>Índice del PEI</h3>
+            <nav>
+                <ul>
+                    <li><a href="#presentacion">1. Presentación</a></li>
+                    <li><a href="#introduccion">2. Introducción</a></li>
+                    <li><a href="#info-institucional">3. Información Institucional</a></li>
+                    <li><a href="#resena-historica">4. Reseña Histórica & Entorno</a></li>
+                    <li><a href="#organigrama">5. Organigrama</a></li>
+                    <li><a href="#ideario">6. Ideario</a></li>
+                    <li><a href="#vision-mision">7. Visión y Misión</a></li>
+                    <li><a href="#sellos">8. Sellos Educativos</a></li>
+                    <li><a href="#principios">9. Principios y Valores</a></li>
+                    <li><a href="#propuesta">10. Propuesta Educativa</a></li>
+                    <li><a href="#identidad">11. Identidad y Lema</a></li>
+                    <li><a href="#perfil-estudiante">12. Perfil del Estudiante</a></li>
+                    <li><a href="#perfil-apoderado">13. Perfil del Apoderado</a></li>
+                    <li><a href="#perfil-funcionarios">14. Perfil de Funcionarios</a></li>
+                    <li><a href="#gestion">15. Gestión Institucional</a></li>
+                    <li><a href="#marco-legal">16. Marco Legal y Curricular</a></li>
+                    <li><a href="#vigencia">17. Vigencia y Revisión</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Contenido Principal -->
+        <main class="content">
+            
+            <div class="cover-logos">
+                <img src="logo.png" alt="Logo Liceo TP Gonzalo Guglielmi Montiel">
+            </div>
+
+            <h1>PROYECTO EDUCATIVO INSTITUCIONAL<br>
+                <span style="font-size: 1.5rem; font-weight: 500; color: var(--text-muted);">Liceo Técnico Profesional Gonzalo Guglielmi Montiel (2026-2027)</span>
+            </h1>
+
+            <section id="presentacion">
+                <h2>1. Presentación</h2>
+                <p>El <strong>Liceo Técnico Profesional Gonzalo Guglielmi Montiel</strong> es una institución de educación pública con una larga y fructífera historia en Yumbel Estación. Consagrando esta tradición, de sus aulas han egresado muchas generaciones de ciudadanos altamente comprometidos con la sociedad y con el desarrollo del país.</p>
+                <p>Este año 2026, como comunidad "LGGM", estamos cumpliendo más de 80 años de labor educativa. Este hito nos llena de orgullo y nos motiva más que nunca a seguir formando personas con los valores e identidad que compartimos de manera colectiva.</p>
+                <p>A través de este documento, queremos plasmar las intenciones del <strong>Proyecto Educativo Institucional (PEI)</strong> del liceo. Este instrumento se constituye como una herramienta estratégica que ordena, articula y da sentido a la gestión del establecimiento.</p>
+                <p>Para aquello trabajamos en comunidad por una educación transformadora que tiene como lema: <em>"Formando personas para construir futuro"</em>.</p>
+                
+                <div class="signature">
+                    <p><strong>Maricela Bao Venegas</strong></p>
+                    <p style="color: var(--text-muted);">Directora</p>
+                </div>
+            </section>
+
+            <section id="introduccion">
+                <h2>2. Introducción</h2>
+                <p>El presente documento da cuenta del Proyecto Educativo Institucional del Liceo TP Gonzalo Guglielmi Montiel cuyo propósito fundamental es orientar la propuesta formativa del establecimiento y servir de fundamento para las estrategias organizacionales que sean emprendidas para llevar a cabo el ideario pedagógico decidido por la Comunidad Educativa, el cual tiene como proyección futura formar estudiantes con vocación de servicio.</p>
+                <p>Sobre la base que El Proyecto Educativo Institucional (PEI) es el instrumento que orienta todos los procesos que ocurren en un establecimiento educacional, clarifica a los actores las metas de mejoramiento, da sentido y racionalidad a la gestión para el mediano o largo plazo, permite la toma de decisiones pedagógicas y curriculares, articula los proyectos y acciones innovadoras en torno al aprendizaje y la formación de los alumnos, en resumen, ordena las grandes tareas en torno a objetivos compartidos.</p>
+                <p>Este Proyecto Educativo Institucional de la comuna de Yumbel fue construido con la participación de todas y todos los miembros de la Comunidad Educativa. De él se desprenden todas las estrategias formativas, prácticas organizacionales, aplicación de nuevos enfoques educativos y protocolización de proyectos. Derechos, deberes, atribuciones o funciones, deben enmarcarse en lo determinado por este PEI.</p>
+                <p>De esta forma, las expectativas, demandas y sueños de las y los integrantes de la Comunidad Educativa serán encarnados en instrumentos de gestión como el Reglamento Interno, el Manual de Convivencia Escolar, los sucesivos Planes de Mejoramiento Escolar, planes de convenio del ADP, y los protocolos que regulan y reglamentan las situaciones particulares del quehacer educativo.</p>
+                <p>La vigencia de este instrumento institucional es de dos años, posteriormente, será actualizado para comenzar un nuevo ciclo formativo.</p>
+            </section>
+
+            <section id="info-institucional">
+                <h2>3. Información Institucional</h2>
+                <table class="info-table">
+                    <tbody>
+                        <tr>
+                            <td>Establecimiento</td>
+                            <td>Liceo TP Gonzalo Guglielmi Montiel</td>
+                        </tr>
+                        <tr>
+                            <td>RBD</td>
+                            <td>4507-1</td>
+                        </tr>
+                        <tr>
+                            <td>Dirección</td>
+                            <td>Ignacio Carrera pinto 369</td>
+                        </tr>
+                        <tr>
+                            <td>Comuna</td>
+                            <td>Yumbel</td>
+                        </tr>
+                        <tr>
+                            <td>Región</td>
+                            <td>Bio Bio</td>
+                        </tr>
+                        <tr>
+                            <td>Dependencia</td>
+                            <td>Municipal</td>
+                        </tr>
+                        <tr>
+                            <td>Sostenedor</td>
+                            <td>Ilustre Municipalidad de Yumbel</td>
+                        </tr>
+                        <tr>
+                            <td>Teléfono</td>
+                            <td>+569 77998767</td>
+                        </tr>
+                        <tr>
+                            <td>Correo electrónico</td>
+                            <td>liceoggm@gmail.com</td>
+                        </tr>
+                        <tr>
+                            <td>Página web</td>
+                            <td><a href="http://www.liceotpggm.cl" target="_blank">www.liceotpggm.cl</a></td>
+                        </tr>
+                        <tr>
+                            <td>Nombre Directora</td>
+                            <td>Maricela Alejandra Bao Venegas<br>
+                                <a href="mailto:maricela.ingenieracivil@gmail.com">maricela.ingenieracivil@gmail.com</a><br>
+                                <a href="mailto:maricelabao@yumbeleduca.cl">maricelabao@yumbeleduca.cl</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section id="resena-historica">
+                <h2>4. Reseña Histórica y Entorno</h2>
+                <h3>Reseña Histórica</h3>
+                <p>El origen del Liceo Técnico Profesional Gonzalo Guglielmi Montiel se remonta a la década de 1940, cuando se construye en un sitio cercano a la Escuela N°14 de Mujeres y, en su actual emplazamiento, la Escuela N° 27 de Hombres, las que se fusionarían en 1981, dando origen a la escuela F-1109.</p>
+                <p>Posteriormente, en 2005 se transforma en el Liceo Yumbel Estación, ampliando gradualmente su oferta educativa a Educación Media Humanista-Científica (HC).</p>
+                <p>Finalmente, en mayo de 2007 recibe su actual denominación en honor al primer director de la Escuela N°27 de Hombres. En este sentido, cabe señalar que a este mismo año deja de ofrecer Educación Media HC y pasa a impartir Educación Media Técnico Profesional (TP) en ramas Industrial y Agrícola.</p>
+                
+                <h3>Entorno</h3>
+                <p>El Liceo Técnico Profesional Gonzalo Guglielmi Montiel, se localiza en la calle Ignacio Carrera Pinto 369, de la comuna de Yumbel, una de las 33 comunas que conforman la Región del Bío Bío.</p>
+                <p>Emplazado específicamente en el sector denominado Estación Yumbel, a seis kilómetros del centro de la comuna, cuyo sector se caracteriza por ser un barrio residencial, y en sus inmediaciones es posible encontrar un Centro de Salud Familiar (CESFAM), cuartel de Bomberos, Carabineros de Chile, entre otras entidades públicas.</p>
+                <p>Esta comuna tiene actualmente una población que supera los 20.676 habitantes, que se distribuyen en una superficie aproximada de 767,25 Km², representando el 2,1% de la superficie del territorio de la VIII región, y a un 0,1% del territorio nacional; está ubicada al sur de la capital regional, Concepción, en la depresión central, entre la cordillera de la Costa y el valle del Bio Bio.</p>
+            </section>
+
+            <section id="organigrama">
+                <h2>5. Organigrama</h2>
+                <img src="organigrama.png" alt="Organigrama Institucional">
+            </section>
+
+            <section id="ideario">
+                <h2>6. Ideario</h2>
+                <p>En este capítulo del Proyecto Educativo Institucional se establecen las pautas generales que guiarán el crecimiento, desarrollo y consolidación del Liceo TP Gonzalo Guglielmi Montiel.</p>
+                <p>Estas líneas operacionales permitirán responder las dos grandes preguntas que toda institución de educación debe instalar como parte de su proceso de desarrollo continuo: <em>¿quiénes somos y quiénes queremos ser como Comunidad Educativa? y ¿qué tipo de proyecto pedagógico deseamos implementar para la formación de nuestras y nuestros estudiantes?</em></p>
+                <p>La consolidación de esta identidad del establecimiento tiene un doble fin: por un lado, fortalecer el sentimiento de unidad e inclusión en la acción educativa y, por otro, diferenciarse de otros proyectos formativos, caracterizada por la enseñanza técnico profesional.</p>
+                <p>Ambos propósitos son organizados sobre la base del rescate de los elementos tradicionales que han caracterizado a nuestro establecimiento desde su fundación y de las nuevas estrategias que debemos articular para responder a los desafíos de la educación del siglo XXI y las demandas que la ciudadanía realiza sobre la educación pública, especialmente aquellas que están vinculadas con el sector productivo del país.</p>
+            </section>
+
+            <section id="vision-mision">
+                <h2>7. Visión y Misión Institucional</h2>
+                
+                <div class="mision-vision-card">
+                    <h3>Visión Institucional</h3>
+                    <p>"Ser reconocidos como una comunidad educativa Técnico Profesional de excelencia, referente en la formación de personas integrales y profesionales altamente capacitados. Aspiramos a ser el puente que permita a nuestros estudiantes acceder a la Educación Superior y al mundo laboral, promoviendo el cuidado medioambiental para transformar positivamente su futuro y el de sus familias."</p>
+                </div>
+
+                <div class="mision-vision-card">
+                    <h3>Misión Institucional</h3>
+                    <p>"Somos un liceo técnico profesional comprometido con la formación integral de técnicos de nivel medio, altamente calificados y éticos. A través de metodologías de aprendizaje activo y una sólida vinculación con el sector socio-productivo, desarrollamos competencias técnicas y habilidades socioemocionales que permiten a nuestros egresados insertarse con éxito en el mercado laboral o continuar estudios superiores, contribuyendo activamente al desarrollo sostenible de nuestra comunidad."</p>
+                </div>
+            </section>
+
+            <section id="sellos">
+                <h2>8. Sellos Educativos</h2>
+                <p>El Liceo Técnico Profesional Gonzalo Guglielmi Montiel, se propone formar a sus estudiantes, colocando el acento en los siguientes sellos institucionales:</p>
+                <img src="Document%20from%20cristian%20valdebenito_archivos/image004.png" alt="Sellos Educativos" onerror="this.style.display='none'">
+            </section>
+
+            <section id="principios">
+                <h2>9. Declaración de Principios y Valores</h2>
+                <ul>
+                    <li><strong>Honestidad:</strong> Fomentamos la honestidad como una capacidad para buscar lo verdadero con actitudes de discernimiento y valores aceptados en la vida cotidiana, con el fin de alcanzar el mejor bienestar de nuestra comunidad educativa.</li>
+                    <li><strong>Libertad / Autogestión:</strong> Entendemos la libertad o autogestión, como la aceptación de una sociedad integrada, respetando y aceptando las diferencias, para alcanzar la realización de un proyecto de vida.</li>
+                    <li><strong>Trabajo, Esfuerzo y Superación:</strong> Promocionamos el trabajo y superación personal, a través del desarrollo de las distintas cualidades y destrezas personales, para alcanzar cambios expresados a través de la perseverancia y el compromiso consigo mismo y los demás.</li>
+                    <li><strong>Responsabilidad y Compromiso:</strong> Incentivamos a lograr el valor de la responsabilidad entendiéndola como hacerse cargo de sus deberes u obligaciones, asumiendo compromisos por voluntad propia que beneficien a su entorno.</li>
+                    <li><strong>Solidaridad y Respeto:</strong> Promovemos la solidaridad y el respeto con el fin de desarrollar el compromiso con los demás, especialmente con los más deficitarios, poniendo al servicio competencias técnicas e iniciativas.</li>
+                    <li><strong>Autosuperación:</strong> Creemos en la autosuperación como valor que nos permite enfrentar con optimismo los desafíos y obstáculos, que aparentemente superan las posibilidades y las capacidades humanas.</li>
+                    <li><strong>Afectividad:</strong> Entendemos la afectividad como la entrega y aceptación en las distintas acciones, desarrollando la capacidad de sostener, animar y guiar en un ambiente agradable y acogedor.</li>
+                    <li><strong>Tolerancia:</strong> Entendemos la tolerancia para contribuir a una fraternidad basada en el respeto a la dignidad y a los derechos de cada uno, para desarrollar un proyecto de vida que favorezca la equidad y la democracia.</li>
+                </ul>
+            </section>
+
+            <section id="propuesta">
+                <h2>10. Propuesta Educativa</h2>
+                <p>Nuestro Liceo Técnico Profesional GGM plantea un proceso educativo progresivo en el tiempo, evaluado permanentemente con la finalidad de incorporar y adecuar las exigencias del proceso de reforma educativa en marcha. Con esto, garantizamos una propuesta pedagógica de calidad en relación con las necesidades de nuestra comuna de Yumbel, la cual considera los siguientes elementos fundamentales:</p>
+                
+                <h3>La educación como un servicio para el desarrollo integral y local:</h3>
+                <p>Nuestro propósito es formar personas capaces de desenvolverse en el medio que las rodea y aprovechar las oportunidades que este ofrece, especialmente las vinculadas al sector productivo y las redes con instituciones de educación superior. Buscamos formar técnicos comprometidos con su localidad, de modo que su título profesional no sea solo un logro individual, sino una herramienta de aporte real al progreso de su entorno social.</p>
+
+                <h3>Compromiso ético y principios profesionales:</h3>
+                <p>Orientamos la formación hacia estudiantes con sólidos principios morales y valores éticos. Buscamos que estas virtudes se pongan en juego de manera activa y consciente al momento de ejercer su profesión en el mundo laboral, asegurando un desempeño responsable, honesto y de excelencia.</p>
+
+                <h3>Eficiencia de los aprendizajes y calidad lectora:</h3>
+                <p>La acción pedagógica del liceo tiene como centro la efectividad de los aprendizajes, privilegiando el desarrollo del pensamiento reflexivo y creativo, hábitos de estudio y el diseño de un proyecto de vida personal y social. Dentro de este marco, se asume la calidad lectora de todos los estudiantes como un pilar fundamental y transversal.</p>
+
+                <h3>Corresponsabilidad de la comunidad educativa:</h3>
+                <p>Entendemos que el éxito de este proyecto requiere el compromiso activo de las familias, quienes son las primeras educadoras y aliadas estratégicas. Asimismo, este esfuerzo se sostiene sobre la base de la dedicación, profesionalismo y vocación de los docentes y asistentes de la educación.</p>
+
+                <h3>Planificación estratégica desde la base:</h3>
+                <p>Diseñamos actividades educativas complementarias coordinadas por el equipo de Convivencia Escolar que ayudan al educando a desarrollar una serie de valores, aptitudes y destrezas psicomotrices desde la educación prebásica. Estas acciones constituyen una estrategia de integración sociocultural.</p>
+
+                <h3>Finalmente:</h3>
+                <p>Nuestra propuesta educativa se consolida como un proyecto vivo y participativo, donde el aprendizaje técnico se funde con la formación humana, respondiendo con pertinencia, equidad y sentido de pertenencia a los desafíos y la identidad de la comunidad de Yumbel.</p>
+            </section>
+
+            <section id="identidad">
+                <h2>11. Identidad y Lema Institucional</h2>
+                <p>Como liceo técnico profesional, asumimos este lema como propio para que inspire la identidad de nuestros funcionarios, estudiantes y apoderados:</p>
+                
+                <div class="lema">
+                    "Forjando personas, construyendo futuro"
+                </div>
+
+                <h3>Logos Especialidades</h3>
+                <img src="Document%20from%20cristian%20valdebenito_archivos/image005.png" alt="Logos Especialidades TP" onerror="this.style.display='none'">
+            </section>
+
+            <section id="perfil-estudiante">
+                <h2>12. Perfil del Estudiante</h2>
+                <p>Los estudiantes de este establecimiento se reconocen por su compromiso social, adaptabilidad tecnológica y mentalidad emprendedora. Ellos transitan desde el juego y el autodescubrimiento en la infancia hacia el dominio de competencias técnicas de alta empleabilidad.</p>
+
+                <h3>12.1 Área Formativa y Valórica (Troncal de Prebásica a 4° Medio)</h3>
+                <ul>
+                    <li><strong>Ética y Empatía:</strong> Actúa con honestidad, respeto mutuo y responsabilidad social.</li>
+                    <li><strong>Inclusión y Diversidad:</strong> Valora las diferencias individuales como una riqueza comunitaria.</li>
+                    <li><strong>Autonomía y Resiliencia:</strong> Es capaz de resolver problemas individuales y superar frustraciones de forma proactiva.</li>
+                    <li><strong>Ciudadanía Activa:</strong> Participa de manera responsable y democrática en su entorno escolar y social.</li>
+                </ul>
+
+                <h3>12.2 Área Académica y Cognitiva (Troncal de Prebásica a 4° Medio)</h3>
+                <ul>
+                    <li><strong>Pensamiento Crítico:</strong> Analiza de forma objetiva la información para la toma de decisiones.</li>
+                    <li><strong>Creatividad e Innovación:</strong> Desarrolla soluciones originales frente a desafíos del entorno.</li>
+                    <li><strong>Comunicación Efectiva:</strong> Expresa ideas con claridad de forma oral, escrita y digital.</li>
+                    <li><strong>Aprendizaje Autónomo:</strong> Muestra curiosidad e interés por la formación continua a lo largo de su vida.</li>
+                </ul>
+
+                <h3>12.3 Perfil de Egreso Técnico Profesional (Educación Media)</h3>
+                <p>El egresado técnico profesional destaca por su alta especialización técnica combinada con habilidades blandas para el mundo laboral contemporáneo.</p>
+                
+                <h4>Especialidad: Atención de Enfermería</h4>
+                <ul>
+                    <li>Vocación de Servicio: Centra su quehacer en el cuidado humanizado, digno y empático del paciente.</li>
+                    <li>Rigor Procedimental: Aplica normas de bioseguridad y protocolos clínicos con precisión matemática.</li>
+                    <li>Trabajo Interdisciplinario: Colabora eficientemente en equipos de salud bajo altos niveles de estrés.</li>
+                    <li>Promoción de la Salud: Educa a la comunidad en hábitos preventivos y estilos de vida saludables.</li>
+                </ul>
+
+                <h4>Especialidad: Muebles y Terminaciones en Madera</h4>
+                <ul>
+                    <li>Precisión Técnica: Domina el diseño, la lectura de planos y la cubicación exacta de materiales.</li>
+                    <li>Sustentabilidad y Eficiencia: Utiliza los recursos forestales y materiales con un enfoque ecológico y de cero residuos.</li>
+                    <li>Cultura de Seguridad: Opera maquinaria compleja respetando estrictamente las normas de prevención de riesgos.</li>
+                    <li>Orientación a la Calidad: Desarrolla un alto nivel de detalle estético y estructural en acabados.</li>
+                </ul>
+
+                <h4>Especialidad: Telecomunicaciones</h4>
+                <ul>
+                    <li>Resolución de Problemas: Diagnostica y repara fallas en redes de datos de forma lógica y estructurada.</li>
+                    <li>Vanguardia Tecnológica: Se adapta rápidamente a la evolución del hardware, software y tecnologías de conectividad.</li>
+                    <li>Gestión de Proyectos: Planifica, instala y certifica infraestructuras de redes bajo estándares internacionales.</li>
+                    <li>Seguridad Digital: Implementa buenas prácticas de ciberseguridad y protección de datos en sistemas de redes.</li>
+                </ul>
+            </section>
+
+            <section id="perfil-apoderado">
+                <h2>13. Perfil de los Padres y Apoderados</h2>
+                <p>Los padres y apoderados son los primeros educadores de sus niños, niñas y jóvenes. Es por esta razón que cuanto más se desarrolle la alianza, familia y escuela, serán más efectivos los propósitos educativos, logrando potenciar aún más la formación de cada alumno, lo que finalmente se concretará en resultados de enseñanza positivos.</p>
+                <p>Como institución esperamos principalmente de ellos un perfil de apoderados que sean capaces de:</p>
+                <ul>
+                    <li>Apoyar las normas de convivencia escolar.</li>
+                    <li>Cooperar activamente en el proyecto educativo institucional.</li>
+                    <li>Participar en las distintas instancias de colaboración y formación como lo son: reuniones, jornadas, entrevistas, etc.</li>
+                    <li>Estimular y gestionar las altas expectativas, respecto de sus hijos(as).</li>
+                    <li>Fortalecer el vínculo con la escuela y su compromiso con el aprendizaje de sus hijos(as).</li>
+                    <li>Generar y reforzar los hábitos de estudio de sus niños y/o adolescentes.</li>
+                </ul>
+            </section>
+
+            <section id="perfil-funcionarios">
+                <h2>14. Perfil de los Funcionarios</h2>
+                <p>El Liceo TPGGM cuenta con personal profesional y técnico, altamente calificado para desarrollar y llevar adelante el proyecto educativo institucional. El equipo directivo se encarga de gestionar, coordinar, articular y velar por que los procesos pedagógicos se lleven a cabo de acuerdo a la línea educacional del liceo y las exigencias del Ministerio de Educación.</p>
+
+                <h3>14.1 Perfil del Equipo Directivo y de Gestión</h3>
+                <ol>
+                    <li><strong>Difunde el PEI y el marco formativo:</strong> Garantiza su aplicación, fomenta un ambiente de unidad y desarrolla un liderazgo cercano.</li>
+                    <li><strong>Centra la gestión en los aprendizajes:</strong> Apoya y supervisa procesos, e informa periódicamente al Sostenedor.</li>
+                    <li><strong>Conduce de manera efectiva:</strong> Asegura el uso eficaz del tiempo, identifica necesidades de capacitación y seguridad.</li>
+                    <li><strong>Propicia cultura de altas expectativas:</strong> Gestiona ámbitos para la mejora y está abierto a la crítica constructiva.</li>
+                    <li><strong>Instaura cultura de trabajo en equipo:</strong> Promueve responsabilidad laboral y relaciones de ayuda.</li>
+                    <li><strong>Instaura un ambiente estimulante:</strong> Promueve amor por el conocimiento y artes.</li>
+                    <li><strong>Instala un plan de mejoramiento:</strong> Aplica autoevaluaciones institucionales y monitorea resultados.</li>
+                    <li><strong>Sistematiza datos:</strong> Analiza sistemáticamente datos para la toma de decisiones.</li>
+                    <li><strong>Lidera la formación integral:</strong> Promueve actividades que apoyen el desarrollo individual de los estudiantes.</li>
+                    <li><strong>Genera instancias para apoderados:</strong> Mantiene comunicación fluida con familias.</li>
+                </ol>
+
+                <h3>14.2 Perfil del Docente</h3>
+                <ol>
+                    <li><strong>Correspondencia con el PEI:</strong> Demuestra adhesión y actúa como mediador del aprendizaje.</li>
+                    <li><strong>Atiende las diferencias individuales:</strong> Conoce contextos socioeconómicos y aplica diseños pedagógicos diferenciados.</li>
+                    <li><strong>Domina su disciplina:</strong> Maneja estrategias didácticas y el currículo vigente.</li>
+                    <li><strong>Planifica aprendizajes efectivos:</strong> Optimiza tiempos escolares y recursos TIC.</li>
+                    <li><strong>Incorpora evaluación formativa:</strong> Diseña situaciones evaluativas rigurosas y justas.</li>
+                    <li><strong>Establece buen ambiente de aula:</strong> Promueve el respeto y autorregulación.</li>
+                    <li><strong>Apoya y contiene a estudiantes:</strong> Fomenta competencias socioemocionales y respeto a la diversidad.</li>
+                    <li><strong>Desarrolla responsabilidad profesional:</strong> Actúa éticamente y se capacita continuamente.</li>
+                </ol>
+
+                <h3>14.3 Perfil de los Asistentes de la Educación</h3>
+                <ol>
+                    <li><strong>Se identifica con el PEI:</strong> Manifiesta actitud de servicio cordial y respeta el marco formativo.</li>
+                    <li><strong>Favorece el buen clima laboral:</strong> Facilita la comunicación y el buen trato.</li>
+                    <li><strong>Apoya y contiene a estudiantes:</strong> Mantiene actitud de respeto y resguarda información sensible.</li>
+                    <li><strong>Compromiso laboral:</strong> Potencia el trabajo en equipo y el desarrollo de sus propias competencias.</li>
+                </ol>
+            </section>
+
+            <section id="gestion">
+                <h2>15. Gestión</h2>
+                
+                <h3>15.1 Gestión Institucional</h3>
+                <p>Comprende las ideas, concepciones y acciones de un liderazgo llamado a ejercerse como equipo. <br><strong>Objetivos:</strong> Desarrollar las capacidades de todos los actores, gestionar la convivencia, y garantizar el uso pedagógico de los recursos.</p>
+
+                <h3>15.2 Gestión Curricular</h3>
+                <p>Comprende las políticas, procedimientos y prácticas de organización y evaluación del proceso educativo. <br><strong>Objetivos:</strong> Asegurar la cobertura curricular, implementar estrategias centradas en el estudiante y alcanzar el desarrollo integral (formativo, valórico y pedagógico).</p>
+
+                <h3>15.3 Gestión de Formación y Convivencia</h3>
+                <p>Políticas dirigidas a favorecer el desarrollo valórico, ético, moral, afectivo, social y físico.<br><strong>Objetivos:</strong> Promover habilidades sanas de relacionamiento, prevención de conductas de riesgo, autoestima positiva, sentido de pertenencia y cultura vocacional.</p>
+
+                <h3>15.4 Gestión de Recursos</h3>
+                <p>La Administración está centralizada en el DEM de Yumbel.<br><strong>Objetivos:</strong> Asegurar personal competente, garantizar uso eficiente de los recursos financieros y salvaguardar la infraestructura para el bienestar de los estudiantes.</p>
+            </section>
+
+            <section id="marco-legal">
+                <h2>16. Marco Legal y Curricular</h2>
+                <p>El Liceo TPGGM es una institución de administración Municipal (Municipalidad de Yumbel) regida por las leyes del Ministerio de Educación de Chile, incluyendo la Ley 20.370 (General de Educación), la Ley 20.529 (Aseguramiento de Calidad) y la Ley 20.501 (Calidad y Equidad).</p>
+                
+                <h3>Bases Curriculares y Planes de Estudio</h3>
+                <ul>
+                    <li><strong>Educación Parvularia:</strong> Decreto N° 481/2017 y Decreto N° 289/2002.</li>
+                    <li><strong>Educación Básica:</strong> Decreto N° 439/2012 (Lenguaje, Matemática, etc), Decreto N° 433/2012 (Artes, Educación Física), Decreto N° 1.363 (7° y 8° básico).</li>
+                    <li><strong>Educación Media:</strong> Decreto Supremo N° 194/2019 (1° y 2° medio), Decreto Supremo N° 193/2019 (Formación Diferenciada TP 3° y 4° medio). Decreto Exento N° 876/2019 y 954/2015 para tiempos escolares.</li>
+                </ul>
+
+                <h3>Evaluación, Inclusión y Promoción</h3>
+                <ul>
+                    <li><strong>Decreto N° 67/2018:</strong> Normas sobre evaluación, calificación y promoción.</li>
+                    <li><strong>Decreto N° 170/2009:</strong> Beneficiarios de subvención por necesidades educativas especiales.</li>
+                    <li><strong>Decreto N° 83/2015:</strong> Criterios de adecuación curricular (Educación Parvularia y Básica).</li>
+                    <li><strong>Decreto N° 240/2019:</strong> Estándares de equipamiento TP.</li>
+                </ul>
+            </section>
+
+            <section id="vigencia">
+                <h2>17. Vigencia y Revisión del PEI</h2>
+                <h3>Vigencia</h3>
+                <p>La actual versión del PEI estará vigente entre le año 2026 y 2027. Durante dicho periodo, sus definiciones y disposiciones constituyen los fundamentos conceptuales orientadores de la gestión y del quehacer del liceo en todas sus dimensiones, por lo tanto, no pueden ser modificados radicalmente en dicho periodo.</p>
+                
+                <h3>Revisión del PEI</h3>
+                <p>El Liceo asume el compromiso de realizar en forma anual acciones para dar a conocer y socializar el documento en la comunidad educativa. Durante el 2028, las autoridades del Liceo darán inicio formal a un proceso de revisión y actualización del proyecto para garantizar su coherencia con las políticas educativas nacionales (Agencia de Calidad) y con los cambios científicos, tecnológicos, sociales y económicos a nivel comunal, regional y global.</p>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>

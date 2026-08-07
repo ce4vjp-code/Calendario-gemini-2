@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Política de Privacidad y Protección de Datos Personales del Liceo Técnico Profesional Gonzalo Guglielmi Montiel, elaborada conforme a la Ley N° 21.719, Ley N° 21.663 y demás normativa chilena vigente al año 2026." />
+  <title>Política de Privacidad — Liceo TP Gonzalo Guglielmi Montiel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary:       #1a3a5c;
+      --primary-light: #2563a8;
+      --accent:        #e8a020;
+      --accent-light:  #fde68a;
+      --bg:            #f5f7fa;
+      --surface:       #ffffff;
+      --surface-2:     #eef2f7;
+      --text:          #1e2a3a;
+      --text-muted:    #5a6a7e;
+      --border:        #d0dae8;
+      --danger:        #c0392b;
+      --danger-bg:     #fdf0ef;
+      --warning:       #c07000;
+      --warning-bg:    #fff8e1;
+      --success:       #1a6e3c;
+      --success-bg:    #eafaf1;
+      --radius:        10px;
+      --shadow:        0 2px 16px rgba(26,58,92,0.09);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      font-size: 15.5px;
+    }
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff;
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    header .badge {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--primary);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.85rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+    header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      position: relative;
+    }
+    header .subtitle {
+      font-size: 0.95rem;
+      opacity: 0.85;
+      margin-bottom: 1.2rem;
+      position: relative;
+    }
+    header .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 2rem;
+      justify-content: center;
+      font-size: 0.82rem;
+      opacity: 0.8;
+      position: relative;
+    }
+    /* LAYOUT */
+    .container { max-width: 940px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    /* NOTICE BOX */
+    .notice-box {
+      background: var(--warning-bg);
+      border-left: 5px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1.1rem 1.4rem;
+      margin: 1rem 0 1.4rem;
+      font-size: 0.92rem;
+    }
+    .notice-box.danger  { background: var(--danger-bg);  border-color: var(--danger);  }
+    .notice-box.success { background: var(--success-bg); border-color: #27ae60; }
+    .notice-box strong  { display: block; margin-bottom: 0.25rem; font-size: 0.83rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--warning); }
+    .notice-box.danger  strong { color: var(--danger);  }
+    .notice-box.success strong { color: var(--success); }
+    /* SECTION */
+    section { margin-bottom: 2.5rem; }
+    section h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 2.5px solid var(--accent);
+      padding-bottom: 0.45rem;
+      margin-bottom: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    section h2 .num {
+      background: var(--primary);
+      color: #fff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      width: 1.75rem; height: 1.75rem;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    section h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary-light);
+      margin: 1.4rem 0 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    p { margin-bottom: 0.85rem; }
+    ul, ol { padding-left: 1.4rem; margin-bottom: 0.85rem; }
+    li { margin-bottom: 0.3rem; }
+    a { color: var(--primary-light); }
+    /* TABLES */
+    .table-wrap { overflow-x: auto; margin: 0.5rem 0 1.4rem; border-radius: var(--radius); box-shadow: var(--shadow); }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); font-size: 0.91rem; }
+    thead th {
+      background: var(--primary);
+      color: #fff;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:nth-child(even) { background: var(--surface-2); }
+    td { padding: 0.7rem 1rem; vertical-align: top; }
+    /* CARD GRID */
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; margin: 1rem 0; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.2rem;
+      box-shadow: var(--shadow);
+    }
+    .card h4 { font-size: 0.88rem; font-weight: 700; color: var(--primary); margin-bottom: 0.4rem; }
+    .card p  { font-size: 0.87rem; color: var(--text-muted); margin: 0; }
+    /* TAG PILL */
+    .tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.12rem 0.6rem;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
+      vertical-align: middle;
+    }
+    .tag.new     { background: #d1fae5; color: #065f46; }
+    .tag.fixed   { background: #dbeafe; color: #1e3a8a; }
+    /* CONTACT BOX */
+    .contact-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.4rem;
+      box-shadow: var(--shadow);
+    }
+    .contact-box p { margin-bottom: 0.3rem; }
+    .contact-box a { color: var(--primary-light); text-decoration: none; font-weight: 500; }
+    .contact-box a:hover { text-decoration: underline; }
+    /* FOOTER */
+    footer {
+      background: var(--primary);
+      color: rgba(255,255,255,0.75);
+      text-align: center;
+      padding: 1.75rem 1rem;
+      font-size: 0.82rem;
+    }
+    footer strong { color: #fff; }
+    footer a { color: var(--accent-light); text-decoration: none; }
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      header { padding: 1.75rem 1rem 1.5rem; }
+      .card-grid { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: #fff; font-size: 12pt; }
+      header { background: var(--primary) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .table-wrap { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Versión 2.0 · Julio 2026</div>
+  <h1>Política de Privacidad y Protección de Datos Personales</h1>
+  <p class="subtitle">Liceo Técnico Profesional Gonzalo Guglielmi Montiel &nbsp;·&nbsp; <a href="https://www.liceotpggm.cl" style="color:var(--accent-light);">www.liceotpggm.cl</a></p>
+  <div class="meta-row">
+    <span>📅 Actualización: Julio 2026</span>
+    <span>⚖️ Plena vigencia: 1° de diciembre de 2026</span>
+    <span>📄 Versión 2.0</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="notice-box">
+    <strong>⚠️ Marco normativo aplicable</strong>
+    El presente documento ha sido elaborado y actualizado conforme a la <strong>Ley N° 21.719</strong> (Ley de Protección de Datos Personales, plena vigencia desde el 1° de diciembre de 2026), la <strong>Ley N° 21.663</strong> (Ley Marco de Ciberseguridad, vigente desde 2025), la <strong>Ley N° 21.459</strong> (Ley de Delitos Informáticos) y la <strong>Ley N° 19.628</strong> (en los aspectos no derogados). Esta Versión 2.0 reemplaza íntegramente la Versión 1.0 e incorpora todas las adecuaciones exigidas por la normativa vigente al año 2026.
+  </div>
+
+  <!-- ── 1. RESPONSABLE ── -->
+  <section id="responsable">
+    <h2><span class="num">1</span> Identificación del Responsable del Tratamiento</h2>
+    <p>El <strong>Liceo Técnico Profesional Gonzalo Guglielmi Montiel</strong> (en adelante, "el Liceo" o "el Establecimiento"), establecimiento de educación media técnico-profesional, actúa como <strong>Responsable del Tratamiento</strong> de los datos personales recopilados a través de su sitio web <a href="https://www.liceotpggm.cl">www.liceotpggm.cl</a> y demás plataformas digitales institucionales.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Campo</th><th>Información</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Nombre del establecimiento</strong></td><td>Liceo Técnico Profesional Gonzalo Guglielmi Montiel</td></tr>
+          <tr><td><strong>Sitio web oficial</strong></td><td><a href="https://www.liceotpggm.cl">www.liceotpggm.cl</a></td></tr>
+          <tr><td><strong>Dependencia</strong></td><td>Municipalidad correspondiente a la comuna de su ubicación</td></tr>
+          <tr><td><strong>Nivel educativo</strong></td><td>Educación Media Técnico-Profesional</td></tr>
+          <tr><td><strong>Especialidades</strong></td><td>Telecomunicaciones · Atención de Enfermería · Muebles y Terminaciones en Madera</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Delegado de Protección de Datos (DPD) <span class="tag fixed">CORREGIDO</span></h3>
+    <p>En cumplimiento del <strong>artículo 32 de la Ley N° 21.719</strong>, el Liceo ha designado formalmente un <strong>Delegado de Protección de Datos (DPD)</strong>, encargado de velar por el cumplimiento de la normativa de protección de datos, actuar como punto de contacto con la Agencia de Protección de Datos Personales (APDP) y atender las solicitudes de los titulares. Su designación ha sido registrada ante la APDP conforme al artículo 31 de la Ley N° 21.719.</p>
+
+    <div class="contact-box">
+      <p><strong>Correo electrónico DPD:</strong> <a href="mailto:privacidad@liceotpggm.cl">privacidad@liceotpggm.cl</a></p>
+      <p><strong>Correo general de consultas:</strong> <a href="mailto:contacto@liceotpggm.cl">contacto@liceotpggm.cl</a></p>
+      <p><strong>Sitio web:</strong> <a href="https://www.liceotpggm.cl">www.liceotpggm.cl</a></p>
+    </div>
+  </section>
+
+  <!-- ── 2. MARCO NORMATIVO ── -->
+  <section id="marco-normativo">
+    <h2><span class="num">2</span> Marco Normativo Aplicable</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Norma</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Ley N° 21.719</strong></td><td>Ley de Protección de Datos Personales (plena vigencia desde el 1° de diciembre de 2026)</td></tr>
+          <tr><td><strong>Ley N° 21.663</strong></td><td>Ley Marco de Ciberseguridad e Infraestructura Digital (vigente desde 2025)</td></tr>
+          <tr><td><strong>Ley N° 21.459</strong></td><td>Ley de Delitos Informáticos</td></tr>
+          <tr><td><strong>Ley N° 19.628</strong></td><td>Ley sobre Protección de la Vida Privada (en los aspectos no derogados)</td></tr>
+          <tr><td><strong>Ley N° 20.370</strong></td><td>Ley General de Educación</td></tr>
+          <tr><td><strong>Ley N° 20.285</strong></td><td>Ley sobre Acceso a la Información Pública</td></tr>
+          <tr><td><strong>Ley N° 21.430</strong></td><td>Ley sobre Garantías y Protección Integral de los Derechos de la Niñez y Adolescencia</td></tr>
+          <tr><td><strong>Ley N° 20.584</strong></td><td>Regula los derechos y deberes de las personas en relación a su atención en salud</td></tr>
+          <tr><td><strong>Ley N° 20.379</strong></td><td>Crea el Sistema Intersectorial de Protección Social (Ficha de Protección Social)</td></tr>
+          <tr><td><strong>Ley N° 19.717</strong></td><td>Sobre el trabajo de menores y protección en el sistema educativo</td></tr>
+          <tr><td><strong>Convención sobre los Derechos del Niño</strong></td><td>Marco internacional de protección del interés superior del niño</td></tr>
+          <tr><td><strong>Directrices ANCI</strong></td><td>Directrices técnicas de la Agencia Nacional de Ciberseguridad</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 3. PRINCIPIOS ── -->
+  <section id="principios">
+    <h2><span class="num">3</span> Principios Rectores del Tratamiento de Datos</h2>
+    <p>Conforme al artículo 3° de la Ley N° 21.719, el Liceo garantiza que todo tratamiento de datos personales se realiza con estricto apego a los siguientes principios:</p>
+    <div class="card-grid">
+      <div class="card"><h4>⚖️ Licitud</h4><p>Todo tratamiento se sustenta en una base legal reconocida por la normativa vigente.</p></div>
+      <div class="card"><h4>🎯 Finalidad</h4><p>Los datos son recabados con propósitos determinados, explícitos y legítimos, y no serán tratados de manera incompatible con dichos fines.</p></div>
+      <div class="card"><h4>📏 Proporcionalidad</h4><p>Solo se recopilan los datos estrictamente necesarios para la finalidad declarada (minimización de datos).</p></div>
+      <div class="card"><h4>✅ Calidad</h4><p>Los datos deben ser exactos, completos y actualizados.</p></div>
+      <div class="card"><h4>🔍 Transparencia</h4><p>El titular tiene derecho a información clara y comprensible sobre el tratamiento de sus datos.</p></div>
+      <div class="card"><h4>📋 Responsabilidad Proactiva</h4><p>El Liceo puede acreditar en todo momento el cumplimiento normativo mediante registros, políticas y evaluaciones documentadas.</p></div>
+      <div class="card"><h4>🔒 Seguridad</h4><p>Se aplican medidas técnicas y organizativas apropiadas para proteger los datos contra accesos no autorizados, pérdida, alteración o divulgación indebida.</p></div>
+      <div class="card"><h4>🤝 Confidencialidad</h4><p>Todos los funcionarios del Establecimiento están sujetos a deber de confidencialidad, que subsiste incluso tras el término de sus funciones.</p></div>
+    </div>
+  </section>
+
+  <!-- ── 4. BASES DE LEGITIMIDAD ── -->
+  <section id="bases-legitimidad">
+    <h2><span class="num">4</span> Bases de Legitimidad del Tratamiento <span class="tag fixed">CORREGIDO</span></h2>
+    <p>De conformidad con el artículo 12 de la Ley N° 21.719, el Liceo fundamenta el tratamiento de datos personales exclusivamente en las siguientes bases de licitud reconocidas por la ley:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Base Legal</th><th>Descripción y Alcance</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Cumplimiento de una obligación legal</strong><br><small style="color:var(--text-muted);">Art. 12 letra c) Ley N° 21.719</small></td>
+            <td>Para el ejercicio de las funciones que la ley asigna a los establecimientos educacionales: matrícula, asistencia, calificaciones, informes, subvenciones y requerimientos del MINEDUC, DAEM, Contraloría o el Municipio.</td>
+          </tr>
+          <tr>
+            <td><strong>Interés público</strong><br><small style="color:var(--text-muted);">Art. 12 letra e) Ley N° 21.719</small></td>
+            <td>Para el desarrollo de actividades educativas, formativas, de convivencia escolar y bienestar estudiantil, en los términos reconocidos expresamente por la Ley N° 20.370 (Ley General de Educación) y demás normas del sistema educativo chileno.</td>
+          </tr>
+          <tr>
+            <td><strong>Consentimiento del titular o de su representante legal</strong><br><small style="color:var(--text-muted);">Art. 12 letra a) y art. 13 Ley N° 21.719</small></td>
+            <td>Cuando se requiera recopilar datos para fines específicos distintos a la prestación educativa obligatoria (publicaciones en web, uso de imágenes, actividades extracurriculares, etc.). El consentimiento debe ser <strong>libre, específico, informado e inequívoco</strong>, prestado por escrito o medio equivalente verificable. Es revocable en cualquier momento sin que ello afecte la licitud del tratamiento previo a la revocación.</td>
+          </tr>
+          <tr>
+            <td><strong>Ejecución de una relación jurídica preexistente</strong><br><small style="color:var(--text-muted);">Art. 12 letra b) Ley N° 21.719</small></td>
+            <td>Cuando el tratamiento es necesario para gestionar la matrícula, los beneficios educacionales y las obligaciones derivadas de la inscripción del estudiante en el Establecimiento.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="notice-box">
+      <strong>ℹ️ Registro de consentimientos</strong>
+      El Liceo registrará y conservará evidencia de cada consentimiento otorgado, indicando la fecha, el medio, la finalidad específica y la identidad del titular o representante. El retiro del consentimiento no afectará la licitud del tratamiento anterior a su revocación.
+    </div>
+  </section>
+
+  <!-- ── 5. CATEGORÍAS DE DATOS ── -->
+  <section id="categorias-datos">
+    <h2><span class="num">5</span> Categorías de Datos Personales Tratados</h2>
+
+    <h3>5.1 Datos Personales Generales</h3>
+    <ul>
+      <li><strong>Datos de identificación:</strong> nombre completo, RUN, fecha de nacimiento, fotografía.</li>
+      <li><strong>Datos de contacto:</strong> dirección, correo electrónico, número de teléfono.</li>
+      <li><strong>Datos académicos:</strong> nivel de enseñanza, especialidad, calificaciones, asistencia, resultados de aprendizaje, planes de mejoramiento.</li>
+      <li><strong>Datos del apoderado o tutor legal:</strong> nombre, RUN, relación con el estudiante, datos de contacto.</li>
+      <li><strong>Datos de navegación:</strong> dirección IP, tipo de navegador, páginas visitadas (ver sección 11).</li>
+    </ul>
+
+    <h3>5.2 Datos Personales Sensibles</h3>
+    <p>Conforme al artículo 16 de la Ley N° 21.719, el Liceo puede tratar las siguientes categorías de datos sensibles, únicamente cuando existe una base legal habilitante expresa y aplicando medidas de seguridad reforzadas:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Categoría Sensible</th><th>Contexto en el Establecimiento</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Discapacidad o condición de salud</strong></td><td>Vinculado al Programa de Integración Escolar (P.I.E.) y situaciones de embarazo estudiantil para adoptar medidas de apoyo. Incluye informes psicopedagógicos y evaluaciones de especialistas del P.I.E., tratados con reserva máxima y acceso estrictamente restringido al personal necesario para el cumplimiento de sus funciones.</td></tr>
+          <tr><td><strong>Necesidades educativas especiales (NEE)</strong></td><td>Modalidad educativa orientada a asegurar el aprendizaje de estudiantes con NEE, en el marco del P.I.E. y otras iniciativas de inclusión.</td></tr>
+          <tr><td><strong>Origen étnico o racial</strong></td><td>Para el diseño de políticas de inclusión e interculturalidad.</td></tr>
+          <tr><td><strong>Situación socioeconómica</strong></td><td>Para la asignación de beneficios, becas y subvenciones (JUNAEB, Ficha de Protección Social, becas municipales). Los datos de la Ficha de Protección Social se tratan con las garantías adicionales de la Ley N° 20.379.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="notice-box danger">
+      <strong>⚠️ Advertencia</strong>
+      El tratamiento de datos sensibles se realiza únicamente cuando existe una base legal explícita, con estricto apego al principio de proporcionalidad y aplicando medidas de seguridad reforzadas. Ideología política, creencias religiosas y vida sexual no son datos que el Liceo recabe en el marco ordinario de sus funciones.
+    </div>
+
+    <h3>5.3 Datos Biométricos <span class="tag new">NUEVO</span></h3>
+    <p>En caso de que el Liceo implemente sistemas de control de asistencia o acceso mediante datos biométricos (huella dactilar, reconocimiento facial u otros), dichos datos son tratados como <strong>categoría especialmente protegida</strong> conforme al artículo 16 de la Ley N° 21.719, aplicándose las siguientes garantías:</p>
+    <ol>
+      <li>Existencia de base legal explícita y habilitante previa a cualquier recolección biométrica.</li>
+      <li>Realización de una <strong>Evaluación de Impacto de Privacidad (DPIA)</strong> antes del despliegue del sistema.</li>
+      <li>Consentimiento expreso del representante legal para todos los estudiantes menores de 18 años.</li>
+      <li>Las plantillas biométricas se almacenarán <strong>cifradas con algoritmos irreversibles</strong>, en sistemas segregados del resto de la red institucional.</li>
+      <li>Las plantillas biométricas serán <strong>eliminadas de forma segura e inmediata</strong> al egreso o desvinculación del titular.</li>
+      <li>El Liceo <strong>no cederá ni transferirá plantillas biométricas a terceros</strong> bajo ninguna circunstancia.</li>
+    </ol>
+
+    <h3>5.4 Imágenes de Videovigilancia (CCTV) <span class="tag new">NUEVO</span></h3>
+    <p>El Liceo puede operar sistemas de videovigilancia (CCTV) en sus dependencias con fines de seguridad de la comunidad escolar, bajo las siguientes condiciones:</p>
+    <ul>
+      <li>Las grabaciones se conservarán por un máximo de <strong>30 días calendario</strong>, transcurridos los cuales serán eliminadas de forma segura, salvo que deban preservarse como evidencia en un procedimiento judicial, administrativo o disciplinario.</li>
+      <li>El acceso a las grabaciones está restringido a la Dirección, la Inspectoría General y, cuando corresponda, las autoridades policiales o judiciales competentes.</li>
+      <li>La existencia del sistema de videovigilancia estará señalizada mediante carteles visibles en los accesos de las dependencias monitoreadas.</li>
+    </ul>
+  </section>
+
+  <!-- ── 6. FINALIDADES ── -->
+  <section id="finalidades">
+    <h2><span class="num">6</span> Finalidades del Tratamiento</h2>
+    <p>Los datos personales recopilados por el Liceo se utilizan exclusivamente para los siguientes fines:</p>
+    <ol>
+      <li>Gestión del proceso de matrícula, registro escolar y administración del establecimiento.</li>
+      <li>Seguimiento académico y formativo de los estudiantes (notas, asistencia, informes).</li>
+      <li>Gestión y control de subvenciones y beneficios educacionales (PIE, JUNAEB, becas municipales, etc.).</li>
+      <li>Atención de solicitudes, consultas, reclamos y peticiones de la comunidad educativa.</li>
+      <li>Comunicación de información institucional relevante para estudiantes, apoderados y comunidad escolar.</li>
+      <li>Publicación de actividades educativas, noticias y eventos del Establecimiento en el sitio web y redes sociales, <strong>previa obtención del consentimiento expreso</strong> correspondiente.</li>
+      <li>Cumplimiento de obligaciones legales y requerimientos de MINEDUC, DAEM, Contraloría o el Municipio.</li>
+      <li>Mejora continua de los servicios educativos y digitales del Liceo.</li>
+      <li>Gestión y supervisión de las Prácticas Profesionales de los estudiantes (ver Sección 7.3).</li>
+    </ol>
+    <p>Los datos no serán utilizados con fines comerciales ni cedidos a terceros con propósitos ajenos a las funciones del Liceo, salvo obligación legal expresa.</p>
+
+    <div class="notice-box">
+      <strong>ℹ️ Decisiones automatizadas e inteligencia artificial</strong>
+      El Liceo no adoptará decisiones que afecten significativamente a los titulares basadas <strong>exclusivamente</strong> en tratamientos automatizados, incluida la elaboración de perfiles, sin intervención humana revisora. En caso de utilizarse herramientas de apoyo pedagógico o evaluación asistidas por inteligencia artificial, el titular tendrá derecho a solicitar revisión humana de cualquier resultado que le afecte, conforme al artículo 15 letra f) de la Ley N° 21.719.
+    </div>
+  </section>
+
+  <!-- ── 7. TRANSFERENCIA ── -->
+  <section id="transferencia">
+    <h2><span class="num">7</span> Transferencia y Comunicación de Datos</h2>
+
+    <h3>7.1 Comunicación a Terceros</h3>
+    <p>Los datos personales podrán ser comunicados a:</p>
+    <ul>
+      <li><strong>Organismos del Estado:</strong> MINEDUC, DAEM, JUNAEB, Registro Civil, SENCE, entre otros, cuando sea necesario para el ejercicio de funciones públicas o por obligación legal.</li>
+      <li><strong>Encargados del tratamiento:</strong> Proveedores de servicios tecnológicos o plataformas digitales utilizadas por el Liceo, quienes deberán actuar bajo instrucción del Establecimiento, en virtud de un <strong>contrato escrito con cláusulas mínimas exigidas por la Ley N° 21.719</strong>, y con garantías de confidencialidad.</li>
+      <li><strong>Tribunales de Justicia y Fiscalía:</strong> En virtud de resolución judicial o requerimiento legal.</li>
+      <li><strong>Centro General de Padres y Apoderados:</strong> Para la gestión de asuntos propios de la participación de la comunidad escolar, limitado a los datos estrictamente necesarios para dicha finalidad.</li>
+    </ul>
+
+    <h3>7.2 Transferencias Internacionales de Datos <span class="tag fixed">CORREGIDO</span></h3>
+    <p>En caso de utilizar plataformas o servicios digitales con servidores en el extranjero, el Liceo verificará y acreditará que dichos proveedores cuenten con un nivel de protección adecuado, conforme al Título V de la Ley N° 21.719, mediante alguno de los siguientes mecanismos:</p>
+    <ul>
+      <li>Decisión de adecuación emitida por la APDP respecto del país del proveedor.</li>
+      <li>Cláusulas contractuales tipo aprobadas por la APDP, suscritas con el proveedor.</li>
+      <li>Mecanismos equivalentes de protección reconocidos por la APDP.</li>
+    </ul>
+    <p>La lista actualizada de transferencias internacionales y sus garantías estará disponible para consulta en la Dirección del Establecimiento y en el Registro de Actividades de Tratamiento (RAT).</p>
+
+    <h3>7.3 Transferencia de Datos en Prácticas Profesionales <span class="tag new">NUEVO</span></h3>
+    <p>Los estudiantes del Liceo realizan <strong>Prácticas Profesionales</strong> en empresas o centros receptores externos como requisito de egreso. Este proceso implica la comunicación de datos personales del estudiante a terceros, regulada de la siguiente forma:</p>
+    <ul>
+      <li>Los datos comunicados al centro de práctica se limitarán a los <strong>estrictamente necesarios</strong> para la gestión y supervisión de la práctica (identificación, especialidad, nivel de avance), conforme al principio de proporcionalidad.</li>
+      <li>Los centros receptores deberán suscribir un <strong>Acuerdo de Confidencialidad y Tratamiento de Datos</strong> antes del inicio de la práctica, comprometiéndose a tratar los datos del estudiante únicamente para los fines de la práctica y a no comunicarlos a terceros.</li>
+      <li>El representante legal del estudiante menor de edad será informado de los datos que serán comunicados al centro de práctica.</li>
+      <li>Para los estudiantes de la especialidad de <strong>Atención de Enfermería</strong>, se aplicarán adicionalmente las disposiciones de la <strong>Ley N° 20.584</strong> respecto a los datos clínicos de pacientes a los que el estudiante pueda tener acceso durante su formación, los cuales están sujetos al más estricto deber de confidencialidad.</li>
+    </ul>
+  </section>
+
+  <!-- ── 8. PLAZOS DE CONSERVACIÓN ── -->
+  <section id="conservacion">
+    <h2><span class="num">8</span> Plazos de Conservación de Datos <span class="tag fixed">CORREGIDO</span></h2>
+    <p>Los datos personales serán conservados durante el tiempo necesario para la finalidad para la cual fueron recopilados, o mientras exista una obligación legal de conservarlos. Una vez vencido el plazo, serán suprimidos o anonimizados de manera segura conforme al protocolo de la Sección 9.4.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tipo de Datos</th><th>Plazo de Conservación</th><th>Justificación</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Datos de matrícula y registro escolar</strong></td><td>Durante la permanencia y <strong>mínimo 10 años</strong> tras el egreso</td><td>Obligación MINEDUC; solicitudes de certificados</td></tr>
+          <tr><td><strong>Datos de identificación del ex-alumno</strong></td><td><strong>10 años</strong> desde el egreso</td><td>Vinculado al expediente académico</td></tr>
+          <tr><td><strong>Datos de salud y NEE (informes P.I.E., psicopedagógicos)</strong></td><td><strong>5 años</strong> desde el egreso, luego anonimización</td><td>Proporcionalidad; datos sensibles innecesarios tras el período de estudio</td></tr>
+          <tr><td><strong>Expedientes disciplinarios</strong></td><td>Según normativa MINEDUC; máximo 5 años si no hay norma especial</td><td>Principio de proporcionalidad</td></tr>
+          <tr><td><strong>Datos de subvenciones (PIE, JUNAEB)</strong></td><td>5 años desde el último acto administrativo</td><td>Obligación de archivo administrativo</td></tr>
+          <tr><td><strong>Datos de contacto y consultas</strong></td><td>2 años desde la resolución de la solicitud</td><td>Gestión de reclamaciones posteriores</td></tr>
+          <tr><td><strong>Datos biométricos</strong></td><td><strong>Eliminación inmediata</strong> al egreso o desvinculación</td><td>No subsiste la finalidad que justificó su recolección</td></tr>
+          <tr><td><strong>Imágenes de videovigilancia (CCTV)</strong></td><td>Máximo <strong>30 días calendario</strong></td><td>Proporcionalidad; salvo evidencia judicial o administrativa</td></tr>
+          <tr><td><strong>Imágenes y registros fotográficos publicados</strong></td><td>Hasta revocación del consentimiento o 5 años desde publicación</td><td>Proporcionalidad</td></tr>
+          <tr><td><strong>Datos de contacto del apoderado (ex-alumno)</strong></td><td>2 años desde el egreso del estudiante</td><td>Gestión de solicitudes posteriores</td></tr>
+          <tr><td><strong>Datos de navegación y cookies</strong></td><td>Según lo indicado en la Sección 11</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── 9. MEDIDAS DE SEGURIDAD ── -->
+  <section id="seguridad">
+    <h2><span class="num">9</span> Medidas de Seguridad y Ciberseguridad</h2>
+
+    <h3>9.1 Medidas Técnicas y Organizativas <span class="tag fixed">CORREGIDO</span></h3>
+    <p>En cumplimiento del principio de seguridad establecido en la Ley N° 21.719, el Liceo implementa las siguientes medidas, ajustadas a los estándares mínimos definidos por la ANCI:</p>
+    <ul>
+      <li>Uso de conexiones seguras (<strong>HTTPS / TLS 1.2 o superior</strong>) en el sitio web y sistemas de gestión escolar.</li>
+      <li><strong>Autenticación multifactor (MFA)</strong> para el acceso de funcionarios a sistemas con datos personales.</li>
+      <li><strong>Cifrado en tránsito y en reposo</strong> para datos sensibles.</li>
+      <li>Control de acceso basado en <strong>perfiles diferenciados</strong> según el principio de mínimo privilegio (ver Sección 9.5).</li>
+      <li><strong>Registros de auditoría (logs)</strong> de acceso a sistemas con datos personales, conservados por mínimo 2 años.</li>
+      <li>Segmentación de redes para aislar sistemas con datos sensibles de la red general.</li>
+      <li>Políticas de <strong>respaldo periódico y verificación de integridad</strong> de la información.</li>
+      <li>Procedimiento formal de <strong>gestión de vulnerabilidades</strong> con aplicación oportuna de actualizaciones y parches.</li>
+      <li>Contratos de confidencialidad con proveedores externos que accedan a datos personales.</li>
+      <li><strong>Capacitación periódica</strong> de docentes, directivos y asistentes de la educación en protección de datos y ciberseguridad, con registro de participación.</li>
+    </ul>
+
+    <h3>9.2 Ciberseguridad — Ley N° 21.663</h3>
+    <p>El Liceo da cumplimiento a las disposiciones de la Ley Marco de Ciberseguridad N° 21.663, coordinando con la <strong>Agencia Nacional de Ciberseguridad (ANCI)</strong> y el <strong>CSIRT Gobierno</strong> cuando corresponda, mediante:</p>
+    <ul>
+      <li>Implementación de controles de seguridad informática conforme a las directrices técnicas de la ANCI.</li>
+      <li>Aplicación oportuna de actualizaciones y parches de seguridad en los sistemas utilizados.</li>
+      <li>Protocolo formal de respuesta ante incidentes de ciberseguridad.</li>
+      <li>Mantenimiento de un <strong>Plan de Continuidad Operacional (BCP)</strong> que asegure la disponibilidad de los sistemas críticos ante eventos disruptivos.</li>
+    </ul>
+
+    <h3>9.3 Notificación de Brechas de Seguridad</h3>
+    <p>En caso de producirse una brecha de seguridad que afecte datos personales, el Liceo adoptará las siguientes acciones:</p>
+    <ol>
+      <li><strong>Notificación a la ANCI y alerta al CSIRT Gobierno:</strong> dentro de las <strong>3 horas</strong> siguientes de detectado el incidente, cuando corresponda por la naturaleza y magnitud del mismo, conforme al artículo 9 de la Ley N° 21.663.</li>
+      <li><strong>Notificación a la APDP:</strong> dentro de las <strong>72 horas</strong> siguientes de tomar conocimiento, conforme a la Ley N° 21.719.</li>
+      <li><strong>Comunicación a los titulares afectados:</strong> cuando el incidente suponga un alto riesgo, se informará de manera oportuna indicando la naturaleza de la brecha, los datos comprometidos, las medidas adoptadas y los canales de contacto.</li>
+    </ol>
+    <p>Todo incidente será documentado internamente, conservándose el registro por un mínimo de 5 años.</p>
+
+    <h3>9.4 Eliminación Segura de Datos <span class="tag new">NUEVO</span></h3>
+    <p>Al vencimiento de los plazos de conservación, el Liceo procederá a la eliminación segura mediante el siguiente protocolo:</p>
+    <ul>
+      <li><strong>Datos digitales:</strong> borrado seguro con estándar mínimo DoD 5220.22-M (3 pasadas) o destrucción criptográfica (<em>crypto-shredding</em>) para datos en la nube.</li>
+      <li><strong>Datos en papel:</strong> destrucción mediante trituradora de seguridad de corte en partículas (nivel P-4 o superior, DIN 66399) o servicio certificado con emisión de acta.</li>
+      <li><strong>Soportes físicos dados de baja (HDD, USB, CD):</strong> destrucción física certificada o borrado seguro previo a su disposición final.</li>
+    </ul>
+    <p>Cada proceso de eliminación quedará registrado en un <strong>Acta de Eliminación de Datos</strong> que indicará: fecha, categoría de datos, método, responsable y validación del DPD. Este registro se conservará por 3 años. El Liceo podrá conservar datos históricos de ex-alumnos en formato <strong>anonimizado irreversiblemente</strong> para fines estadísticos, documentado en el RAT.</p>
+
+    <h3>9.5 Gestión de Accesos por Perfiles <span class="tag new">NUEVO</span></h3>
+    <p>El acceso a los sistemas de información se gestionará conforme al <strong>principio de mínimo privilegio</strong>:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Perfil</th><th>Acceso Permitido</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Directivos</strong></td><td>Todos los módulos del sistema de gestión escolar, registros académicos completos, datos de subvenciones.</td></tr>
+          <tr><td><strong>Docentes</strong></td><td>Datos académicos de sus propios cursos (asistencia, notas, informes). Sin acceso a datos sensibles de salud, salvo coordinadores PIE.</td></tr>
+          <tr><td><strong>Inspectoría</strong></td><td>Registros de asistencia, datos de convivencia escolar, datos de contacto de apoderados.</td></tr>
+          <tr><td><strong>Administrativos</strong></td><td>Datos de matrícula, datos financieros de becas, datos de contacto.</td></tr>
+          <tr><td><strong>Coordinador P.I.E.</strong></td><td>Datos de salud y NEE de los estudiantes que atiende, con registro de acceso.</td></tr>
+          <tr><td><strong>Proveedores externos</strong></td><td>Acceso restringido y supervisado, limitado a los datos estrictamente necesarios para el servicio contratado, bajo contrato de confidencialidad.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Al término de la relación laboral o contractual, el encargado técnico procederá a revocar las credenciales de acceso dentro de las <strong>24 horas</strong> siguientes, notificando al DPD.</p>
+  </section>
+
+  <!-- ── 10. DERECHOS TITULARES ── -->
+  <section id="derechos">
+    <h2><span class="num">10</span> Derechos de los Titulares (ARCOP+)</h2>
+    <p>Conforme al Título III de la Ley N° 21.719, los titulares —y los apoderados o tutores en el caso de menores de edad— tienen los siguientes derechos:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Derecho</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td><strong>A — Acceso</strong></td><td>Conocer si sus datos son tratados; obtener información sobre su origen, destinatarios, finalidad y organismos a quienes han sido transmitidos.</td></tr>
+          <tr><td><strong>R — Rectificación</strong></td><td>Solicitar la corrección de datos inexactos, incompletos o desactualizados.</td></tr>
+          <tr><td><strong>C — Cancelación / Supresión</strong></td><td>Solicitar la eliminación de datos que hayan dejado de ser necesarios o cuando se retire el consentimiento.</td></tr>
+          <tr><td><strong>O — Oposición</strong></td><td>Oponerse al tratamiento cuando existan motivos fundados, salvo que sea exigido por ley.</td></tr>
+          <tr><td><strong>P — Portabilidad</strong></td><td>Recibir sus datos en un <strong>formato estructurado, de uso común y lectura mecánica</strong> (CSV, XML u otro estándar interoperable) y transmitirlos a otro responsable del tratamiento.</td></tr>
+          <tr><td><strong>B — Bloqueo</strong></td><td>Solicitar la suspensión temporal del tratamiento mientras se verifica una solicitud de rectificación, supresión o se resuelve una reclamación.</td></tr>
+          <tr><td><strong>No automatización</strong></td><td>No ser objeto de una decisión basada exclusivamente en tratamiento automatizado que produzca efectos jurídicos significativos (art. 15 letra f) Ley N° 21.719).</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>10.1 Procedimiento para el Ejercicio de Derechos <span class="tag fixed">CORREGIDO</span></h3>
+    <ol>
+      <li>Presentar solicitud por escrito en la Secretaría del Liceo o a través del correo <a href="mailto:privacidad@liceotpggm.cl">privacidad@liceotpggm.cl</a>.</li>
+      <li>Identificarse con nombre completo y RUN (o del estudiante en caso de apoderado), acreditando la representación si corresponde.</li>
+      <li>Indicar claramente el derecho que desea ejercer y adjuntar los antecedentes que sustenten la solicitud si corresponde.</li>
+    </ol>
+
+    <div class="notice-box success">
+      <strong>✅ Plazo de respuesta — Art. 49 Ley N° 21.719</strong>
+      El Liceo dará respuesta dentro de los <strong>15 días hábiles</strong> siguientes a la recepción de la solicitud. En casos de complejidad justificada, este plazo podrá prorrogarse por una sola vez por un período igual (15 días hábiles adicionales), debiendo informarse al titular antes del vencimiento del plazo original. La respuesta es gratuita y se entregará en el mismo medio en que fue solicitada.
+    </div>
+
+    <h3>10.2 Reclamación ante la Agencia de Protección de Datos</h3>
+    <p>Si el titular considera que sus derechos no han sido debidamente atendidos, podrá presentar una reclamación ante la <strong>Agencia de Protección de Datos Personales (APDP)</strong>, a través de los canales que dicha agencia disponga, sin perjuicio de las acciones judiciales contempladas en el artículo 59 de la Ley N° 21.719.</p>
+  </section>
+
+  <!-- ── 11. COOKIES ── -->
+  <section id="cookies">
+    <h2><span class="num">11</span> Uso de Cookies y Tecnologías de Rastreo</h2>
+    <p>El sitio <a href="https://www.liceotpggm.cl">www.liceotpggm.cl</a> puede utilizar cookies y tecnologías similares para mejorar la experiencia de navegación:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Tipo</th><th>Finalidad</th><th>Requiere Consentimiento</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Cookies estrictamente necesarias</strong></td><td>Funcionamiento técnico del sitio (sesión, seguridad)</td><td>No</td></tr>
+          <tr><td><strong>Cookies analíticas</strong></td><td>Medición del uso del sitio (estadísticas de visitas)</td><td><strong>Sí</strong></td></tr>
+          <tr><td><strong>Cookies de preferencias</strong></td><td>Recordar configuraciones del usuario</td><td><strong>Sí</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Al ingresar al sitio web, el usuario será informado mediante un <strong>banner de consentimiento de cookies</strong> que le permitirá aceptar, rechazar o personalizar las cookies no esenciales. Las cookies analíticas y de preferencias solo se activarán con el consentimiento previo y explícito del usuario. El consentimiento puede ser retirado en cualquier momento a través de las opciones de configuración del sitio o del navegador. La deshabilitación de cookies estrictamente necesarias puede afectar el correcto funcionamiento de algunas funcionalidades.</p>
+  </section>
+
+  <!-- ── 12. PROTECCIÓN DE MENORES ── -->
+  <section id="menores">
+    <h2><span class="num">12</span> Protección de Datos de Niños, Niñas y Adolescentes <span class="tag fixed">CORREGIDO</span></h2>
+    <p>El Liceo reconoce la importancia de proteger especialmente los datos personales de sus estudiantes, quienes en su mayoría son menores de edad. En consecuencia, se aplican las siguientes garantías:</p>
+    <ol>
+      <li>Cuando sea necesario recopilar o tratar datos de estudiantes <strong>menores de 18 años</strong> para fines distintos a la prestación educativa obligatoria, se requerirá el <strong>consentimiento expreso, informado y documentado del padre, madre o tutor legal</strong>. Para los estudiantes de entre 14 y 17 años, se tomará en consideración su opinión conforme al principio de autonomía progresiva reconocido por la Ley N° 21.430, pero el consentimiento definitivo corresponderá al representante legal hasta la mayoría de edad.</li>
+      <li>El tratamiento de datos de estudiantes menores de edad se realizará priorizando el <strong>interés superior del niño o niña</strong>, conforme a la Convención sobre los Derechos del Niño, la Ley N° 21.430 y la legislación chilena vigente.</li>
+      <li>Las imágenes y videos de estudiantes solo serán publicados en el sitio web o redes sociales del Liceo previa <strong>autorización escrita del apoderado o tutor legal</strong>. Dicha autorización es <strong>revocable en cualquier momento</strong>; ante su revocación, el Liceo retirará las imágenes publicadas en un plazo máximo de <strong>5 días hábiles</strong>.</li>
+      <li>Se adoptarán medidas especiales de seguridad para proteger los datos de salud, discapacidad y NEE de los estudiantes vinculados al P.I.E., con acceso restringido al personal estrictamente necesario.</li>
+      <li>Los estudiantes que hayan alcanzado la mayoría de edad (18 años) podrán ejercer directamente sus derechos ARCOP+ sin intervención de sus representantes legales.</li>
+    </ol>
+  </section>
+
+  <!-- ── 13. GOBERNANZA ── -->
+  <section id="gobernanza">
+    <h2><span class="num">13</span> Gobernanza de la Información <span class="tag new">NUEVO</span></h2>
+
+    <h3>13.1 Estructura de Gobernanza</h3>
+    <ul>
+      <li><strong>Delegado de Protección de Datos (DPD):</strong> Funcionario formalmente designado con autonomía funcional, encargado de supervisar el cumplimiento de la Ley N° 21.719, coordinar con la APDP y la ANCI, y actuar como punto de contacto. Su designación está registrada ante la APDP conforme al artículo 31 de la Ley N° 21.719.</li>
+      <li><strong>Comité de Seguridad de la Información:</strong> Integrado por la Dirección, el DPD, el encargado técnico de informática y el Inspector General. Se reunirá al menos <strong>dos veces al año</strong> para revisar el estado de cumplimiento, analizar incidentes ocurridos, actualizar el Inventario de Activos de Información y aprobar modificaciones a la presente Política.</li>
+    </ul>
+
+    <h3>13.2 Registro de Actividades de Tratamiento (RAT)</h3>
+    <p>El Liceo mantendrá un <strong>Registro de Actividades de Tratamiento (RAT)</strong> actualizado, que indicará para cada actividad: finalidad, categorías de datos, responsables, encargados externos, plazos de retención y medidas de seguridad aplicadas. Este registro estará disponible para la APDP y la ANCI cuando sea requerido, conforme al artículo 31 de la Ley N° 21.719.</p>
+
+    <h3>13.3 Evaluaciones de Impacto de Privacidad (DPIA)</h3>
+    <p>Antes de implementar nuevos tratamientos de datos de <strong>alto riesgo</strong> —incluyendo sistemas biométricos, plataformas de videovigilancia, herramientas de inteligencia artificial educativa o tratamiento masivo de datos de menores—, el Liceo realizará una <strong>Evaluación de Impacto de Privacidad (DPIA)</strong> conforme al artículo 68 de la Ley N° 21.719, cuyos resultados quedarán documentados y conservados por el DPD.</p>
+  </section>
+
+  <!-- ── 14. FUNCIONARIOS ── -->
+  <section id="funcionarios">
+    <h2><span class="num">14</span> Responsabilidad de Funcionarios y Personal</h2>
+    <p>Todos los funcionarios del Liceo —incluyendo docentes, directivos, inspectores, asistentes de la educación y personal administrativo— que intervengan en cualquier fase del tratamiento de datos personales están sujetos a:</p>
+    <ul>
+      <li>El <strong>deber de confidencialidad</strong> respecto de los datos a los que accedan, obligación que subsiste después del término de sus funciones.</li>
+      <li>La obligación de tratar los datos exclusivamente para los fines declarados y bajo las instrucciones de la Dirección del Establecimiento.</li>
+      <li>La obligación de <strong>reportar de inmediato</strong> al DPD cualquier incidente de seguridad, brecha o acceso no autorizado que detecten.</li>
+      <li>Las sanciones administrativas, civiles y penales establecidas en la Ley N° 21.719, la Ley N° 21.663 y la Ley N° 21.459, según corresponda.</li>
+    </ul>
+  </section>
+
+  <!-- ── 15. ACTUALIZACIÓN ── -->
+  <section id="actualizacion">
+    <h2><span class="num">15</span> Actualización de la Política</h2>
+    <p>El Liceo podrá modificar la presente Política cuando sea necesario para adecuarla a cambios normativos, tecnológicos o en sus servicios. Las modificaciones serán publicadas oportunamente en <a href="https://www.liceotpggm.cl">www.liceotpggm.cl</a> con indicación de la nueva fecha de actualización y un registro de cambios respecto a la versión anterior. Se recomienda a la comunidad educativa revisar periódicamente este documento.</p>
+    <p>Cuando las modificaciones sean sustanciales y afecten tratamientos basados en consentimiento, el Liceo informará directamente a los titulares afectados y, cuando corresponda, solicitará un nuevo consentimiento.</p>
+  </section>
+
+  <!-- ── 16. NOTA LEGAL ── -->
+  <section id="nota-legal">
+    <h2><span class="num">16</span> Nota Legal <span class="tag fixed">CORREGIDO</span></h2>
+    <p>La presente <strong>Política de Privacidad y Protección de Datos Personales</strong> constituye el instrumento de transparencia activa del Liceo Técnico Profesional Gonzalo Guglielmi Montiel, conforme a las obligaciones establecidas en la Ley N° 21.719 y la Ley N° 20.285. <strong>Las obligaciones aquí declaradas son jurídicamente exigibles</strong> ante la Agencia de Protección de Datos Personales (APDP) y los tribunales competentes.</p>
+    <p>El Liceo se compromete a actualizar este documento ante cualquier cambio normativo o modificación sustancial en las prácticas de tratamiento descritas, notificando a los titulares cuando corresponda.</p>
+  </section>
+
+</div>
+
+<footer>
+  <p><strong>Liceo Técnico Profesional Gonzalo Guglielmi Montiel</strong> — <a href="https://www.liceotpggm.cl">www.liceotpggm.cl</a></p>
+  <p style="margin-top:0.4rem;">Versión 2.0 — Julio 2026 · Elaborada conforme a la Ley N° 21.719, Ley N° 21.663, Ley N° 21.459 y demás normativa educacional y de protección de datos vigente en Chile.</p>
+  <p style="margin-top:0.4rem;opacity:0.6;font-size:0.78rem;">DPD: <a href="mailto:privacidad@liceotpggm.cl">privacidad@liceotpggm.cl</a> · General: <a href="mailto:contacto@liceotpggm.cl">contacto@liceotpggm.cl</a></p>
+</footer>
+
+</body>
+</html>

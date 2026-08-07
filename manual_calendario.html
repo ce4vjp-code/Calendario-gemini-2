@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Manual de Usuario - Calendario de Evaluaciones</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2c3e50;
+    line-height: 1.6;
+    margin: 40px auto;
+    max-width: 800px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .header img {
+    max-width: 150px;
+    height: auto;
+    margin-bottom: 15px;
+  }
+  h1 {
+    color: #1a252f;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+    font-size: 26px;
+    text-align: center;
+  }
+  .subtitle {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    font-size: 16px;
+  }
+  h2 {
+    color: #2980b9;
+    margin-top: 30px;
+    font-size: 20px;
+    border-bottom: 1px solid #ecf0f1;
+    padding-bottom: 5px;
+  }
+  h3 {
+    color: #34495e;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  p {
+    margin-bottom: 15px;
+    text-align: justify;
+    font-size: 14px;
+  }
+  ul, ol {
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+  li {
+    margin-bottom: 10px;
+  }
+  .highlight {
+    background-color: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 0 5px 5px 0;
+  }
+  .highlight strong {
+    color: #2980b9;
+  }
+  
+  /* Mock UI styles */
+  .mock-ui {
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin: 15px 0;
+    text-align: center;
+    color: #7f8c8d;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+  .mock-button {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin: 5px;
+    font-weight: bold;
+  }
+  .mock-button.action {
+    background-color: #e74c3c;
+  }
+  
+  .step-number {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-color: #2980b9;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    margin-right: 8px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+  }
+  .cal-day {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    text-align: left;
+    min-height: 80px;
+  }
+  .cal-header {
+    background: #3498db;
+    color: white;
+    font-weight: bold;
+    padding: 5px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .cal-event {
+    background: #fdf2e9;
+    border-left: 3px solid #e67e22;
+    font-size: 11px;
+    padding: 4px;
+    margin-top: 5px;
+    color: #333;
+  }
+
+  .footer {
+    margin-top: 50px;
+    font-size: 12px;
+    color: #7f8c8d;
+    text-align: center;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+  }
+  
+  @media print {
+    body { margin: 0; max-width: 100%; }
+    .footer { position: fixed; bottom: 0; width: 100%; }
+    .page-break { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img src="https://new.liceotpggm.cl/wp-content/uploads/2026/07/logo.png" alt="Logo Liceo TP GGM">
+</div>
+
+<h1>Manual de Usuario</h1>
+<div class="subtitle">Plataforma de Calendario de Evaluaciones</div>
+
+<p>¡Hola! Para que todos nuestros estudiantes y profesores estén siempre informados y organizados, hemos implementado el <strong>Calendario de Evaluaciones Digital</strong>. Aquí podrás revisar las fechas de pruebas, disertaciones y entregas de trabajos de manera rápida y sin confusiones.</p>
+
+<h2><span class="step-number">1</span> ¿Cómo ingresar al Calendario?</h2>
+<p>El calendario está integrado directamente en la página oficial del Liceo. Para encontrarlo, solo debes seguir estos pasos:</p>
+<ol>
+    <li>Ingresa a la página principal: <strong>https://new.liceotpggm.cl/</strong></li>
+    <li>En el menú superior, pasa el ratón sobre <strong>"Área Académica"</strong>.</li>
+    <li>Haz clic en la opción <strong>"Calendarios de evaluaciones"</strong>.</li>
+</ol>
+
+<div class="mock-ui" style="text-align: center;">
+    <div style="background: #2c3e50; color: white; padding: 10px; border-radius: 4px; display: inline-block;">
+        <span style="margin: 0 15px;">Inicio</span>
+        <span style="margin: 0 15px;">Liceo ▾</span>
+        <span style="margin: 0 15px; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 4px;">Área Académica ▾</span>
+        <span style="margin: 0 15px;">Especialidades ▾</span>
+    </div>
+    <div style="background: white; border: 1px solid #ccc; border-radius: 4px; width: 200px; margin: -5px auto 0 auto; text-align: left; padding: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div style="padding: 5px 0;">Docentes</div>
+        <div style="padding: 5px 0;">Programas de Asignatura</div>
+        <div style="padding: 5px 0; color: #3498db; font-weight: bold;">➡️ Calendarios de eval...</div>
+        <div style="padding: 5px 0;">Horarios por curso</div>
+    </div>
+</div>
+
+<h2><span class="step-number">2</span> Visualizar y Filtrar Evaluaciones (Para Alumnos y Apoderados)</h2>
+<p>Una vez dentro de la plataforma, verás un calendario mensual. Para encontrar exactamente lo que buscas, puedes usar los filtros:</p>
+<ul>
+    <li><strong>Selecciona tu Curso:</strong> Usa el menú desplegable en la parte superior para elegir un curso específico (Ej. "3° Medio Telecomunicaciones"). El calendario se actualizará para mostrar solo las pruebas de ese curso.</li>
+    <li><strong>Ver detalles:</strong> Haz clic sobre cualquier evaluación que aparezca en los días del calendario. Se abrirá una pequeña ventana (Pop-up) indicando la <strong>Asignatura</strong>, el <strong>Profesor</strong> y los <strong>Temas a evaluar</strong>.</li>
+</ul>
+
+<div class="mock-ui">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div style="font-size: 18px; color: #2c3e50; font-weight: bold;">📅 Noviembre</div>
+        <div>
+            <span style="font-size: 14px; color: #7f8c8d; margin-right: 10px;">Filtrar por curso:</span>
+            <span style="border: 1px solid #ccc; padding: 5px 10px; border-radius: 4px; background: white;">3° Medio Enfermería ▾</span>
+        </div>
+    </div>
+    
+    <div class="calendar-grid">
+        <div class="cal-header">Lunes</div>
+        <div class="cal-header">Martes</div>
+        <div class="cal-header">Miércoles</div>
+        <div class="cal-header">Jueves</div>
+        <div class="cal-header">Viernes</div>
+        
+        <div class="cal-day">1</div>
+        <div class="cal-day">2<br>
+            <div class="cal-event"><strong>Matemáticas</strong><br>Prueba Unidad 2</div>
+        </div>
+        <div class="cal-day">3</div>
+        <div class="cal-day">4<br>
+            <div class="cal-event"><strong>Historia</strong><br>Disertación</div>
+        </div>
+        <div class="cal-day">5</div>
+    </div>
+</div>
+
+<div class="page-break"></div> <!-- Salto de página para la impresión -->
+
+<h2><span class="step-number">3</span> ¿Cómo agregar una evaluación? (Solo para Docentes)</h2>
+<p>Si eres profesor y tienes los permisos necesarios para agendar evaluaciones, sigue estos pasos:</p>
+<ol>
+    <li>Ingresa al sistema con tu cuenta de profesor.</li>
+    <li>Dirígete a la sección de administración del Calendario de Evaluaciones.</li>
+    <li>Haz clic en el botón <strong>"Agregar Nueva Evaluación"</strong> (o haz clic directamente sobre el día en el calendario).</li>
+    <li>Llena el formulario con los siguientes datos:
+        <ul>
+            <li><strong>Curso:</strong> (Ej. 4° Medio Muebles)</li>
+            <li><strong>Asignatura:</strong> (Ej. Lenguaje y Comunicación)</li>
+            <li><strong>Fecha y Tipo:</strong> (Ej. Prueba escrita, Trabajo práctico, etc.)</li>
+            <li><strong>Temario/Descripción:</strong> (Ej. Lectura complementaria "El Quijote").</li>
+        </ul>
+    </li>
+    <li>Presiona el botón <strong>Guardar</strong>. ¡La evaluación aparecerá automáticamente en la página web para los alumnos!</li>
+</ol>
+
+<div class="mock-ui">
+    <div style="margin-bottom: 15px; font-size: 18px; color: #2c3e50; text-align: left; padding-left: 10%;">➕ Programar Evaluación</div>
+    <div style="background: white; border: 1px solid #ccc; padding: 8px; margin-bottom: 10px; width: 80%; margin: 0 auto 10px auto; text-align: left; color: #333; border-radius: 4px;">🎓 Curso: <strong>2° Medio B</strong> ▾</div>
+    <div style="background: white; border: 1px solid #ccc; padding: 8px; margin-bottom: 10px; width: 80%; margin: 0 auto 10px auto; text-align: left; color: #333; border-radius: 4px;">📚 Asignatura: <strong>Ciencias Naturales</strong> ▾</div>
+    <div style="background: white; border: 1px solid #ccc; padding: 8px; margin-bottom: 10px; width: 80%; margin: 0 auto 10px auto; text-align: left; color: #333; border-radius: 4px;">📝 Detalles / Temario: <strong>Células eucariotas y procariotas.</strong></div>
+    
+    <div style="text-align: right; padding-right: 10%; margin-top: 15px;">
+        <span class="mock-button action">Guardar en Calendario</span>
+    </div>
+</div>
+
+<div class="highlight">
+<strong>💡 Un buen consejo:</strong> 
+Recomendamos a los docentes ingresar las evaluaciones con al menos <strong>una semana de anticipación</strong>. Así, los estudiantes tendrán tiempo suficiente para organizar sus jornadas de estudio.
+</div>
+
+<div class="footer">
+Documento generado para el Liceo Técnico Profesional Gonzalo Guglielmi Montiel
+</div>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/usersFragment"
+        android:title="Usuarios" />
+    <item
+        android:id="@+id/auditFragment"
+        android:title="Auditoría" />
+    <item
+        android:id="@+id/inviteFragment"
+        android:title="Códigos" />
+</menu>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertidor de Excel a vCard</title>
+    <!-- Incluir SheetJS para leer Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        :root {
+            --primary: #10B981; /* Verde esmeralda para Excel/Contactos */
+            --primary-hover: #059669;
+            --bg-color: #0F172A;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-color: #F8FAFC;
+            --text-muted: #94A3B8;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0F172A 0%, #064E3B 100%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2.5rem 2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin: 1rem;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.75rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #34D399, #10B981);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 600;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .instructions {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .instructions strong {
+            color: var(--text-color);
+        }
+
+        .file-upload-wrapper {
+            position: relative;
+            width: 100%;
+            height: 120px;
+            border: 2px dashed var(--primary);
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .file-upload-wrapper:hover {
+            background: rgba(16, 185, 129, 0.1);
+            transform: scale(1.02);
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-text {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        #fileName {
+            display: none;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #34D399;
+            background: rgba(52, 211, 153, 0.1);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none; /* Hidden until file is selected */
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+        }
+
+        button:disabled {
+            background: #64748B;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #status {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+            min-height: 1.5em;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Excel a vCard</h1>
+        <p class="subtitle">Convierte tus contactos de Excel (.xlsx, .xls) a formato vCard (.vcf) para importarlos a tu teléfono o correo.</p>
+
+        <div class="instructions">
+            La primera fila de tu Excel debe contener los encabezados. Títulos recomendados:<br>
+            <strong>Nombre, Apellido, Telefono, Email, Empresa</strong>
+        </div>
+
+        <div class="file-upload-wrapper">
+            <input type="file" id="excelFile" accept=".xlsx, .xls, .csv">
+            <div class="upload-icon">📄</div>
+            <div class="upload-text">Haz clic o arrastra tu archivo Excel aquí</div>
+        </div>
+
+        <div id="fileName"></div>
+
+        <button id="convertBtn" onclick="convertToVcard()">Convertir y Descargar</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('excelFile');
+        const fileNameDisplay = document.getElementById('fileName');
+        const convertBtn = document.getElementById('convertBtn');
+        const statusDiv = document.getElementById('status');
+        
+        let excelData = null;
+
+        // Mostrar nombre del archivo cuando se selecciona
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                fileNameDisplay.textContent = `Archivo seleccionado: ${file.name}`;
+                fileNameDisplay.style.display = 'block';
+                convertBtn.style.display = 'block';
+                statusDiv.textContent = '';
+                excelData = file;
+            } else {
+                fileNameDisplay.style.display = 'none';
+                convertBtn.style.display = 'none';
+                excelData = null;
+            }
+        });
+
+        // Buscar el valor en las claves basándose en posibles nombres
+        function findValue(row, possibleKeys) {
+            for (let key in row) {
+                const normalizedKey = key.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Quitar acentos
+                if (possibleKeys.includes(normalizedKey)) {
+                    return row[key];
+                }
+            }
+            return "";
+        }
+
+        async function convertToVcard() {
+            if (!excelData) return;
+
+            convertBtn.disabled = true;
+            convertBtn.textContent = 'Procesando...';
+            statusDiv.textContent = '';
+            statusDiv.style.color = 'var(--text-muted)';
+
+            try {
+                const data = await excelData.arrayBuffer();
+                const workbook = XLSX.read(data);
+                
+                // Tomar la primera hoja
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convertir a JSON
+                const json = XLSX.utils.sheet_to_json(worksheet);
+                
+                if (json.length === 0) {
+                    throw new Error("El archivo está vacío o no tiene el formato correcto.");
+                }
+
+                let vcards = '';
+                let count = 0;
+
+                json.forEach(row => {
+                    const nombre = findValue(row, ['nombre', 'name', 'nombres', 'first name']);
+                    const apellido = findValue(row, ['apellido', 'apellidos', 'last name', 'surname']);
+                    const telefono = findValue(row, ['telefono', 'celular', 'movil', 'phone', 'mobile']);
+                    const email = findValue(row, ['email', 'correo', 'mail', 'correo electronico']);
+                    const empresa = findValue(row, ['empresa', 'compania', 'organizacion', 'company', 'organization']);
+
+                    // Solo crear vCard si hay al menos un nombre o teléfono
+                    if (nombre || telefono || apellido) {
+                        vcards += 'BEGIN:VCARD\n';
+                        vcards += 'VERSION:3.0\n';
+                        
+                        const fullName = [nombre, apellido].filter(Boolean).join(' ');
+                        vcards += `FN:${fullName}\n`;
+                        vcards += `N:${apellido || ''};${nombre || ''};;;\n`;
+                        
+                        if (empresa) vcards += `ORG:${empresa}\n`;
+                        if (telefono) vcards += `TEL;TYPE=CELL:${telefono}\n`;
+                        if (email) vcards += `EMAIL;TYPE=PREF,INTERNET:${email}\n`;
+                        
+                        vcards += 'END:VCARD\n';
+                        count++;
+                    }
+                });
+
+                if (count === 0) {
+                    throw new Error("No se encontraron contactos válidos (se requiere al menos Nombre o Teléfono). Revisa los encabezados.");
+                }
+
+                // Crear y descargar archivo
+                const blob = new Blob([vcards], { type: 'text/vcard;charset=utf-8;' });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "contactos.vcf");
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                statusDiv.textContent = `¡Éxito! Se generaron ${count} contactos.`;
+                statusDiv.style.color = '#34D399';
+
+            } catch (error) {
+                console.error(error);
+                statusDiv.textContent = `Error: ${error.message}`;
+                statusDiv.style.color = '#EF4444';
+            } finally {
+                convertBtn.disabled = false;
+                convertBtn.textContent = 'Convertir y Descargar';
+            }
+        }
+    </script>
+</body>
+</html>

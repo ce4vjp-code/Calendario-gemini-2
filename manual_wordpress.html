@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Manual de Usuario - Publicación de Noticias</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2c3e50;
+    line-height: 1.6;
+    margin: 40px auto;
+    max-width: 800px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .header img {
+    max-width: 150px;
+    height: auto;
+    margin-bottom: 15px;
+  }
+  h1 {
+    color: #1a252f;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+    font-size: 26px;
+    text-align: center;
+  }
+  .subtitle {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    font-size: 16px;
+  }
+  h2 {
+    color: #2980b9;
+    margin-top: 30px;
+    font-size: 20px;
+    border-bottom: 1px solid #ecf0f1;
+    padding-bottom: 5px;
+  }
+  h3 {
+    color: #34495e;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  p {
+    margin-bottom: 15px;
+    text-align: justify;
+    font-size: 14px;
+  }
+  ul, ol {
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+  li {
+    margin-bottom: 10px;
+  }
+  .highlight {
+    background-color: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 0 5px 5px 0;
+  }
+  .highlight strong {
+    color: #2980b9;
+  }
+  
+  /* Mock UI styles */
+  .mock-ui {
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin: 15px 0;
+    text-align: center;
+    color: #7f8c8d;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+  .mock-button {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin: 5px;
+  }
+  .mock-button.publish {
+    background-color: #2ecc71;
+  }
+  .mock-button.dark {
+    background-color: #2c3e50;
+  }
+  
+  .step-number {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-color: #2980b9;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    margin-right: 8px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .footer {
+    margin-top: 50px;
+    font-size: 12px;
+    color: #7f8c8d;
+    text-align: center;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+  }
+  
+  @media print {
+    body { margin: 0; max-width: 100%; }
+    .footer { position: fixed; bottom: 0; width: 100%; }
+    .page-break { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img src="https://new.liceotpggm.cl/wp-content/uploads/2026/07/logo.png" alt="Logo Liceo TP GGM">
+</div>
+
+<h1>Manual de Usuario</h1>
+<div class="subtitle">Guía rápida para publicar Noticias (Entradas) en el Portal Web</div>
+
+<p>¡Hola! Este manual está diseñado para ayudarte a publicar noticias, anuncios o circulares en el nuevo sitio web del Liceo de manera rápida y sencilla. ¡No necesitas ser un experto en informática para hacerlo!</p>
+
+<h2><span class="step-number">1</span> Ingresar al Panel de Control (WordPress)</h2>
+<p>Lo primero que debemos hacer es entrar al "detrás de escena" de la página web.</p>
+<ol>
+    <li>Abre tu navegador web y escribe la siguiente dirección: <strong>https://new.liceotpggm.cl/wp-admin</strong></li>
+    <li>Se abrirá una pantalla de inicio de sesión. Ingresa tu <strong>Nombre de usuario</strong> o correo electrónico y tu <strong>Contraseña</strong>.</li>
+    <li>Haz clic en el botón <strong>"Acceder"</strong>.</li>
+</ol>
+
+<div class="mock-ui">
+    <div style="margin-bottom: 10px; font-size: 20px;">👤 Acceso a WordPress</div>
+    <div style="background: white; border: 1px solid #ccc; padding: 5px; margin-bottom: 10px; width: 60%; margin-left: auto; margin-right: auto; text-align: left; color: #aaa;">Usuario o Correo</div>
+    <div style="background: white; border: 1px solid #ccc; padding: 5px; margin-bottom: 10px; width: 60%; margin-left: auto; margin-right: auto; text-align: left; color: #aaa;">Contraseña</div>
+    <span class="mock-button">Acceder</span>
+</div>
+
+<h2><span class="step-number">2</span> Crear una Nueva Noticia (Entrada)</h2>
+<p>Una vez dentro, verás un menú de color oscuro en el lado izquierdo de tu pantalla. Para crear una noticia, utilizaremos la sección llamada <strong>Entradas</strong>.</p>
+<ol>
+    <li>En el menú lateral izquierdo, ubica y haz clic en <strong>Entradas</strong> y luego en <strong>Añadir nueva</strong>.</li>
+</ol>
+
+<div class="mock-ui" style="text-align: left; max-width: 300px; margin: 15px auto;">
+    <div style="background: #2c3e50; color: white; padding: 10px; border-radius: 4px;">
+        <div style="margin-bottom: 10px;">🏠 Escritorio</div>
+        <div style="font-weight: bold; margin-bottom: 5px;">📌 Entradas</div>
+        <div style="margin-left: 15px; font-weight: normal;">• Todas las entradas</div>
+        <div style="margin-left: 15px; color: #3498db; font-weight: bold;">• Añadir nueva</div>
+        <div style="margin-left: 15px; font-weight: normal;">• Categorías</div>
+    </div>
+</div>
+
+<h2><span class="step-number">3</span> Escribir el Título y el Contenido</h2>
+<p>Ahora estás en el editor, el cual es muy parecido a escribir un documento en Word.</p>
+<ul>
+    <li><strong>Añadir el Título:</strong> En la parte superior, verás un texto grande que dice "Añadir el título". Haz clic ahí y escribe el titular de tu noticia (ej. <em>"¡Felicitaciones a nuestros estudiantes de 3° Medio!"</em>).</li>
+    <li><strong>Añadir el Contenido:</strong> Justo debajo del título, haz clic en el espacio en blanco (donde dice "Escribe para elegir un bloque") y comienza a redactar el cuerpo de tu noticia o anuncio.</li>
+</ul>
+
+<div class="highlight">
+<strong>💡 Un pequeño truco (Los Bloques):</strong> 
+En WordPress, todo es un "bloque". Un párrafo es un bloque, una imagen es un bloque. Si necesitas agregar una foto en medio del texto, simplemente presiona el botón <strong><span style="background: black; color: white; border-radius: 3px; padding: 0 5px;">+</span></strong> que aparece a la derecha o arriba al hacer clic, y selecciona "Imagen".
+</div>
+
+<div class="page-break"></div> <!-- Salto de página para la impresión -->
+
+<h2><span class="step-number">4</span> Añadir una Imagen Destacada (La Foto de Portada)</h2>
+<p>Toda noticia necesita una buena imagen de portada para que se vea atractiva en la página principal del Liceo.</p>
+<ol>
+    <li>Mira hacia la columna derecha de tu pantalla (si no la ves, haz clic en el ícono del engranaje ⚙️ arriba a la derecha).</li>
+    <li>Asegúrate de estar en la pestaña <strong>"Entrada"</strong> (y no en "Bloque").</li>
+    <li>Baja un poco hasta encontrar la sección que dice <strong>"Imagen destacada"</strong>.</li>
+    <li>Haz clic en <strong>Establecer la imagen destacada</strong>. Se abrirá una ventana donde podrás "Subir archivos" desde tu computador. Selecciona la foto, espera que cargue y dale al botón azul de confirmar.</li>
+</ol>
+
+<div class="mock-ui">
+    <div style="text-align: right;">
+        <div style="display: inline-block; width: 250px; text-align: left; background: white; border: 1px solid #ccc; padding: 10px;">
+            <div style="border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 10px;"><strong>⚙️ Entrada</strong> | Bloque</div>
+            <div style="margin-bottom: 10px;">▸ Resumen</div>
+            <div style="margin-bottom: 10px;">▸ Categorías</div>
+            <div style="margin-bottom: 10px;"><strong>▾ Imagen destacada</strong></div>
+            <div style="background: #f1f1f1; border: 2px dashed #ccc; padding: 20px; text-align: center;">
+                🖼️ Haz clic para subir imagen
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2><span class="step-number">5</span> Asignar una Categoría</h2>
+<p>Para mantener el sitio ordenado, debemos decirle a la página de qué trata esta noticia.</p>
+<ol>
+    <li>En la misma columna derecha, un poco más arriba de la imagen destacada, busca la sección <strong>"Categorías"</strong>.</li>
+    <li>Marca la casilla que corresponda a tu publicación (por ejemplo: <em>Noticias</em>, <em>Circulares</em>, <em>Especialidades</em>). Puedes marcar más de una si es necesario.</li>
+</ol>
+
+<h2><span class="step-number">6</span> ¡Publicar!</h2>
+<p>¡Ya casi terminamos! Antes de mostrar tu noticia al mundo, puedes ver cómo quedó.</p>
+<ol>
+    <li>En la esquina superior derecha, haz clic en <strong>Vista previa</strong> para ver cómo lucirá la noticia en el sitio web real.</li>
+    <li>Si todo se ve perfecto, haz clic en el botón azul brillante que dice <strong>Publicar</strong> (te pedirá confirmación, haz clic en Publicar de nuevo).</li>
+</ol>
+
+<div class="mock-ui">
+    <div style="text-align: right; padding-right: 20px;">
+        <span class="mock-button dark">Guardar borrador</span>
+        <span class="mock-button dark">Vista previa</span>
+        <span class="mock-button publish">Publicar</span>
+    </div>
+</div>
+
+<p><strong>¡Felicidades! 🎉</strong> Tu noticia ya está disponible en el sitio web oficial del Liceo.</p>
+
+<div class="highlight">
+<strong>📝 Si necesitas hacer cambios después de publicar:</strong> 
+Vuelve al menú <strong>Entradas -> Todas las entradas</strong>. Pasa el ratón por encima del título de tu noticia y haz clic en "Editar". Haz los cambios que necesites y luego presiona el botón azul "Actualizar" (que aparece donde antes estaba el botón Publicar).
+</div>
+
+<div class="footer">
+Documento generado para el Liceo Técnico Profesional Gonzalo Guglielmi Montiel
+</div>
+
+</body>
+</html>

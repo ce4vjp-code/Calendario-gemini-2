@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Usuario - Profesores</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --bg: #f8fafc;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+        }
+        .document-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem 4rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+        h2 {
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-top: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        h3 {
+            color: #334155;
+            margin-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.6rem;
+        }
+        .alert {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 0 4px 4px 0;
+            margin: 1.5rem 0;
+        }
+        .alert strong {
+            color: var(--primary);
+        }
+        .btn-pdf {
+            display: block;
+            width: 100%;
+            max-width: 250px;
+            margin: 2rem auto;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 1.1rem;
+        }
+        .btn-pdf:hover {
+            background: #4338ca;
+        }
+        kbd {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 0.1rem 0.4rem;
+            font-size: 0.9em;
+            font-family: monospace;
+        }
+        
+        /* Ocultar botón al imprimir */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .document-container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .btn-pdf {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-pdf" onclick="window.print()">🖨️ Guardar como PDF</button>
+
+    <div class="document-container">
+        <div class="header">
+            <h1>Manual de Usuario</h1>
+            <p>Plataforma de Gestión de Evaluaciones</p>
+        </div>
+
+        <p>Bienvenido al manual oficial de la plataforma de evaluaciones escolares. Este documento te guiará paso a paso en el uso del sistema como <strong>Profesor(a)</strong>, para que puedas programar y coordinar tus evaluaciones sin inconvenientes.</p>
+
+        <h2>1. Acceso a la Plataforma</h2>
+        <p>Para ingresar al sistema y poder agendar evaluaciones, debes contar con una cuenta de profesor. La plataforma utiliza tu RUT (con dígito verificador) como identificador principal.</p>
+        <ol>
+            <li>Ingresa al enlace de la plataforma entregado por el establecimiento.</li>
+            <li>En la pantalla principal, haz clic en el botón <strong>"Acceso Profesores"</strong> situado en la esquina superior derecha.</li>
+            <li>Ingresa tu RUT y tu contraseña. (Si es tu primera vez, deberás hacer clic en "Regístrate aquí" y usar un <em>Código de Invitación</em>. Para obtenerlo, debes solicitarlo mediante un ticket de soporte para que sea enviado a tu correo electrónico institucional).</li>
+        </ol>
+
+        <h2>2. Navegación y Filtros</h2>
+        <p>Una vez dentro de la plataforma, verás el calendario en formato de lista interactiva. Puedes avanzar o retroceder de mes usando las flechas (<kbd><</kbd> <kbd>></kbd>) situadas al lado del nombre del mes.</p>
+        
+        <h3>Filtros Inteligentes</h3>
+        <p>En la parte superior del calendario encontrarás una barra de filtros que te permitirá encontrar información específica rápidamente:</p>
+        <ul>
+            <li><strong>Filtro de Curso:</strong> Te permite aislar el calendario para ver únicamente las evaluaciones de un curso específico (ej. "3° Medio A - Telecomunicaciones").</li>
+            <li><strong>Filtro de Asignatura:</strong> <em>Este filtro es inteligente.</em> Al ingresar a la página, estará bloqueado. <strong>Debes seleccionar un curso primero</strong>. Al hacerlo, el filtro se desbloqueará y te mostrará única y exclusivamente las asignaturas que corresponden a ese curso.</li>
+        </ul>
+
+        <div class="alert">
+            <strong>💡 Consejo:</strong> Si deseas volver a ver todo el calendario general, simplemente devuelve el filtro de Curso a la opción "Todos los cursos".
+        </div>
+
+        <h2>3. Gestión de Evaluaciones</h2>
+        <p>En la parte izquierda de tu pantalla encontrarás el <strong>Panel Lateral</strong>, que es tu centro de comandos para agendar fechas.</p>
+
+        <h3>3.1 Agregar una Evaluación</h3>
+        <ol>
+            <li>En el panel lateral, el primer paso es <strong>seleccionar el Curso</strong>.</li>
+            <li>Al elegir el curso, el selector de <strong>Asignatura</strong> se habilitará mágicamente con las materias exactas de ese nivel (Básica, Telecomunicaciones, Enfermería, etc.). Elíge tu asignatura.</li>
+            <li>Tu nombre (Profesor) ya estará escrito y bloqueado automáticamente por seguridad.</li>
+            <li>Selecciona la Fecha y la Hora estipulada.</li>
+            <li>Selecciona el Tipo de Evaluación (Prueba Escrita, Disertación, etc.). Notarás que el sistema le asigna un color distintivo a cada tipo.</li>
+            <li>Presiona <strong>"Agregar Evaluación"</strong>. Tu fecha quedará guardada inmediatamente.</li>
+        </ol>
+
+        <h3>3.2 Editar y Eliminar Evaluaciones</h3>
+        <p>Si te equivocaste de fecha o hubo un cambio de planes, puedes modificar o borrar tus evaluaciones. <em>(Por seguridad, el sistema solo te permitirá modificar o eliminar las evaluaciones que tú mismo hayas creado).</em></p>
+        <ol>
+            <li>En el calendario (la lista de la derecha), haz clic sobre la evaluación que deseas modificar.</li>
+            <li>Se abrirá una ventana con los detalles. Si eres el dueño de esa evaluación, verás dos botones en la esquina inferior derecha: <strong>Editar</strong> y <strong>Eliminar</strong>.</li>
+            <li>Si presionas <strong>Eliminar</strong>, el sistema te pedirá confirmación y luego borrará el registro de forma permanente.</li>
+            <li>Si presionas <strong>Editar</strong>, la ventana se cerrará y los datos de esa evaluación viajarán directamente al Panel Lateral izquierdo. Cambia la fecha, la hora, o el curso que desees, y presiona <strong>"Actualizar Evaluación"</strong> para guardar los cambios.</li>
+        </ol>
+
+        <h2>4. Exportación a PDF (Modo Impresión)</h2>
+        <p>Si necesitas enviar la programación mensual a los apoderados, estudiantes, o imprimirla para la sala de profesores, el sistema cuenta con una función de transmutación visual.</p>
+        <ol>
+            <li>En la pantalla principal, presiona el botón rojo <strong>"Exportar a PDF"</strong> (arriba a la derecha).</li>
+            <li>Notarás que la vista de "Lista" desaparece y se transforma en una <strong>cuadrícula panorámica clásica</strong> (tipo calendario de pared).</li>
+            <li>Toda la interfaz innecesaria (botones, filtros, panel lateral) se volverá invisible automáticamente para que el documento impreso luzca limpio y profesional.</li>
+            <li>Guarda el archivo generado o envíalo directamente a tu impresora.</li>
+        </ol>
+
+        <div style="margin-top: 4rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 2rem;">
+            Documento de Uso Exclusivo para Cuerpo Docente.
+        </div>
+    </div>
+</body>
+</html>

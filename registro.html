@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Profesor - Calendario</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { justify-content: center; align-items: center; background-color: var(--bg-main); padding: 2rem; }
+        .auth-container { background: var(--bg-card); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 100%; max-width: 450px; text-align: center; }
+        .auth-container h2 { color: var(--primary-color); margin-bottom: 0.5rem; }
+        .auth-container p { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
+        .auth-form { display: flex; flex-direction: column; gap: 1.25rem; text-align: left; }
+        .links { margin-top: 1.5rem; font-size: 0.85rem; }
+        .links a { color: var(--primary-color); text-decoration: none; font-weight: 500; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Registro de Profesor</h2>
+        <p>Usa el código de invitación para crear tu cuenta</p>
+        
+        <form id="registro-form" class="auth-form">
+            <div class="form-group">
+                <label for="codigo">Código de Invitación</label>
+                <input type="text" id="codigo" required placeholder="PROFE-XXXXXX">
+            </div>
+            <div class="form-group">
+                <label for="rut">RUT (sin puntos ni guión)</label>
+                <input type="text" id="rut" required placeholder="Ej: 123456789">
+            </div>
+            <div class="form-group">
+                <label for="nombre">Nombre Completo</label>
+                <input type="text" id="nombre" required placeholder="Ej: Juan Pérez">
+            </div>
+            <div class="form-group">
+                <label for="clave">Crear Contraseña</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="clave" required minlength="6" style="width: 100%; padding-right: 2.5rem;">
+                    <i class="fa-solid fa-eye" id="toggle-clave" style="position: absolute; right: 10px; cursor: pointer; color: var(--text-muted);"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit" id="btn-registro">Registrarme</button>
+        </form>
+        <div id="auth-message" class="form-message" style="margin-top: 1rem; display: none;"></div>
+        
+        <div class="links">
+            <a href="login.html">¿Ya tienes cuenta? Inicia sesión aquí</a><br><br>
+            <a href="index.html">← Volver al calendario público</a>
+        </div>
+    </div>
+
+    <script>
+        function validarRutSinGuion(rutCompleto) {
+            if (!/^[0-9]+[0-9kK]{1}$/.test( rutCompleto )) return false;
+            let cuerpo = rutCompleto.slice(0, -1);
+            let dv = rutCompleto.slice(-1).toLowerCase();
+            let suma = 0;
+            let multiplo = 2;
+            for (let i = 1; i <= cuerpo.length; i++) {
+                let index = multiplo * cuerpo.charAt(cuerpo.length - i);
+                suma = suma + index;
+                if (multiplo < 7) { multiplo = multiplo + 1; } else { multiplo = 2; }
+            }
+            let dvEsperado = 11 - (suma % 11);
+            dvEsperado = (dvEsperado === 11) ? "0" : (dvEsperado === 10) ? "k" : dvEsperado.toString();
+            return dvEsperado === dv;
+        }
+
+        document.getElementById('registro-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const codigo = document.getElementById('codigo').value;
+            const rut = document.getElementById('rut').value.trim();
+            const nombre = document.getElementById('nombre').value;
+            const clave = document.getElementById('clave').value;
+            
+            const btn = document.getElementById('btn-registro');
+            const msg = document.getElementById('auth-message');
+            
+            if (!validarRutSinGuion(rut)) {
+                msg.textContent = 'El RUT ingresado no es válido.';
+                msg.className = 'form-message error';
+                msg.style.display = 'block';
+                return;
+            }
+
+            btn.textContent = 'Registrando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('api/registro.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ codigo, rut, nombre, clave })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    msg.textContent = '¡Registro exitoso! Puedes iniciar sesión ahora.';
+                    msg.className = 'form-message success';
+                    msg.style.display = 'block';
+                    document.getElementById('registro-form').reset();
+                    setTimeout(() => window.location.href = 'login.html', 2000);
+                } else {
+                    msg.textContent = data.error || 'Error al registrarse';
+                    msg.className = 'form-message error';
+                    msg.style.display = 'block';
+                }
+            } catch (error) {
+                msg.textContent = 'Error de conexión con el servidor.';
+                msg.className = 'form-message error';
+                msg.style.display = 'block';
+            } finally {
+                btn.textContent = 'Registrarme';
+                btn.disabled = false;
+            }
+        });
+
+        // Alternar visibilidad de contraseña
+        const toggleClave = document.getElementById('toggle-clave');
+        const claveInput = document.getElementById('clave');
+        if (toggleClave && claveInput) {
+            toggleClave.addEventListener('click', function () {
+                const type = claveInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                claveInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+    </script>
+</body>
+</html>

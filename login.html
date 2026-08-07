@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Calendario de Evaluaciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { justify-content: center; align-items: center; background-color: var(--bg-main); }
+        .auth-container { background: var(--bg-card); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        .auth-container h2 { color: var(--primary-color); margin-bottom: 0.5rem; }
+        .auth-container p { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
+        .auth-form { display: flex; flex-direction: column; gap: 1.25rem; text-align: left; }
+        .links { margin-top: 1.5rem; font-size: 0.85rem; }
+        .links a { color: var(--primary-color); text-decoration: none; font-weight: 500; }
+        .links a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Logo del Liceo -->
+        <img src="logo.png" alt="Logo del Liceo" style="max-width: 150px; height: auto; display: block; margin: 0 auto 1.5rem auto; border-radius: 8px;">
+        
+        <h2>Bienvenido</h2>
+        <p>Inicia sesión para gestionar evaluaciones</p>
+        
+        <form id="login-form" class="auth-form">
+            <div class="form-group">
+                <label for="rut">RUT (sin puntos ni guión)</label>
+                <input type="text" id="rut" required placeholder="Ej: 123456789">
+            </div>
+            <div class="form-group">
+                <label for="clave">Contraseña</label>
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input type="password" id="clave" required style="width: 100%; padding-right: 2.5rem;">
+                    <i class="fa-solid fa-eye" id="toggle-clave" style="position: absolute; right: 10px; cursor: pointer; color: var(--text-muted);"></i>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit" id="btn-login">Ingresar</button>
+        </form>
+        
+        <!-- Formulario 2FA oculto inicialmente -->
+        <form id="twofa-form" class="auth-form" style="display: none;">
+            <p>Por favor, ingresa el código de 6 dígitos de tu aplicación Google Authenticator.</p>
+            <div class="form-group">
+                <label for="code-2fa">Código 2FA</label>
+                <input type="text" id="code-2fa" required placeholder="123456" maxlength="6" pattern="\d{6}">
+            </div>
+            <button type="submit" class="btn-submit" id="btn-verify-2fa">Verificar y Entrar</button>
+        </form>
+        
+        <div id="auth-message" class="form-message" style="margin-top: 1rem; display: none;"></div>
+        
+        <div class="links">
+            <a href="index.html">← Volver al calendario público</a><br><br>
+            <a href="registro.html">¿Tienes un código de invitación? Regístrate</a>
+        </div>
+    </div>
+
+    <script>
+        function validarRutSinGuion(rutCompleto) {
+            if (!/^[0-9]+[0-9kK]{1}$/.test( rutCompleto )) return false;
+            let cuerpo = rutCompleto.slice(0, -1);
+            let dv = rutCompleto.slice(-1).toLowerCase();
+            let suma = 0;
+            let multiplo = 2;
+            for (let i = 1; i <= cuerpo.length; i++) {
+                let index = multiplo * cuerpo.charAt(cuerpo.length - i);
+                suma = suma + index;
+                if (multiplo < 7) { multiplo = multiplo + 1; } else { multiplo = 2; }
+            }
+            let dvEsperado = 11 - (suma % 11);
+            dvEsperado = (dvEsperado === 11) ? "0" : (dvEsperado === 10) ? "k" : dvEsperado.toString();
+            return dvEsperado === dv;
+        }
+
+        let tempToken2FA = '';
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rut = document.getElementById('rut').value.trim();
+            const clave = document.getElementById('clave').value;
+            const btn = document.getElementById('btn-login');
+            const msg = document.getElementById('auth-message');
+            
+            if (rut.toLowerCase() !== 'admin' && rut.toLowerCase() !== 'diplomas' && rut.toLowerCase() !== 'diploma' && !validarRutSinGuion(rut)) {
+                msg.textContent = 'El RUT ingresado no es válido.';
+                msg.className = 'form-message error';
+                msg.style.display = 'block';
+                return;
+            }
+
+            btn.textContent = 'Verificando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('api/login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rut, clave })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    if (data.require_2fa) {
+                        tempToken2FA = data.token_2fa;
+                        document.getElementById('login-form').style.display = 'none';
+                        document.getElementById('twofa-form').style.display = 'flex';
+                        msg.style.display = 'none';
+                    } else {
+                        msg.textContent = 'Sesión iniciada. Redirigiendo...';
+                        msg.className = 'form-message success';
+                        msg.style.display = 'block';
+                        
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const redirectUrl = urlParams.get('redirect');
+                        
+                        if (data.user.rol === 'admin') {
+                            const target = redirectUrl ? redirectUrl : 'admin.html';
+                            setTimeout(() => window.location.href = target + '?t=' + new Date().getTime(), 1000);
+                        } else if (data.user.rol === 'diplomas') {
+                            setTimeout(() => window.location.href = 'admin_diplomas.html?t=' + new Date().getTime(), 1000);
+                        } else {
+                            setTimeout(() => window.location.href = 'index.html?t=' + new Date().getTime(), 1000);
+                        }
+                    }
+                } else {
+                    msg.textContent = data.error || 'Error al iniciar sesión';
+                    msg.className = 'form-message error';
+                    msg.style.display = 'block';
+                }
+            } catch (error) {
+                msg.textContent = 'Error de conexión con el servidor.';
+                msg.className = 'form-message error';
+                msg.style.display = 'block';
+            } finally {
+                btn.textContent = 'Ingresar';
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('twofa-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const code = document.getElementById('code-2fa').value.trim();
+            const btn = document.getElementById('btn-verify-2fa');
+            const msg = document.getElementById('auth-message');
+            
+            btn.textContent = 'Verificando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('api/verify_2fa.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token_2fa: tempToken2FA, code })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    msg.textContent = 'Autenticación exitosa. Redirigiendo...';
+                    msg.className = 'form-message success';
+                    msg.style.display = 'block';
+                    
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const redirectUrl = urlParams.get('redirect');
+                    
+                    if (data.user.rol === 'admin') {
+                        const target = redirectUrl ? redirectUrl : 'admin.html';
+                        setTimeout(() => window.location.href = target + '?t=' + new Date().getTime(), 1000);
+                    } else if (data.user.rol === 'diplomas') {
+                        setTimeout(() => window.location.href = 'admin_diplomas.html?t=' + new Date().getTime(), 1000);
+                    } else {
+                        setTimeout(() => window.location.href = 'index.html?t=' + new Date().getTime(), 1000);
+                    }
+                } else {
+                    msg.textContent = data.error || 'Código incorrecto';
+                    msg.className = 'form-message error';
+                    msg.style.display = 'block';
+                }
+            } catch (error) {
+                msg.textContent = 'Error de conexión.';
+                msg.className = 'form-message error';
+                msg.style.display = 'block';
+            } finally {
+                btn.textContent = 'Verificar y Entrar';
+                btn.disabled = false;
+            }
+        });
+
+        // Alternar visibilidad de contraseña
+        const toggleClave = document.getElementById('toggle-clave');
+        const claveInput = document.getElementById('clave');
+        if (toggleClave && claveInput) {
+            toggleClave.addEventListener('click', function () {
+                const type = claveInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                claveInput.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
+    </script>
+</body>
+</html>

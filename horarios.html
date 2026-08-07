@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horario de Clases</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { padding: 2rem; background-color: var(--bg-main); display: block; height: auto !important; overflow: auto !important; min-height: 100vh; }
+        .public-container { background: var(--bg-card); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); max-width: 1000px; margin: 0 auto; }
+        h1 { color: var(--primary-color); margin-bottom: 1rem; text-align: center; }
+        
+        .horario-table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; text-align: center; }
+        .horario-table th, .horario-table td { border: 1px solid var(--border-color); padding: 0.5rem; }
+        .horario-table th { background: #f8fafc; font-weight: 600; color: var(--text-main); }
+        .horario-cell { min-height: 60px; border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.9rem; padding: 4px; font-weight: 500; }
+        .horario-cell.empty { background: #fafafa; color: #94a3b8; font-style: italic; }
+        
+        .recreo-row td { background: #f1f5f9; font-style: italic; color: var(--text-muted); font-size: 0.85rem; }
+        
+        .filter-section { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 2rem 0; }
+        .filter-section select { padding: 0.75rem; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; min-width: 250px; }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .public-container { box-shadow: none; padding: 0; width: 100%; max-width: 100%; margin: 0; }
+            .no-print { display: none !important; }
+            .horario-table { width: 100%; border: 1px solid #000; }
+            .horario-table th, .horario-table td { border: 1px solid #000; color: #000 !important; }
+            .horario-cell { box-shadow: none !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .horario-cell.empty { background: transparent; color: #000; border: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="public-container">
+        <div class="no-print" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="index.html" class="btn-submit" style="text-decoration: none; padding: 0.5rem 1rem; background: var(--primary-color);">← Calendario de Evaluaciones</a>
+            <a href="https://new.liceotpggm.cl" title="Ir al Sitio Principal del Liceo">
+                <img src="logo.png" alt="Logo" style="height: 50px; cursor: pointer;">
+            </a>
+        </div>
+        
+        <h1 style="margin-top: 1rem;">Horario de Clases <span id="print-course-name"></span></h1>
+        <p class="no-print" style="text-align: center; color: var(--text-muted);">Seleccione su curso para ver el horario semanal actualizado.</p>
+        
+        <div class="filter-section no-print">
+            <select id="select-curso">
+                <option value="">Seleccione un Curso...</option>
+            </select>
+            <button id="btn-print" style="padding: 0.75rem 1rem; border-radius: 8px; border: none; background: var(--danger); color: white; cursor: pointer; font-weight: bold; font-size: 1rem; display: none;">
+                <i class="fa-solid fa-print"></i> Imprimir
+            </button>
+        </div>
+        
+        <div id="horario-container" style="display: none; overflow-x: auto;">
+            <table class="horario-table" id="tabla-horario">
+                <thead>
+                    <tr>
+                        <th style="width: 120px;">Horario</th>
+                        <th>Lunes</th>
+                        <th>Martes</th>
+                        <th>Miércoles</th>
+                        <th>Jueves</th>
+                        <th>Viernes</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-horario">
+                    <!-- Generado por JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const bloques = [
+            { id: 1, hora: "08:30 - 09:15" },
+            { id: 2, hora: "09:15 - 10:00" },
+            { id: 0, hora: "10:00 - 10:20", label: "RECREO" },
+            { id: 3, hora: "10:20 - 11:05" },
+            { id: 4, hora: "11:05 - 11:50" },
+            { id: 0, hora: "11:50 - 12:00", label: "RECREO" },
+            { id: 5, hora: "12:00 - 12:45" },
+            { id: 6, hora: "12:45 - 13:30" },
+            { id: 0, hora: "13:30 - 14:25", label: "ALMUERZO" },
+            { id: 7, hora: "14:25 - 15:10" },
+            { id: 8, hora: "15:10 - 15:55" }
+        ];
+
+        async function loadCursos() {
+            try {
+                const res = await fetch('api/horarios/public_get_cursos.php');
+                const data = await res.json();
+                if(data.success) {
+                    const sel = document.getElementById('select-curso');
+                    data.data.forEach(c => {
+                        sel.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+                    });
+                }
+            } catch (e) {
+                console.error("Error al cargar cursos.");
+            }
+        }
+        
+        function renderEmptyTabla() {
+            const tbody = document.getElementById('tbody-horario');
+            tbody.innerHTML = '';
+            
+            bloques.forEach(b => {
+                const tr = document.createElement('tr');
+                if(b.id === 0) {
+                    tr.className = 'recreo-row';
+                    tr.innerHTML = `<td><strong>${b.hora}</strong></td><td colspan="5" style="letter-spacing:4px;">${b.label}</td>`;
+                } else {
+                    let html = `<td><strong>${b.hora}</strong><br><small style="color:var(--text-muted)">Bloque ${b.id}</small></td>`;
+                    for(let dia = 1; dia <= 5; dia++) {
+                        html += `<td><div class="horario-cell empty" id="cell-${dia}-${b.id}">--</div></td>`;
+                    }
+                    tr.innerHTML = html;
+                }
+                tbody.appendChild(tr);
+            });
+        }
+
+        async function loadHorario(curso_id) {
+            renderEmptyTabla();
+            try {
+                const res = await fetch(`api/horarios/public_get_horario.php?curso_id=${curso_id}`);
+                const data = await res.json();
+                
+                if(data.success) {
+                    data.data.forEach(clase => {
+                        const cell = document.getElementById(`cell-${clase.dia_semana}-${clase.bloque}`);
+                        if(cell) {
+                            cell.innerHTML = `<span>${clase.asignatura_nombre}</span>`;
+                            cell.className = 'horario-cell';
+                            cell.style.backgroundColor = clase.color;
+                            cell.style.color = '#ffffff';
+                            cell.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+                        }
+                    });
+                }
+                document.getElementById('horario-container').style.display = 'block';
+            } catch (e) {
+                console.error("Error cargando el horario");
+            }
+        }
+
+        document.getElementById('select-curso').addEventListener('change', (e) => {
+            if(e.target.value) {
+                const selectedText = e.target.options[e.target.selectedIndex].text;
+                document.getElementById('print-course-name').textContent = "- " + selectedText;
+                document.getElementById('btn-print').style.display = 'inline-block';
+                loadHorario(e.target.value);
+            } else {
+                document.getElementById('print-course-name').textContent = "";
+                document.getElementById('btn-print').style.display = 'none';
+                document.getElementById('horario-container').style.display = 'none';
+            }
+        });
+
+        document.getElementById('btn-print').addEventListener('click', () => {
+            window.print();
+        });
+
+        // Initialize
+        loadCursos();
+    </script>
+</body>
+</html>

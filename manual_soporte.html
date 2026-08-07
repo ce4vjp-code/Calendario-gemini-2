@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Manual de Usuario - Soporte Informático</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2c3e50;
+    line-height: 1.6;
+    margin: 40px auto;
+    max-width: 800px;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .header img {
+    max-width: 150px;
+    height: auto;
+    margin-bottom: 15px;
+  }
+  h1 {
+    color: #1a252f;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+    font-size: 26px;
+    text-align: center;
+  }
+  .subtitle {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+    font-size: 16px;
+  }
+  h2 {
+    color: #2980b9;
+    margin-top: 30px;
+    font-size: 20px;
+    border-bottom: 1px solid #ecf0f1;
+    padding-bottom: 5px;
+  }
+  h3 {
+    color: #34495e;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  p {
+    margin-bottom: 15px;
+    text-align: justify;
+    font-size: 14px;
+  }
+  ul, ol {
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+  li {
+    margin-bottom: 10px;
+  }
+  .highlight {
+    background-color: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 0 5px 5px 0;
+  }
+  .highlight strong {
+    color: #2980b9;
+  }
+  
+  /* Mock UI styles */
+  .mock-ui {
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    padding: 20px;
+    margin: 15px 0;
+    text-align: center;
+    color: #7f8c8d;
+    font-weight: 500;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+  .mock-button {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    margin: 5px;
+    font-weight: bold;
+  }
+  .mock-button.submit {
+    background-color: #2ecc71;
+  }
+  .mock-button.view {
+    background-color: #f39c12;
+  }
+  .mock-input {
+    background: white; 
+    border: 1px solid #ccc; 
+    padding: 8px; 
+    margin-bottom: 10px; 
+    width: 80%; 
+    margin-left: auto; 
+    margin-right: auto; 
+    text-align: left; 
+    color: #aaa;
+    border-radius: 4px;
+  }
+  
+  .step-number {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-color: #2980b9;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    margin-right: 8px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .footer {
+    margin-top: 50px;
+    font-size: 12px;
+    color: #7f8c8d;
+    text-align: center;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+  }
+  
+  @media print {
+    body { margin: 0; max-width: 100%; }
+    .footer { position: fixed; bottom: 0; width: 100%; }
+    .page-break { page-break-before: always; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <img src="https://new.liceotpggm.cl/wp-content/uploads/2026/07/logo.png" alt="Logo Liceo TP GGM">
+</div>
+
+<h1>Manual de Usuario</h1>
+<div class="subtitle">Plataforma de Soporte Informático (Tickets)</div>
+
+<p>¡Hola! Para organizar mejor todas las solicitudes de ayuda con computadores, internet, correos o plataformas, hemos habilitado una <strong>Mesa de Ayuda (Help Desk)</strong>. A través de este sistema, cada problema que reportes recibirá un "número de ticket", permitiéndote hacer seguimiento hasta que sea resuelto por el equipo de Informática.</p>
+
+<h2><span class="step-number">1</span> Ingresar a la Mesa de Ayuda</h2>
+<p>Para solicitar ayuda técnica o revisar el estado de una consulta anterior:</p>
+<ol>
+    <li>Abre tu navegador y entra a: <strong>https://new.liceotpggm.cl/soporte/</strong></li>
+    <li>En la pantalla principal verás dos opciones grandes y claras. Dependiendo de lo que necesites, elegirás "Enviar un ticket" o "Ver un ticket".</li>
+</ol>
+
+<div class="mock-ui">
+    <div style="font-size: 20px; margin-bottom: 20px; color: #2c3e50;">Bienvenido al Centro de Soporte</div>
+    <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+        <div style="border: 1px solid #ddd; padding: 20px; background: white; border-radius: 8px; width: 250px;">
+            <div style="font-size: 30px; margin-bottom: 10px;">➕</div>
+            <div style="font-weight: bold; color: #3498db; margin-bottom: 10px;">Enviar un ticket</div>
+            <div style="font-size: 12px; color: #7f8c8d;">Abrir una nueva solicitud de soporte técnico.</div>
+        </div>
+        <div style="border: 1px solid #ddd; padding: 20px; background: white; border-radius: 8px; width: 250px;">
+            <div style="font-size: 30px; margin-bottom: 10px;">🔍</div>
+            <div style="font-weight: bold; color: #f39c12; margin-bottom: 10px;">Ver un ticket</div>
+            <div style="font-size: 12px; color: #7f8c8d;">Revisar el estado de un ticket ya enviado.</div>
+        </div>
+    </div>
+</div>
+
+<h2><span class="step-number">2</span> Cómo crear una nueva solicitud (Enviar un ticket)</h2>
+<p>Si tienes un problema nuevo (por ejemplo: <em>"No funciona el proyector de la sala 5"</em> o <em>"Olvidé la clave de mi correo"</em>), haz clic en <strong>Enviar un ticket</strong> y sigue estos pasos:</p>
+<ol>
+    <li><strong>Datos Personales:</strong> Escribe tu <em>Nombre</em> y <em>Correo electrónico</em> (asegúrate de que el correo esté bien escrito, ahí te llegarán las respuestas).</li>
+    <li><strong>Categoría:</strong> Si el sistema te lo pide, selecciona la categoría de tu problema (Ej. Soporte Hardware, Correo Institucional, etc.).</li>
+    <li><strong>Asunto:</strong> Escribe un título breve y claro (Ej. <em>"Falla de proyector sala 5"</em>).</li>
+    <li><strong>Mensaje:</strong> Describe con la mayor cantidad de detalles posible cuál es el problema que estás experimentando.</li>
+    <li><strong>Enviar:</strong> Haz clic en el botón de enviar.</li>
+</ol>
+
+<div class="mock-ui">
+    <div style="margin-bottom: 15px; font-size: 18px; color: #2c3e50; text-align: left; padding-left: 10%;">📝 Formulario de Solicitud</div>
+    <div class="mock-input">👤 Tu Nombre Completo</div>
+    <div class="mock-input">📧 Tu Correo Electrónico</div>
+    <div class="mock-input">🏷️ Asunto del problema (Ej. Computador no enciende)</div>
+    <div class="mock-input" style="height: 80px;">💬 Describe detalladamente el problema aquí...</div>
+    <div style="text-align: right; padding-right: 10%;">
+        <span class="mock-button submit">Enviar Ticket</span>
+    </div>
+</div>
+
+<div class="page-break"></div> <!-- Salto de página para la impresión -->
+
+<h2><span class="step-number">3</span> ¡Importante! Guarda tu ID de Seguimiento</h2>
+<p>Al hacer clic en "Enviar", la pantalla te mostrará un mensaje de éxito y un código muy importante llamado <strong>ID de Seguimiento</strong> (Tracking ID). Por ejemplo: <em>ABC-123-DEF4</em>.</p>
+<div class="highlight">
+<strong>⚠️ ¡No pierdas este código!</strong> 
+Este ID es como la "boleta" de tu solicitud. Lo necesitarás, junto con tu correo electrónico, para ver qué ha respondido el equipo de informática. De todas formas, se te enviará una copia de este código a tu correo automáticamente.
+</div>
+
+<h2><span class="step-number">4</span> Cómo revisar la respuesta (Ver un ticket)</h2>
+<p>Cuando el equipo de informática resuelva tu problema o si te hacen una pregunta, te avisarán por correo. Para ver los detalles o contestarles:</p>
+<ol>
+    <li>Entra nuevamente a <strong>https://new.liceotpggm.cl/soporte/</strong></li>
+    <li>Esta vez, haz clic en <strong>Ver un ticket</strong>.</li>
+    <li>El sistema te pedirá dos datos: tu <em>ID de Seguimiento</em> y el <em>Correo Electrónico</em> con el que creaste la solicitud.</li>
+    <li>Haz clic en <strong>Ver Ticket</strong> y podrás leer el historial completo y enviar nuevas respuestas.</li>
+</ol>
+
+<div class="mock-ui">
+    <div style="margin-bottom: 15px; font-size: 18px; color: #2c3e50; text-align: left; padding-left: 10%;">🔍 Consultar Estado del Ticket</div>
+    <div class="mock-input">🎫 ID de Seguimiento (Ej. ABC-123-DEF4)</div>
+    <div class="mock-input">📧 Correo Electrónico (El mismo que usaste antes)</div>
+    <div style="text-align: right; padding-right: 10%;">
+        <span class="mock-button view">Ver Ticket</span>
+    </div>
+</div>
+
+<div class="highlight">
+<strong>💡 Un buen consejo:</strong> 
+Revisa tu carpeta de "Correo No Deseado" (Spam) si no recibes el correo de confirmación a los pocos minutos de haber enviado tu ticket. ¡A veces los correos automáticos se esconden ahí!
+</div>
+
+<div class="footer">
+Documento generado para el Liceo Técnico Profesional Gonzalo Guglielmi Montiel
+</div>
+
+</body>
+</html>

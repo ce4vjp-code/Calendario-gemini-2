@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Administrador - Plataforma de Evaluaciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --admin-primary: #dc2626; /* Rojo oscuro para diferenciar del manual de profe */
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --bg: #f1f5f9;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+        }
+        .document-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem 4rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            border-top: 8px solid var(--admin-primary);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--admin-primary);
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            color: var(--admin-primary);
+            margin: 0;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+        h2 {
+            color: var(--admin-primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-top: 2.5rem;
+        }
+        h3 {
+            color: #334155;
+            margin-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        ul, ol {
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.6rem;
+        }
+        .alert {
+            background-color: #fef2f2;
+            border-left: 4px solid var(--admin-primary);
+            padding: 1rem;
+            border-radius: 0 4px 4px 0;
+            margin: 1.5rem 0;
+        }
+        .alert strong {
+            color: var(--admin-primary);
+        }
+        .alert-info {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            border-radius: 0 4px 4px 0;
+            margin: 1.5rem 0;
+        }
+        .btn-pdf {
+            display: block;
+            width: 100%;
+            max-width: 250px;
+            margin: 2rem auto;
+            background: var(--text-main);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 1.1rem;
+        }
+        .btn-pdf:hover {
+            background: #0f172a;
+        }
+        kbd {
+            background-color: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 0.1rem 0.4rem;
+            font-size: 0.9em;
+            font-family: monospace;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .document-container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+                border-top: none;
+            }
+            .btn-pdf {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-pdf" onclick="window.print()">🖨️ Guardar como PDF</button>
+
+    <div class="document-container">
+        <div class="header">
+            <h1>Manual de Administrador</h1>
+            <p>Gestión del Sistema, Seguridad y Soporte Técnico</p>
+        </div>
+
+        <p>Este documento contiene las directrices técnicas y de administración necesarias para gobernar la Plataforma de Evaluaciones. Todo lo detallado aquí son funciones con privilegios exclusivos del rol <strong>Admin</strong>.</p>
+
+        <h2>1. Permisos Globales del Administrador</h2>
+        <p>A diferencia de los profesores regulares, tu cuenta de Administrador posee privilegios superiores sobre todo el sistema:</p>
+        <ul>
+            <li><strong>Filtro Maestro:</strong> En el calendario principal verás un filtro adicional de "Profesor" (invisible para el resto) que te permite ver las evaluaciones asignadas específicamente a cada docente de la institución.</li>
+            <li><strong>Edición sin Restricciones:</strong> Como Administrador, si haces clic en la evaluación de <em>cualquier</em> profesor en el calendario, verás los botones de "Editar" y "Eliminar". Tienes el poder de modificar o borrar las fechas agendadas por otros docentes.</li>
+        </ul>
+
+        <h2>2. Panel de Administración de Usuarios</h2>
+        <p>Para ingresar, ve al calendario, haz clic en <strong>"Acceso Profesores"</strong> y luego selecciona el enlace rojo <strong>"Panel Admin"</strong> situado junto a tu nombre.</p>
+
+        <h3>2.1 Alta de Nuevos Profesores</h3>
+        <p>Para agregar a un nuevo profesor al sistema:</p>
+        <ol>
+            <li>En la sección superior del panel, ingresa el correo electrónico institucional del docente.</li>
+            <li>Presiona "Generar y Enviar Invitación".</li>
+            <li>El sistema creará un <strong>Código de Invitación único y de un solo uso</strong> y se lo enviará por correo. El profesor debe hacer clic en "Regístrate aquí" en la pantalla de inicio de sesión e ingresar ese código junto con su RUT y nueva contraseña.</li>
+        </ol>
+
+        <h3>2.2 Restablecimiento de Contraseñas</h3>
+        <p>Si un profesor olvida su clave y te lo reporta a través de un ticket de soporte:</p>
+        <ol>
+            <li>Busca al profesor en la tabla de "Usuarios Registrados".</li>
+            <li>Presiona el botón verde con el icono de <strong>Llave</strong> <i class="fa-solid fa-key"></i>.</li>
+            <li>El sistema generará una clave aleatoria y se la enviará a su correo. <em>(Si el envío de correo falla, el sistema te mostrará la nueva clave en pantalla para que se la entregues de forma manual).</em></li>
+        </ol>
+
+        <h3>2.3 Eliminación de Usuarios</h3>
+        <p>Si un docente deja la institución, puedes borrarlo presionando el botón rojo de la <strong>Papelera</strong> <i class="fa-solid fa-trash"></i>.</p>
+        <div class="alert">
+            <strong>⚠️ ALERTA DE SISTEMA:</strong> Eliminar a un profesor provocará una eliminación en cascada. Es decir, <strong>todas las evaluaciones</strong> en el calendario que hayan sido registradas por ese profesor desaparecerán inmediatamente e irreversiblemente de la plataforma.
+        </div>
+        <div class="alert-info">
+            <strong>Nota:</strong> Como medida de "prevención de suicidio digital", tu propio usuario (la cuenta Admin con la que iniciaste sesión) no aparece en esta lista para evitar que te elimines a ti mismo accidentalmente o te bloquees el acceso.
+        </div>
+
+        <h2>3. Protocolos de Seguridad y Sesiones</h2>
+        <p>El sistema cuenta con un motor de seguridad de sesiones que actúa en segundo plano sin intervención manual:</p>
+        <ul>
+            <li><strong>Anti-Multicuenta:</strong> Si un usuario inicia sesión en la sala de profesores e intenta abrir otra sesión en su celular con el mismo RUT, la sesión original se destruirá de forma remota. El sistema solo tolera 1 dispositivo activo por usuario.</li>
+            <li><strong>Timeout por Inactividad:</strong> Si un dispositivo se deja encendido en el sistema sin interactuar (cambiar mes, editar evaluación) durante más de <strong>30 minutos</strong>, el servidor lo expulsará automáticamente.</li>
+        </ul>
+
+        <h2>4. Troubleshooting (Solución de Problemas Frecuentes)</h2>
+
+        <h3>El calendario no se actualiza o no aparecen cambios recientes</h3>
+        <p><strong>Causa:</strong> Los navegadores web guardan los archivos visuales en la memoria Caché para cargar más rápido.<br>
+        <strong>Solución:</strong> Pide al usuario que presione <kbd>Ctrl</kbd> + <kbd>F5</kbd> en su teclado. Esto obliga al navegador a vaciar la memoria y descargar la versión más reciente desde el servidor cPanel.</p>
+
+        <h3>Las asignaturas no coinciden o quiero agregar nuevas</h3>
+        <p><strong>Solución:</strong> Las asignaturas están codificadas en el archivo <code>script.js</code> (Búscalo en tu cPanel o editor de código). Existe un diccionario llamado <code>subjectMap</code> que clasifica las asignaturas por categoría (Telecomunicaciones, Muebles, Enfermería, Básica/Media). Para agregar una materia nueva, simplemente escríbela allí dentro de las comillas (ej. <code>"Nueva Asignatura"</code>), guardando el archivo.</p>
+
+        <h3>Migración de Servidor o Base de Datos Nueva</h3>
+        <p>Si alguna vez debes mover este sistema a un nuevo servidor web (o instalarlo desde cero), recuerda que además de subir la base de datos SQL original, debes ejecutar el archivo <strong><code>parche_db.php</code></strong> que genera la arquitectura para el bloqueo de seguridad de sesiones, de lo contrario los usuarios no podrán entrar al sistema.</p>
+
+        <div style="margin-top: 4rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 2rem;">
+            <strong>Confidencial.</strong> Documento de Uso Exclusivo para Administración IT.
+        </div>
+    </div>
+</body>
+</html>

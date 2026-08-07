@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs de Auditoría</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { padding: 2rem; background-color: var(--bg-main); min-height: 100vh; height: auto !important; overflow: auto !important; display: block; }
+        .admin-container { background: var(--bg-card); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); max-width: 1000px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; text-align: left; font-size: 0.9rem; }
+        th, td { padding: 0.75rem; border-bottom: 1px solid var(--border-color); }
+        th { background-color: #f1f5f9; font-weight: 600; }
+        .filter-bar { display: flex; gap: 1rem; margin-bottom: 1.5rem; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; align-items: center; }
+        .badge { display: inline-block; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #e0f2fe; color: #075985; }
+        .tabs { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 1rem; }
+        .tab { padding: 0.75rem 1.5rem; cursor: pointer; font-weight: 600; color: #64748b; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* --- Mejoras Responsive para Móviles --- */
+        @media (max-width: 768px) {
+            * { box-sizing: border-box; }
+            body { padding: 0.5rem; margin: 0; overflow-x: hidden !important; }
+            .admin-container { padding: 1rem; border-radius: 0.5rem; width: 100%; max-width: 100vw; margin: 0; box-shadow: none; overflow-x: hidden; }
+            
+            /* Ajustar cabecera */
+            .header-actions { flex-direction: column; gap: 0.5rem; align-items: flex-start !important; }
+            .header-actions h2 { font-size: 1.5rem; }
+            .header-actions a { width: 100%; text-align: center; margin-top: 0.5rem; box-sizing: border-box; }
+
+            /* Ajustar filtros */
+            .filter-bar { flex-direction: column; align-items: stretch; gap: 0.8rem; padding: 0.8rem; }
+            .filter-bar > div { width: 100%; }
+            .filter-bar input[type="date"] { width: 100%; box-sizing: border-box; }
+            #btn-buscar { width: 100%; }
+
+            /* Ajustar Pestañas */
+            .tabs { flex-direction: column; border-bottom: none; gap: 0.5rem; }
+            .tab { border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; margin-bottom: 0; padding: 0.75rem; background: #f8fafc; width: 100%; }
+            .tab.active { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+            
+            /* Ajustar tablas (Modo Tarjetas) */
+            .tab-content > div { border: none; overflow-x: hidden; }
+            table { width: 100%; display: block; border-collapse: separate; border-spacing: 0; min-width: 0; }
+            thead { display: none; }
+            tbody { display: block; width: 100%; }
+            tr { display: block; background: #fff; margin-bottom: 1rem; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+            td { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0 !important; border-bottom: 1px solid #f1f5f9; text-align: right !important; white-space: normal; }
+            td:last-child { border-bottom: none; padding-bottom: 0 !important; }
+            td::before { content: attr(data-label); font-weight: bold; color: var(--text-muted); text-align: left; margin-right: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="header-actions" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+            <div>
+                <h2 style="color: var(--primary-color); margin-bottom: 0.5rem;">Auditoría del Sistema</h2>
+                <p style="color: var(--text-muted);">Revisa los ingresos y actividades de los usuarios.</p>
+            </div>
+            <a href="admin.html" id="btn-volver" class="btn-submit" style="text-decoration:none; background: #64748b;">Volver al Panel</a>
+        </div>
+        
+        <div class="filter-bar">
+            <div>
+                <label for="fecha-filtro" style="font-weight: 600; font-size: 0.9rem; display:block; margin-bottom:0.2rem;">Fecha a consultar:</label>
+                <input type="date" id="fecha-filtro" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #cbd5e1; outline: none;">
+            </div>
+            <div style="margin-top: auto; display: flex; gap: 0.5rem;">
+                <button id="btn-buscar" class="btn-submit" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-search"></i> Buscar</button>
+                <button onclick="enviarLogManual()" class="btn-submit" style="padding: 0.5rem 1rem; background-color: #0f172a;" id="btn-enviar-log"><i class="fa-solid fa-envelope"></i> Enviar Log por Correo</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-target="tab-actividades"><i class="fa-solid fa-list-check"></i> Registro de Actividades</div>
+            <div class="tab" data-target="tab-ingresos"><i class="fa-solid fa-right-to-bracket"></i> Registro de Ingresos</div>
+        </div>
+
+        <div id="tab-actividades" class="tab-content active">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Usuario</th>
+                            <th>Módulo</th>
+                            <th>Acción</th>
+                            <th>Detalles</th>
+                            <th>IP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-actividades">
+                        <tr><td colspan="6" style="text-align:center;">Selecciona una fecha y haz clic en Buscar.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-ingresos" class="tab-content">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>RUT</th>
+                            <th>Nombre</th>
+                            <th>Estado</th>
+                            <th>Navegador / Dispositivo</th>
+                            <th>IP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-ingresos">
+                        <tr><td colspan="6" style="text-align:center;">Selecciona una fecha y haz clic en Buscar.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Check Admin Auth
+        async function checkAdmin() {
+            try {
+                const response = await fetch('api/check_session.php?t=' + new Date().getTime(), { credentials: 'same-origin' });
+                const data = await response.json();
+                if (!data.authenticated || data.user.rol !== 'admin') {
+                    window.location.href = 'index.html';
+                }
+            } catch (e) { window.location.href = 'index.html'; }
+        }
+        checkAdmin();
+
+        // Actualizar botón de volver si venimos de la App
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('source') === 'app') {
+            document.getElementById('btn-volver').href = 'admin_app.html';
+        }
+
+        // Tabs logic
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.target).classList.add('active');
+            });
+        });
+
+        // Set today as default date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('fecha-filtro').value = today;
+
+        async function cargarLogs() {
+            const fecha = document.getElementById('fecha-filtro').value;
+            if (!fecha) return;
+            
+            const btn = document.getElementById('btn-buscar');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Cargando...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('api/admin_get_logs.php?fecha=' + fecha);
+                const data = await res.json();
+                
+                if (data.success) {
+                    // Cargar Actividades
+                    const tbAct = document.getElementById('tbody-actividades');
+                    tbAct.innerHTML = '';
+                    if (data.actividades.length === 0) {
+                        tbAct.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay actividades registradas en esta fecha.</td></tr>';
+                    } else {
+                        data.actividades.forEach(a => {
+                            const hora = a.fecha_hora.split(' ')[1];
+                            tbAct.innerHTML += `
+                                <tr>
+                                    <td data-label="Hora">${hora}</td>
+                                    <td data-label="Usuario"><strong>${a.usuario_nombre}</strong><br><small style="color:#64748b">${a.usuario_rut}</small></td>
+                                    <td data-label="Módulo"><span class="badge badge-info">${a.modulo}</span></td>
+                                    <td data-label="Acción">${a.accion}</td>
+                                    <td data-label="Detalles">${a.detalles}</td>
+                                    <td data-label="IP" style="font-family:monospace; font-size:0.8rem;">${a.ip_address}</td>
+                                </tr>
+                            `;
+                        });
+                    }
+
+                    // Cargar Ingresos
+                    const tbIng = document.getElementById('tbody-ingresos');
+                    tbIng.innerHTML = '';
+                    if (data.ingresos.length === 0) {
+                        tbIng.innerHTML = '<tr><td colspan="6" style="text-align:center;">No hay ingresos registrados en esta fecha.</td></tr>';
+                    } else {
+                        data.ingresos.forEach(i => {
+                            const hora = i.fecha_hora.split(' ')[1];
+                            const estadoClase = i.estado === 'Exitoso' ? 'badge-success' : 'badge-danger';
+                            const navDisp = (i.navegador || 'N/A') + ' / ' + (i.dispositivo || 'N/A');
+                            const nombre = i.nombre_usuario ? i.nombre_usuario : '<em style="color:#94a3b8">Desconocido</em>';
+                            
+                            tbIng.innerHTML += `
+                                <tr>
+                                    <td data-label="Hora">${hora}</td>
+                                    <td data-label="RUT">${i.rut_ingresado}</td>
+                                    <td data-label="Nombre">${nombre}</td>
+                                    <td data-label="Estado"><span class="badge ${estadoClase}">${i.estado}</span></td>
+                                    <td data-label="Nav/Disp" style="font-size:0.8rem; color:#475569;">${navDisp}</td>
+                                    <td data-label="IP" style="font-family:monospace; font-size:0.8rem;">${i.ip_address}</td>
+                                </tr>
+                            `;
+                        });
+                    }
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                alert('Error de conexión al cargar los logs.');
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-search"></i> Buscar';
+                btn.disabled = false;
+            }
+        }
+
+        document.getElementById('btn-buscar').addEventListener('click', cargarLogs);
+        
+        async function enviarLogManual() {
+            const btn = document.getElementById('btn-enviar-log');
+            const fecha = document.getElementById('fecha-filtro').value;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+            btn.disabled = true;
+            
+            let url = 'api/cron_envio_logs.php?token=log_manual';
+            if (fecha) url += '&fecha=' + fecha;
+            
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+                try {
+                    const data = JSON.parse(text);
+                    if(data.success) alert("✅ Log enviado correctamente a ce4vjp@gmail.com");
+                    else alert("❌ Error: " + data.error);
+                } catch(e) {
+                    alert("✅ Se intentó enviar el correo, revisa tu bandeja (El servidor respondió: " + text.substring(0, 50) + ")");
+                }
+            } catch(e) {
+                alert("Error de conexión al enviar el log");
+            } finally {
+                btn.innerHTML = '<i class="fa-solid fa-envelope"></i> Enviar Log por Correo';
+                btn.disabled = false;
+            }
+        }
+        
+        // Auto load on init
+        cargarLogs();
+    </script>
+</body>
+</html>

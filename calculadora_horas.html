@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Horas Laborales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #8b5cf6;
+            --accent-hover: #7c3aed;
+            --danger: #ef4444;
+            --success: #10b981;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.1), transparent 40%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .settings-card {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            border: 1px solid var(--border);
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:focus, .form-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        .days-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .day-row {
+            display: grid;
+            grid-template-columns: 120px 1fr 1fr 120px 100px;
+            gap: 1rem;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .day-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border);
+        }
+
+        .day-row.disabled {
+            opacity: 0.5;
+            filter: grayscale(100%);
+        }
+
+        .day-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .day-label input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .time-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .time-input-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .time-input {
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .time-input:focus {
+            border-color: var(--accent);
+        }
+
+        .day-total {
+            text-align: right;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+        
+        .day-warning {
+            font-size: 0.75rem;
+            color: var(--danger);
+            grid-column: 1 / -1;
+            text-align: right;
+            margin-top: -0.5rem;
+            display: none;
+        }
+
+        .results-section {
+            background: linear-gradient(145deg, rgba(139, 92, 246, 0.1), rgba(0, 0, 0, 0.2));
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            text-align: center;
+        }
+
+        .result-card {
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+        }
+
+        .result-card h3 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .value.total { color: var(--text-main); }
+        .value.ordinarias { color: var(--success); }
+        .value.extras { color: var(--accent); }
+
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .day-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .day-label {
+                grid-column: 1 / -1;
+            }
+            .day-total {
+                grid-column: 1 / -1;
+                text-align: left;
+                padding-top: 0.5rem;
+                border-top: 1px solid var(--border);
+            }
+            .results-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Calculadora de Horas</h1>
+            <p>Control de jornada semanal según la Ley Laboral</p>
+        </div>
+
+        <div class="settings-card">
+            <div class="form-group">
+                <label for="weekly-limit">Jornada Semanal (Horas Ordinarias)</label>
+                <select id="weekly-limit">
+                    <option value="40">40 horas (Ley 40h - 2028)</option>
+                    <option value="42" selected>42 horas (Ley 40h - 2026)</option>
+                    <option value="44">44 horas (Ley 40h - 2024)</option>
+                    <option value="45">45 horas (Antigua Ley)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="daily-limit">Límite Diario Legal (Horas)</label>
+                <input type="number" id="daily-limit" value="10" min="1" max="12">
+            </div>
+        </div>
+
+        <div class="days-container" id="days-container">
+            <!-- Días generados por JS -->
+        </div>
+
+        <div class="results-section">
+            <div class="result-card">
+                <h3>Total Trabajado</h3>
+                <div class="value total" id="res-total">00:00</div>
+            </div>
+            <div class="result-card">
+                <h3>Horas Ordinarias</h3>
+                <div class="value ordinarias" id="res-ordinarias">00:00</div>
+            </div>
+            <div class="result-card">
+                <h3>Horas Extras</h3>
+                <div class="value extras" id="res-extras">00:00</div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-outline" onclick="resetForm()">Limpiar</button>
+            <button class="btn btn-primary" onclick="window.print()">Imprimir Reporte</button>
+        </div>
+    </div>
+
+    <script>
+        const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+        const container = document.getElementById('days-container');
+
+        // Initial setup for standard Mon-Fri work week
+        function initDays() {
+            container.innerHTML = '';
+            days.forEach((day, index) => {
+                const isActive = index < 5; // Mon-Fri active by default
+                
+                const row = document.createElement('div');
+                row.className = `day-row ${isActive ? '' : 'disabled'}`;
+                row.id = `row-${index}`;
+                
+                row.innerHTML = `
+                    <label class="day-label">
+                        <input type="checkbox" id="check-${index}" ${isActive ? 'checked' : ''} onchange="toggleDay(${index})">
+                        ${day}
+                    </label>
+                    <div class="time-input-group">
+                        <label>Entrada</label>
+                        <input type="time" class="time-input" id="in-${index}" value="${isActive ? '08:00' : ''}" ${!isActive ? 'disabled' : ''} onchange="calculate()">
+                    </div>
+                    <div class="time-input-group">
+                        <label>Salida</label>
+                        <input type="time" class="time-input" id="out-${index}" value="${isActive ? '18:00' : ''}" ${!isActive ? 'disabled' : ''} onchange="calculate()">
+                    </div>
+                    <div class="time-input-group">
+                        <label>Colación (min)</label>
+                        <input type="number" class="time-input" id="break-${index}" value="${isActive ? '60' : '0'}" min="0" step="15" ${!isActive ? 'disabled' : ''} onchange="calculate()">
+                    </div>
+                    <div class="day-total" id="total-${index}">00:00</div>
+                    <div class="day-warning" id="warning-${index}">Excede límite diario legal</div>
+                `;
+                container.appendChild(row);
+            });
+            calculate();
+        }
+
+        function toggleDay(index) {
+            const row = document.getElementById(`row-${index}`);
+            const isChecked = document.getElementById(`check-${index}`).checked;
+            
+            const inputs = row.querySelectorAll('input[type="time"], input[type="number"]');
+            inputs.forEach(input => {
+                input.disabled = !isChecked;
+                if (!isChecked) input.value = '';
+                else {
+                    if(input.type === 'time') {
+                        input.value = input.id.startsWith('in') ? '08:00' : '18:00';
+                    } else {
+                        input.value = '60';
+                    }
+                }
+            });
+            
+            if (isChecked) {
+                row.classList.remove('disabled');
+            } else {
+                row.classList.add('disabled');
+                document.getElementById(`total-${index}`).textContent = '00:00';
+                document.getElementById(`warning-${index}`).style.display = 'none';
+            }
+            calculate();
+        }
+
+        function timeToMinutes(timeStr) {
+            if (!timeStr) return 0;
+            const [hours, minutes] = timeStr.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        function minutesToTime(mins) {
+            const hours = Math.floor(mins / 60);
+            const minutes = mins % 60;
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        function calculate() {
+            let totalWeeklyMinutes = 0;
+            const dailyLimitHours = parseFloat(document.getElementById('daily-limit').value) || 10;
+            const dailyLimitMins = dailyLimitHours * 60;
+            
+            for (let i = 0; i < 7; i++) {
+                const isChecked = document.getElementById(`check-${i}`).checked;
+                const warningEl = document.getElementById(`warning-${i}`);
+                
+                if (isChecked) {
+                    const timeIn = document.getElementById(`in-${i}`).value;
+                    const timeOut = document.getElementById(`out-${i}`).value;
+                    const breakMins = parseInt(document.getElementById(`break-${i}`).value) || 0;
+                    
+                    if (timeIn && timeOut) {
+                        let minsIn = timeToMinutes(timeIn);
+                        let minsOut = timeToMinutes(timeOut);
+                        
+                        // Handle crossing midnight
+                        if (minsOut < minsIn) {
+                            minsOut += 24 * 60; 
+                        }
+                        
+                        let workedMins = (minsOut - minsIn) - breakMins;
+                        if (workedMins < 0) workedMins = 0;
+                        
+                        totalWeeklyMinutes += workedMins;
+                        
+                        document.getElementById(`total-${i}`).textContent = minutesToTime(workedMins);
+                        
+                        // Check daily limit
+                        if (workedMins > dailyLimitMins) {
+                            warningEl.style.display = 'block';
+                            document.getElementById(`total-${i}`).style.color = 'var(--danger)';
+                        } else {
+                            warningEl.style.display = 'none';
+                            document.getElementById(`total-${i}`).style.color = 'var(--text-main)';
+                        }
+                    } else {
+                        document.getElementById(`total-${i}`).textContent = '00:00';
+                        warningEl.style.display = 'none';
+                    }
+                }
+            }
+
+            // Calculate weekly totals
+            const weeklyLimitHours = parseFloat(document.getElementById('weekly-limit').value);
+            const weeklyLimitMins = weeklyLimitHours * 60;
+            
+            let ordinariasMins = Math.min(totalWeeklyMinutes, weeklyLimitMins);
+            let extrasMins = Math.max(0, totalWeeklyMinutes - weeklyLimitMins);
+            
+            document.getElementById('res-total').textContent = minutesToTime(totalWeeklyMinutes);
+            document.getElementById('res-ordinarias').textContent = minutesToTime(ordinariasMins);
+            document.getElementById('res-extras').textContent = minutesToTime(extrasMins);
+        }
+
+        function resetForm() {
+            if(confirm('¿Estás seguro de que deseas limpiar todos los datos?')) {
+                initDays();
+            }
+        }
+
+        // Add event listeners for settings
+        document.getElementById('weekly-limit').addEventListener('change', calculate);
+        document.getElementById('daily-limit').addEventListener('input', calculate);
+
+        // Init
+        initDays();
+    </script>
+</body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Panel Personal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --border-radius: 24px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            /* Paleta Pastel Vanguardista */
+            --pastel-blue: #e0f2fe;
+            --pastel-mint: #d1fae5;
+            --pastel-lavender: #e0e7ff;
+            --pastel-peach: #ffedd5;
+            --pastel-sand: #fef08a;
+            --pastel-pink: #fce7f3;
+            --pastel-gray: #f1f5f9;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 3rem 1.5rem;
+        }
+
+        header {
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: -1px; }
+        .clock { font-size: 1.25rem; font-weight: 300; color: var(--text-light); }
+
+        /* BENTO GRID */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            grid-auto-rows: 160px;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .bento-card {
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-decoration: none;
+            color: var(--text-dark);
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        .bento-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            z-index: 2;
+        }
+
+        /* Tamaños Bento */
+        .span-1x1 { grid-column: span 1; grid-row: span 1; }
+        .span-2x1 { grid-column: span 2; grid-row: span 1; }
+        .span-1x2 { grid-column: span 1; grid-row: span 2; }
+        .span-2x2 { grid-column: span 2; grid-row: span 2; }
+
+        .card-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .span-1x1 .card-icon { font-size: 2rem; }
+        .card-title { font-weight: 600; font-size: 1.2rem; line-height: 1.2; }
+        .card-url { font-size: 0.8rem; color: rgba(0,0,0,0.4); margin-top: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Botones de acción (Editar/Eliminar) */
+        .card-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .bento-card:hover .card-actions { opacity: 1; }
+        
+        .action-btn {
+            background: rgba(255,255,255,0.7);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            color: var(--text-dark);
+            transition: var(--transition);
+        }
+        .action-btn:hover { background: #fff; transform: scale(1.1); }
+        .btn-delete:hover { color: #e11d48; }
+
+        /* Tarjeta de Añadir */
+        .card-add {
+            background: transparent;
+            border: 2px dashed #cbd5e1;
+            box-shadow: none;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-light);
+        }
+        .card-add:hover {
+            border-color: #94a3b8;
+            color: var(--text-dark);
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+
+        .modal {
+            background: #fff;
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .modal-overlay.active .modal { transform: translateY(0); }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-header h2 { font-size: 1.5rem; }
+        .btn-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
+
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; color: var(--text-light); }
+        .form-group input, .form-group select {
+            width: 100%; padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0; border-radius: 12px;
+            font-family: inherit; font-size: 1rem;
+            outline: none; transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus { border-color: #94a3b8; }
+
+        .color-picker { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
+        .color-option {
+            width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+            border: 2px solid transparent; transition: var(--transition);
+        }
+        .color-option.selected { transform: scale(1.1); border-color: var(--text-dark); }
+
+        .btn-save {
+            width: 100%; padding: 1rem; margin-top: 1rem;
+            background: var(--text-dark); color: #fff;
+            border: none; border-radius: 12px;
+            font-family: inherit; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn-save:hover { background: #1a202c; }
+
+        @media (max-width: 600px) {
+            .bento-grid { grid-template-columns: 1fr; grid-auto-rows: 140px; }
+            .span-2x1, .span-2x2 { grid-column: span 1; }
+            .span-1x2, .span-2x2 { grid-row: span 1; }
+            header { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>Hola 👋</h1>
+            <p style="color: var(--text-light); margin-top: 0.25rem;">Este es tu panel personal.</p>
+        </div>
+        <div class="clock" id="clock">00:00</div>
+    </header>
+
+    <div class="bento-grid" id="grid">
+        <!-- Los enlaces se inyectarán aquí mediante JS -->
+    </div>
+
+    <!-- Modal Form -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title">Añadir Enlace</h2>
+                <button class="btn-close" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <input type="hidden" id="link-id">
+            
+            <div class="form-group">
+                <label>Nombre del sitio</label>
+                <input type="text" id="link-title" placeholder="Ej: Calendario Liceo" required>
+            </div>
+            
+            <div class="form-group">
+                <label>URL (Enlace)</label>
+                <input type="url" id="link-url" placeholder="https://..." required>
+            </div>
+            
+            <div style="display: flex; gap: 1rem;">
+                <div class="form-group" style="flex: 1;">
+                    <label>Icono (Emoji)</label>
+                    <input type="text" id="link-icon" placeholder="📅" maxlength="2">
+                </div>
+                <div class="form-group" style="flex: 2;">
+                    <label>Tamaño Bento</label>
+                    <select id="link-size">
+                        <option value="span-1x1">Cuadrado Pequeño (1x1)</option>
+                        <option value="span-2x1" selected>Rectángulo Ancho (2x1)</option>
+                        <option value="span-1x2">Rectángulo Alto (1x2)</option>
+                        <option value="span-2x2">Cuadrado Grande (2x2)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Color Pastel</label>
+                <div class="color-picker" id="color-picker">
+                    <!-- Los colores se generan por JS -->
+                </div>
+            </div>
+
+            <button class="btn-save" onclick="saveLink()">Guardar Enlace</button>
+        </div>
+    </div>
+
+    <script>
+        // Actualizar Reloj
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Colores Pastel Disponibles
+        const coloresPastel = [
+            'var(--pastel-blue)', 'var(--pastel-mint)', 'var(--pastel-lavender)',
+            'var(--pastel-peach)', 'var(--pastel-sand)', 'var(--pastel-pink)', 'var(--pastel-gray)'
+        ];
+
+        let selectedColor = coloresPastel[0];
+
+        function initColorPicker() {
+            const picker = document.getElementById('color-picker');
+            picker.innerHTML = '';
+            coloresPastel.forEach(color => {
+                const div = document.createElement('div');
+                div.className = 'color-option' + (color === selectedColor ? ' selected' : '');
+                div.style.backgroundColor = color;
+                div.onclick = () => {
+                    document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+                    div.classList.add('selected');
+                    selectedColor = color;
+                };
+                picker.appendChild(div);
+            });
+        }
+        initColorPicker();
+
+        // CRUD de Enlaces en LocalStorage
+        let links = JSON.parse(localStorage.getItem('bentoLinks')) || [
+            { id: 1, title: 'Buscador Google', url: 'https://google.com', icon: '🔍', size: 'span-2x1', color: 'var(--pastel-blue)' },
+            { id: 2, title: 'Calendario Liceo', url: 'index.html', icon: '📅', size: 'span-1x1', color: 'var(--pastel-peach)' }
+        ];
+
+        function saveToStorage() {
+            localStorage.setItem('bentoLinks', JSON.stringify(links));
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+
+            links.forEach(link => {
+                const card = document.createElement('a');
+                card.href = link.url;
+                card.target = '_blank'; // Abrir en nueva pestaña
+                card.className = `bento-card ${link.size}`;
+                card.style.backgroundColor = link.color;
+                
+                card.innerHTML = `
+                    <div class="card-actions" onclick="event.preventDefault();">
+                        <button class="action-btn" onclick="editLink(${link.id})"><i class="fa-solid fa-pen"></i></button>
+                        <button class="action-btn btn-delete" onclick="deleteLink(${link.id})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <div>
+                        <div class="card-icon">${link.icon || '🔗'}</div>
+                    </div>
+                    <div>
+                        <div class="card-title">${link.title}</div>
+                        <div class="card-url">${link.url.replace(/^https?:\/\//, '')}</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            // Botón Añadir (Siempre al final)
+            const addCard = document.createElement('div');
+            addCard.className = 'bento-card span-1x1 card-add';
+            addCard.onclick = () => openModal();
+            addCard.innerHTML = `
+                <i class="fa-solid fa-plus" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                <div style="font-weight: 600;">Nuevo</div>
+            `;
+            grid.appendChild(addCard);
+        }
+
+        // Funciones del Modal
+        const modal = document.getElementById('modal');
+
+        function openModal(link = null) {
+            document.getElementById('modal-title').textContent = link ? 'Editar Enlace' : 'Añadir Enlace';
+            document.getElementById('link-id').value = link ? link.id : '';
+            document.getElementById('link-title').value = link ? link.title : '';
+            document.getElementById('link-url').value = link ? link.url : '';
+            document.getElementById('link-icon').value = link ? link.icon : '✨';
+            document.getElementById('link-size').value = link ? link.size : 'span-1x1';
+            
+            selectedColor = link ? link.color : coloresPastel[Math.floor(Math.random() * coloresPastel.length)];
+            initColorPicker();
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        function saveLink() {
+            const id = document.getElementById('link-id').value;
+            const title = document.getElementById('link-title').value.trim();
+            let url = document.getElementById('link-url').value.trim();
+            const icon = document.getElementById('link-icon').value.trim() || '🔗';
+            const size = document.getElementById('link-size').value;
+
+            if (!title || !url) {
+                alert("El nombre y la URL son obligatorios");
+                return;
+            }
+
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+
+            if (id) {
+                // Editar
+                const index = links.findIndex(l => l.id == id);
+                if (index > -1) {
+                    links[index] = { id: parseInt(id), title, url, icon, size, color: selectedColor };
+                }
+            } else {
+                // Nuevo
+                const newId = links.length > 0 ? Math.max(...links.map(l => l.id)) + 1 : 1;
+                links.push({ id: newId, title, url, icon, size, color: selectedColor });
+            }
+
+            saveToStorage();
+            renderGrid();
+            closeModal();
+        }
+
+        function editLink(id) {
+            const link = links.find(l => l.id === id);
+            if (link) openModal(link);
+        }
+
+        function deleteLink(id) {
+            if (confirm("¿Estás seguro de eliminar este enlace?")) {
+                links = links.filter(l => l.id !== id);
+                saveToStorage();
+                renderGrid();
+            }
+        }
+
+        // Cerrar modal haciendo clic fuera de la caja
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) closeModal();
+        });
+
+        // Inicializar
+        renderGrid();
+
+    </script>
+</body>
+</html>

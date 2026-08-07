@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Evaluaciones</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css?v=12">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar para agregar evaluaciones -->
+        <aside class="sidebar" id="sidebar" style="display: none;">
+            <div class="sidebar-header">
+                <h2><i class="fa-solid fa-calendar-days"></i> Evaluaciones</h2>
+                <p>Agrega nuevas evaluaciones al calendario escolar.</p>
+            </div>
+            
+            <button id="btn-config-2fa" onclick="abrirModal2FA()" type="button" class="btn-submit" style="background-color: #0f172a; margin-bottom: 1.5rem;"><i class="fa-solid fa-shield-halved"></i> Configurar Seguridad (2FA)</button>
+            
+            <form id="evaluation-form" class="evaluation-form">
+                <div class="form-group">
+                    <label for="curso">Curso / Grado</label>
+                    <select id="curso" required>
+                        <option value="" disabled selected>Selecciona un curso...</option>
+                        <option value="1° Básico">1° Básico</option>
+                        <option value="2° Básico">2° Básico</option>
+                        <option value="3° Básico">3° Básico</option>
+                        <option value="4° Básico">4° Básico</option>
+                        <option value="5° Básico">5° Básico</option>
+                        <option value="6° Básico">6° Básico</option>
+                        <option value="7° Básico">7° Básico</option>
+                        <option value="8° Básico">8° Básico</option>
+                        <option value="1° Medio A">1° Medio A</option>
+                        <option value="1° Medio B">1° Medio B</option>
+                        <option value="2° Medio A">2° Medio A</option>
+                        <option value="2° Medio B">2° Medio B</option>
+                        <option value="3° Medio A - Telecomunicaciones">3° Medio A - Telecomunicaciones</option>
+                        <option value="3° Medio B - Muebles y Terminaciones en Madera">3° Medio B - Muebles y Terminaciones en Madera</option>
+                        <option value="3° Medio C - Atención de Enfermería">3° Medio C - Atención de Enfermería</option>
+                        <option value="4° Medio A - Telecomunicaciones">4° Medio A - Telecomunicaciones</option>
+                        <option value="4° Medio B - Muebles y Terminaciones en Madera">4° Medio B - Muebles y Terminaciones en Madera</option>
+                        <option value="4° Medio C - Atención de Enfermería">4° Medio C - Atención de Enfermería</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="asignatura">Asignatura</label>
+                    <select id="asignatura" required disabled>
+                        <option value="" disabled selected>Selecciona un curso primero...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="profesor">Profesor(a)</label>
+                    <input type="text" id="profesor" required readonly style="background-color: #f1f5f9; cursor: not-allowed; color: var(--text-muted);" title="Tu nombre se asigna automáticamente">
+                </div>
+                
+                <div class="form-group">
+                    <label for="fecha">Fecha</label>
+                    <input type="date" id="fecha" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="hora">Hora</label>
+                    <select id="hora" required>
+                        <option value="" disabled selected>Selecciona una hora...</option>
+                        <option value="08:00">08:00</option>
+                        <option value="08:30">08:30</option>
+                        <option value="09:00">09:00</option>
+                        <option value="09:30">09:30</option>
+                        <option value="10:00">10:00</option>
+                        <option value="10:30">10:30</option>
+                        <option value="11:00">11:00</option>
+                        <option value="11:30">11:30</option>
+                        <option value="12:00">12:00</option>
+                        <option value="12:30">12:30</option>
+                        <option value="13:00">13:00</option>
+                        <option value="13:30">13:30</option>
+                        <option value="14:00">14:00</option>
+                        <option value="14:30">14:30</option>
+                        <option value="15:00">15:00</option>
+                        <option value="15:30">15:30</option>
+                        <option value="16:00">16:00</option>
+                        <option value="16:30">16:30</option>
+                        <option value="17:00">17:00</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipo">Tipo de Evaluación</label>
+                    <select id="tipo" required>
+                        <option value="" disabled selected>Selecciona un tipo...</option>
+                        <option value="Prueba">Prueba Escrita</option>
+                        <option value="Trabajo">Trabajo Práctico</option>
+                        <option value="Disertacion">Disertación</option>
+                        <option value="Control">Control de Lectura</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="observaciones">Observaciones o Detalles (Opcional)</label>
+                    <textarea id="observaciones" rows="3" placeholder="Ej. Contenidos a evaluar, materiales necesarios..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+                </div>
+                
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-plus"></i> Agregar Evaluación
+                </button>
+            </form>
+            <div id="form-message" class="form-message"></div>
+        </aside>
+
+        <!-- Contenedor principal (Calendario) -->
+        <main class="main-content">
+            <div style="display: flex; justify-content: flex-end; padding-bottom: 1rem; align-items: center; gap: 1rem;">
+                <div>
+                    <a href="https://new.liceotpggm.cl" class="btn-icon" style="text-decoration: none; display: flex; align-items: center; justify-content: center;" title="Ir al Sitio Principal del Liceo"><i class="fa-solid fa-house"></i></a>
+                </div>
+                <div id="public-horarios" style="display:none;">
+                    <!-- Botón movido al selector de vistas -->
+                </div>
+                <div id="user-controls">
+                    <a href="login.html" class="btn-submit" style="text-decoration: none; display: inline-block; padding: 0.5rem 1rem;">Acceso Profesores</a>
+                </div>
+            </div>
+
+            <div class="calendar-header">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button id="prev-month" class="btn-icon"><i class="fa-solid fa-chevron-left"></i></button>
+                    <h1 id="month-year">Cargando...</h1>
+                    <button id="next-month" class="btn-icon"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+                <div id="view-toggle">
+                    <button id="btn-export-pdf" class="btn-danger" style="border: none; padding: 0.6rem 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer;">
+                        <i class="fa-solid fa-file-pdf"></i> Exportar a PDF
+                    </button>
+                </div>
+            </div>
+            
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label for="view-type-selector">Vista de Calendario</label>
+                    <select id="view-type-selector" style="font-weight: bold; background-color: var(--bg-card);">
+                        <option value="evaluaciones" selected>Evaluaciones Mensuales</option>
+                        <option value="horarios">Horario de Clases</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-curso">Curso</label>
+                    <select id="filter-curso">
+                        <option value="all" selected>Todos los cursos</option>
+                        <!-- Opciones clonadas desde JS -->
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-asignatura">Asignatura</label>
+                    <select id="filter-asignatura" disabled>
+                        <option value="all" selected>Todas las asignaturas</option>
+                    </select>
+                </div>
+                <div class="filter-group" id="profesor-filter-group" style="display: none;">
+                    <label for="filter-profesor">Profesor(a)</label>
+                    <select id="filter-profesor">
+                        <option value="all" selected>Todos los profesores</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="calendar-container">
+                <div class="calendar-weekdays" id="calendar-weekdays">
+                    <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- Grid generado por JS -->
+                </div>
+                <div class="calendar-list" id="calendar-list">
+                    <!-- Lista generada por JS -->
+                </div>
+            </div>
+            
+            <!-- Contenedor de Horarios Semanales (Oculto por defecto) -->
+            <div id="horario-container" style="display: none; overflow-x: auto; margin-top: 1rem;">
+                <table class="horario-table" id="tabla-horario" style="width: 100%; border-collapse: collapse; text-align: center; table-layout: fixed;">
+                    <thead>
+                        <tr>
+                            <th style="width: 120px; background: #f8fafc; padding: 0.5rem; border: 1px solid var(--border-color);">Horario</th>
+                            <th style="background: #f8fafc; padding: 0.5rem; border: 1px solid var(--border-color);">Lunes</th>
+                            <th style="background: #f8fafc; padding: 0.5rem; border: 1px solid var(--border-color);">Martes</th>
+                            <th style="background: #f8fafc; padding: 0.5rem; border: 1px solid var(--border-color);">Miércoles</th>
+                            <th style="background: #f8fafc; padding: 0.5rem; border: 1px solid var(--border-color);">Jueves</th>
+                            <th style="background: #f8fafc; padding: 0.5rem; border: 1px solid var(--border-color);">Viernes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-horario">
+                        <!-- Generado por JS -->
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modal para ver detalles de la evaluación -->
+    <div id="eval-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-asignatura">Asignatura</h2>
+            <div class="modal-body">
+                <p><i class="fa-solid fa-users"></i> <strong>Curso:</strong> <span id="modal-curso"></span></p>
+                <p><i class="fa-solid fa-chalkboard-user"></i> <strong>Profesor:</strong> <span id="modal-profesor"></span></p>
+                <p><i class="fa-solid fa-calendar-day"></i> <strong>Fecha:</strong> <span id="modal-fecha"></span></p>
+                <p><i class="fa-solid fa-clock"></i> <strong>Hora:</strong> <span id="modal-hora"></span></p>
+                <p><i class="fa-solid fa-file-pen"></i> <strong>Tipo:</strong> <span class="badge" id="modal-tipo"></span></p>
+                
+                <div id="modal-obs-container" style="margin-top: 1rem; padding: 1rem; background-color: #f8fafc; border-radius: 6px; border: 1px solid #e2e8f0; display: none;">
+                    <strong style="display: block; margin-bottom: 0.5rem; color: #475569;">Observaciones:</strong>
+                    <p id="modal-observaciones" style="margin: 0; white-space: pre-wrap; font-size: 0.95rem;"></p>
+                </div>
+            </div>
+            <div class="modal-footer" id="modal-footer" style="display: none; justify-content: flex-end; gap: 10px;">
+                <button id="btn-edit" class="btn-submit" style="margin-top: 0; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; color: white; cursor: pointer;"><i class="fa-solid fa-pen"></i> Editar</button>
+                <button id="btn-delete" class="btn-danger"><i class="fa-solid fa-trash"></i> Eliminar</button>
+            </div>
+        </div>
+    </div> <!-- Cierre correcto de eval-modal -->
+
+    <!-- Modal para Configurar 2FA -->
+    <div id="modal-2fa" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-card); padding:2rem; border-radius:1rem; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; position:relative; text-align: center;">
+            <button onclick="cerrarModal2FA()" style="position:absolute; top:1rem; right:1rem; border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Configurar Autenticación de Dos Factores (2FA)</h3>
+            
+            <div id="2fa-setup-step1">
+                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">La Autenticación de Dos Factores agrega una capa adicional de seguridad a tu cuenta utilizando Google Authenticator.</p>
+                <button onclick="iniciarSetup2FA()" class="btn-submit" id="btn-start-2fa">Generar Código QR</button>
+            </div>
+            
+            <div id="2fa-setup-step2" style="display:none;">
+                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">1. Escanea este código QR con la aplicación Google Authenticator o Authy en tu teléfono.</p>
+                <img id="qr-image" src="" alt="Código QR 2FA" style="max-width:200px; border:1px solid #ccc; border-radius:8px; padding:10px; margin-bottom:1rem;">
+                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.5rem;">2. Ingresa el código de 6 dígitos que aparece en la aplicación para verificar.</p>
+                <div class="form-group" style="text-align:left;">
+                    <input type="text" id="verify-code-2fa" placeholder="Ej: 123456" maxlength="6" style="text-align:center; font-size:1.2rem; letter-spacing:4px;">
+                </div>
+                <button onclick="verificarYActivar2FA()" class="btn-submit" id="btn-enable-2fa" style="margin-top:1rem;">Verificar y Activar 2FA</button>
+                <div id="2fa-message" class="form-message" style="margin-top: 1rem; display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funciones Globales de 2FA para el modal incrustado
+        const API_BASE_2FA = 'api/';
+
+        function abrirModal2FA() {
+            document.getElementById('modal-2fa').style.display = 'flex';
+            document.getElementById('2fa-setup-step1').style.display = 'block';
+            document.getElementById('2fa-setup-step2').style.display = 'none';
+            document.getElementById('2fa-message').style.display = 'none';
+            document.getElementById('verify-code-2fa').value = '';
+        }
+
+        function cerrarModal2FA() {
+            document.getElementById('modal-2fa').style.display = 'none';
+        }
+
+        async function iniciarSetup2FA() {
+            const btn = document.getElementById('btn-start-2fa');
+            btn.textContent = 'Generando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_2FA}setup_2fa.php`);
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    document.getElementById('qr-image').src = data.qr_url;
+                    document.getElementById('2fa-setup-step1').style.display = 'none';
+                    document.getElementById('2fa-setup-step2').style.display = 'block';
+                } else {
+                    alert('Error al generar código 2FA: ' + (data.error || 'Desconocido'));
+                }
+            } catch (error) {
+                alert('Error de conexión al configurar 2FA');
+            } finally {
+                btn.textContent = 'Generar Código QR';
+                btn.disabled = false;
+            }
+        }
+
+        async function verificarYActivar2FA() {
+            const code = document.getElementById('verify-code-2fa').value.trim();
+            const btn = document.getElementById('btn-enable-2fa');
+            const msg = document.getElementById('2fa-message');
+            
+            if (code.length !== 6) {
+                msg.textContent = 'El código debe tener 6 dígitos.';
+                msg.className = 'form-message error';
+                msg.style.display = 'block';
+                return;
+            }
+
+            btn.textContent = 'Verificando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_2FA}enable_2fa.php`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    msg.textContent = '¡2FA configurado y activado exitosamente!';
+                    msg.className = 'form-message success';
+                    msg.style.display = 'block';
+                    setTimeout(() => cerrarModal2FA(), 2500);
+                } else {
+                    msg.textContent = data.error || 'Código incorrecto';
+                    msg.className = 'form-message error';
+                    msg.style.display = 'block';
+                }
+            } catch (error) {
+                msg.textContent = 'Error de conexión';
+                msg.className = 'form-message error';
+                msg.style.display = 'block';
+            } finally {
+                btn.textContent = 'Verificar y Activar 2FA';
+                btn.disabled = false;
+            }
+        }
+        
+        // Modal logic general
+        const modalEl = document.getElementById('eval-modal');
+        const closeBtn = document.querySelector('.close-modal');
+        if(closeBtn && modalEl) {
+            closeBtn.addEventListener('click', () => {
+                modalEl.style.display = "none";
+            });
+            window.addEventListener('click', (event) => {
+                if (event.target == modalEl) {
+                    modalEl.style.display = "none";
+                }
+            });
+        }
+    </script>
+    <script src="script.js?v=7"></script>
+</body>
+</html>

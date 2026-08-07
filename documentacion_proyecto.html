@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen del Proyecto: Calendario de Evaluaciones</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #f8fafc;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        h1 {
+            color: #0f172a;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.5rem;
+        }
+        h2 {
+            color: #1e293b;
+            margin-top: 2rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.3rem;
+        }
+        h3 {
+            color: #334155;
+            margin-top: 1.5rem;
+        }
+        ul {
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        code {
+            background-color: #f1f5f9;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: #d97706;
+        }
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ecosistema: Calendario de Evaluaciones del Liceo TPGGM</h1>
+        <p>Este documento detalla la arquitectura, componentes y medidas de seguridad implementadas en la plataforma "Calendario de Evaluaciones". El ecosistema está compuesto por un robusto backend centralizado que alimenta tanto a la interfaz web como a dos aplicaciones móviles nativas (una para profesores y otra para la administración).</p>
+
+        <h2>1. Arquitectura Central (Backend y API)</h2>
+        <p>El corazón del ecosistema se encuentra en el servidor web de producción (<code>new.liceotpggm.cl/evaluaciones/</code>), desarrollado en PHP y apoyado por una base de datos relacional (MySQL/MariaDB).</p>
+
+        <h3>Gestión de Accesos y Autenticación</h3>
+        <ul>
+            <li><strong>Control de Roles:</strong> Existen dos perfiles estrictos en la base de datos: <code>admin</code> (Administrador) y <code>profesor</code> (Usuario estándar). La API de PHP verifica activamente la variable de sesión <code>$_SESSION['user_rol']</code> en cada solicitud.</li>
+            <li><strong>Sistema de Códigos de Invitación:</strong> El registro de nuevos profesores está cerrado al público. Para crear una cuenta, un profesor necesita ingresar un código único alfanumérico (ej: <code>PROFE-XXXXX</code>) autogenerado y emitido por el administrador. Estos códigos son de un solo uso.</li>
+            <li><strong>Autenticación en Dos Pasos (2FA):</strong> Para el rol de Administrador, el sistema exige un código dinámico de 6 dígitos enviado por correo electrónico tras validar correctamente la contraseña, evitando el ingreso mediante credenciales filtradas.</li>
+        </ul>
+
+        <h3>Seguridad del Lado del Servidor (PHP)</h3>
+        <ul>
+            <li><strong>Consultas Preparadas (PDO):</strong> Todas las interacciones con la base de datos (inserción de usuarios, registro de logs, etc.) utilizan sentencias preparadas de PDO (<code>prepare</code>/<code>execute</code>), mitigando al 100% el riesgo de inyecciones SQL.</li>
+            <li><strong>Encriptación de Contraseñas:</strong> Las claves de acceso de todos los usuarios se almacenan utilizando <code>password_hash()</code> con el robusto algoritmo de encriptación unidireccional <code>BCRYPT</code>.</li>
+            <li><strong>Registro de Auditoría (Logs):</strong> Se mantiene un registro inmutable en base de datos de cada inicio de sesión (exitoso o fallido, registrando IP y dispositivo) y de cada actividad administrativa (eliminación de usuarios, cambios de claves, envío de invitaciones).</li>
+        </ul>
+
+        <h2>2. Plataforma Web</h2>
+        <p>La versión de escritorio (Web) es la interfaz clásica que permite interactuar con el backend de manera directa a través del navegador.</p>
+
+        <h3>Portal Administrativo (<code>admin.html</code>)</h3>
+        <ul>
+            <li><strong>Interfaz Protegida:</strong> Un script inicial de validación consulta al backend (<code>check_session.php</code>). Si no hay una sesión activa de administrador, expulsa inmediatamente al usuario hacia la página de login.</li>
+            <li><strong>Gestión de Usuarios:</strong> Permite visualizar en una tabla a todos los profesores registrados. Incluye funciones para:
+                <ul>
+                    <li>Modificar correos electrónicos.</li>
+                    <li>Resetear y reenviar contraseñas automáticamente vía SMTP.</li>
+                    <li>Eliminar cuentas (con doble confirmación).</li>
+                </ul>
+            </li>
+            <li><strong>Módulo de Auditoría y Logs:</strong> Visualización del historial completo de ingresos y movimientos del sistema filtrados por fecha.</li>
+            <li><strong>Generador de Invitaciones:</strong> Permite emitir y despachar por correo los códigos <code>PROFE-XXXXX</code>.</li>
+        </ul>
+
+        <h2>3. Aplicación Nativa para Profesores (<code>AppAndroid</code>)</h2>
+        <p>Aplicación enfocada en el usuario final, diseñada para ser rápida, ligera y de fácil distribución.</p>
+        <ul>
+            <li><strong>Tecnología:</strong> App de Android en Kotlin utilizando un esquema de <code>WebView</code> optimizado, lo que permite aprovechar la inmediatez de carga de las vistas móviles del servidor y asegura que todos los profesores vean siempre la versión más actualizada sin necesidad de actualizar la aplicación desde la tienda.</li>
+            <li><strong>Seguridad y Accesos:</strong> Impide el acceso a vistas administrativas y descansa sobre la protección de sesión por Cookies del backend.</li>
+        </ul>
+
+        <h2>4. Aplicación Nativa de Administración (<code>AppAndroidAdminNativa</code>)</h2>
+        <p>La "joya de la corona" del ecosistema. Es una aplicación Android 100% nativa (sin WebView), diseñada exclusivamente para el control total del Liceo desde el dispositivo del Administrador.</p>
+
+        <h3>Tecnologías y Componentes</h3>
+        <ul>
+            <li><strong>Arquitectura UI:</strong> Construida con XML y Material Design Components. Emplea <code>AndroidX Navigation</code> y un <code>BottomNavigationView</code> para intercambiar fluidamente entre Fragmentos (Usuarios, Auditoría, Códigos).</li>
+            <li><strong>Conectividad:</strong> Utiliza la librería <strong>Retrofit</strong> y <strong>Coroutines</strong> (procesamiento asíncrono en hilos de fondo) para enviar peticiones HTTP y mapear el JSON devuelto por el servidor PHP hacia modelos de datos de Kotlin (Data Classes).</li>
+        </ul>
+
+        <h3>Módulos Nativos</h3>
+        <ul>
+            <li><strong>Dashboard de Usuarios (<code>UsersFragment</code>):</strong> Lista en tarjetas a los usuarios utilizando un <code>RecyclerView</code>. Permite, con cuadros de diálogo nativos (AlertDialogs), la eliminación segura de usuarios, reseteo de claves y edición de correos.</li>
+            <li><strong>Auditoría (<code>AuditFragment</code>):</strong> Con un calendario interactivo (<code>DatePickerDialog</code>), extrae y unifica los eventos de actividad y login en una línea de tiempo cromática.</li>
+            <li><strong>Invitaciones (<code>InviteFragment</code>):</strong> Pantalla limpia para gatillar el despacho de códigos de invitación desde el celular.</li>
+        </ul>
+
+        <h3>Seguridad en Capa Nativa</h3>
+        <ul>
+            <li><strong>Doble Validación de Rol:</strong> En la actividad de Login, la App parsea la respuesta del servidor. Si el usuario logueado exitosamente resulta ser un "profesor", la aplicación <strong>bloquea el acceso localmente</strong> y cierra la sesión, reservando el paso exclusivamente al rol "admin".</li>
+            <li><strong>Persistencia de Sesión Encriptada:</strong> Para ofrecer una excelente experiencia de usuario (UX) sin sacrificar seguridad, la "Cookie" (<code>PHPSESSID</code>) entregada por el servidor se almacena de forma persistente utilizando la memoria segura del dispositivo (<code>SharedPreferences</code>). De esta forma, la app puede pasar a segundo plano sin perder la sesión.</li>
+            <li><strong>Interceptor y Auto-Logout Global:</strong> Se programó un interceptor de red HTTP (<code>OkHttp Interceptor</code>). Si el servidor envía un error 403 (Acceso Denegado) en cualquier momento (por ejemplo, si la sesión caducó en el servidor de producción o alguien la revocó), la aplicación intercepta esto, destruye el almacenamiento de cookies local y fuerza al administrador de vuelta a la pantalla de Login con una alerta de seguridad.</li>
+        </ul>
+        
+        <div class="footer">
+            <p>Generado automáticamente - Documentación del Proyecto</p>
+        </div>
+    </div>
+</body>
+</html>

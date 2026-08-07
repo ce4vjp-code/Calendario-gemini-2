@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumen de Plataforma - Calendario de Evaluaciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --bg: #f8fafc;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+        }
+        .document-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem 4rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+        h2 {
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-top: 2.5rem;
+        }
+        h3 {
+            color: #334155;
+            margin-bottom: 0.5rem;
+        }
+        ul {
+            padding-left: 1.5rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        .security-badge {
+            display: inline-block;
+            background: #dcfce7;
+            color: #166534;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        .btn-pdf {
+            display: block;
+            width: 100%;
+            max-width: 250px;
+            margin: 2rem auto;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 1.1rem;
+        }
+        .btn-pdf:hover {
+            background: #4338ca;
+        }
+        
+        /* Ocultar botón al imprimir */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .document-container {
+                box-shadow: none;
+                padding: 0;
+                max-width: 100%;
+            }
+            .btn-pdf {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-pdf" onclick="window.print()">🖨️ Guardar / Exportar a PDF</button>
+
+    <div class="document-container">
+        <div class="header">
+            <h1>Plataforma de Gestión de Evaluaciones</h1>
+            <p>Documentación Técnica, Funcional y Auditoría de Seguridad</p>
+        </div>
+
+        <h2>1. Propósito de Diseño</h2>
+        <p>
+            El sistema fue concebido como una solución web centralizada y altamente responsiva para la organización académica de un liceo. 
+            Su objetivo principal es permitir a los docentes programar, visualizar y coordinar fechas de evaluaciones (pruebas, disertaciones, trabajos prácticos) de manera transparente, evitando la superposición de fechas para los estudiantes.
+        </p>
+        <p>
+            Su interfaz utiliza un enfoque <em>Mobile-First</em> de diseño minimalista, presentando la información en formato de "Lista" para garantizar la legibilidad en pantallas pequeñas, pero conservando la capacidad de exportar cuadrículas panorámicas tradicionales.
+        </p>
+
+        <h2>2. Funcionalidades Principales</h2>
+        <ul>
+            <li><strong>Interfaz Híbrida Adaptativa:</strong> Sistema de lectura basado en listas interactivas en pantalla, que transmuta mediante reglas CSS (<code>@media print</code>) a una clásica cuadrícula mensual tipo <em>Google Calendar</em> exclusivamente al momento de exportar o imprimir.</li>
+            <li><strong>Gestión Académica (CRUD):</strong> Los profesores autenticados pueden crear, editar, visualizar y eliminar sus propias evaluaciones escolares, asignándoles horarios, cursos, asignaturas y colores categorizados según el tipo de evaluación.</li>
+            <li><strong>Panel de Administración:</strong> Un centro de control exclusivo que permite la gestión del cuerpo docente, incluyendo la generación de invitaciones de un solo uso, restablecimiento de contraseñas y eliminación de usuarios (lo que desencadena una eliminación en cascada de sus evaluaciones).</li>
+            <li><strong>Autenticación Geolocalizada:</strong> Inicio de sesión y registro diseñados específicamente para el estándar nacional, utilizando el RUT chileno como identificador único principal.</li>
+        </ul>
+
+        <h2>3. Arquitectura y Métodos de Seguridad (Backend)</h2>
+        <p>
+            El sistema está construido sobre una arquitectura LAMP (Linux, Apache, MySQL, PHP) pura, utilizando una API RESTful interna que se comunica de forma asíncrona con el frontend vía JavaScript. Tras la reciente auditoría, el sistema cuenta con las siguientes capas de seguridad:
+        </p>
+        
+        <ul>
+            <li>
+                <span class="security-badge">Prevención de Inyección SQL</span> 
+                <strong>Sentencias Preparadas (PDO):</strong> Todas las interacciones con la base de datos utilizan <em>Prepared Statements</em> con parámetros enlazados. Esto anula por completo la posibilidad de ataques por inyección de código SQL.
+            </li>
+            
+            <li>
+                <span class="security-badge">Cifrado BCRYPT</span> 
+                <strong>Protección de Credenciales:</strong> Las contraseñas de los usuarios jamás se almacenan en texto plano. Se procesan a través del algoritmo <code>password_hash()</code> de PHP, haciéndolas indescifrables en caso de vulneración de la base de datos.
+            </li>
+            
+            <li>
+                <span class="security-badge">Mitigación IDOR</span> 
+                <strong>Control de Acceso Directo a Objetos:</strong> Los scripts de edición y eliminación validan obligatoriamente la propiedad del objeto antes de ejecutar una acción. El servidor verifica que la evaluación pertenezca a la sesión activa (o a un Administrador), bloqueando el resto con códigos HTTP 403.
+            </li>
+            
+            <li>
+                <span class="security-badge">Anti-Suplantación</span> 
+                <strong>Forzado de Identidad de Autor:</strong> En la creación de registros, el backend desestima cualquier información de autoría proveniente del navegador, inyectando directamente el nombre alojado de forma inmutable en la sesión segura del servidor (<code>$_SESSION</code>).
+            </li>
+            
+            <li>
+                <span class="security-badge">Doble Capa de Verificación</span> 
+                <strong>Algoritmo Módulo 11 (RUT):</strong> La integridad de la identidad se valida mediante el dígito verificador del RUT. Este cálculo se realiza en el cliente (Frontend, para velocidad y usabilidad) y en el servidor (PHP, como barrera de seguridad inviolable).
+            </li>
+            
+            <li>
+                <span class="security-badge">Gestión CORS</span> 
+                <strong>Restricción de Origen:</strong> Se instruye a los navegadores a bloquear cualquier intento de comunicación con la base de datos que provenga de un dominio web externo o no autorizado.
+            </li>
+        </ul>
+
+        <div style="margin-top: 4rem; text-align: center; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 2rem;">
+            Documento generado y actualizado en Julio de 2026 tras auditoría de seguridad del sistema.
+        </div>
+    </div>
+</body>
+</html>

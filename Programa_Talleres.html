@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programa de Capacitación Digital Institucional</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: #fcfcfc;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #0056b3;
+            margin-bottom: 5px;
+        }
+        h2 {
+            color: #004085;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-top: 40px;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            color: #555;
+            font-weight: 500;
+            margin-top: 0;
+        }
+        .intro {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+        .meta-info {
+            background-color: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .meta-info strong {
+            color: #004085;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #0056b3;
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .tip-box {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-left: 5px solid #17a2b8;
+            padding: 15px;
+            margin-top: 40px;
+            border-radius: 4px;
+        }
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+                max-width: 100%;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .no-print {
+                display: none;
+            }
+            table {
+                font-size: 10pt;
+            }
+        }
+        .print-btn {
+            display: block;
+            width: 200px;
+            margin: 0 auto 30px;
+            padding: 10px 20px;
+            background-color: #0056b3;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        .print-btn:hover {
+            background-color: #004085;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn no-print" onclick="window.print()">🖨️ Exportar a PDF / Imprimir</button>
+
+    <div class="header">
+        <h1>Programa de Capacitación Digital Institucional</h1>
+        <p class="subtitle">Liceo Técnico Profesional Gonzalo Guglielmi Montiel</p>
+    </div>
+
+    <p class="intro">A continuación se detalla el cronograma y temario oficial para el ciclo de talleres de capacitación en herramientas digitales. Cada taller está estructurado con una duración de <strong>6 horas pedagógicas</strong>, segmentadas en <strong>6 clases de 1 hora pedagógica cada una</strong>, para facilitar el aprendizaje progresivo y la integración en la jornada laboral.</p>
+
+    <!-- Taller 1 -->
+    <h2>Taller 1: Herramientas de Ofimática Básica</h2>
+    <div class="meta-info">
+        <strong>Objetivo:</strong> Desarrollar habilidades prácticas para la creación, edición y formato de documentos y hojas de cálculo orientados a la gestión administrativa diaria.<br>
+        <strong>Duración Total:</strong> 6 Horas Pedagógicas (6 clases).
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th width="15%">Clase</th>
+                <th width="45%">Tema Principal</th>
+                <th width="40%">Actividad Práctica (1 hr ped.)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Clase 1</strong></td>
+                <td><strong>Entorno de Procesamiento de Texto:</strong> Interfaz, márgenes, fuentes y configuración de página (Word / Google Docs).</td>
+                <td>Creación de un documento en blanco con parámetros formales del Liceo.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 2</strong></td>
+                <td><strong>Redacción Institucional:</strong> Cartas y memorándums formales.</td>
+                <td>Redacción guiada de una carta formal y un memorándum de prueba.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 3</strong></td>
+                <td><strong>Estilos y Automatización:</strong> Uso de plantillas, encabezados, pies de página institucionales y tabulaciones.</td>
+                <td>Aplicación de encabezados con el logo del Liceo a los documentos anteriores.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 4</strong></td>
+                <td><strong>Entorno de Planillas de Cálculo:</strong> Interfaz de Excel / Google Sheets, manejo de celdas, filas y columnas.</td>
+                <td>Estructuración básica de una tabla de datos (ej: nombres y cursos).</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 5</strong></td>
+                <td><strong>Gestión Administrativa en Planillas:</strong> Listas de asistencia, formato condicional y ordenamiento.</td>
+                <td>Construcción de un registro de asistencia mensual automatizado.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 6</strong></td>
+                <td><strong>Fórmulas y Control:</strong> Diseño de planillas de inventario y fórmulas fundamentales (SUMA, PROMEDIO).</td>
+                <td>Diseño de una pequeña planilla de control de stock y filtros de datos.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <!-- Taller 2 -->
+    <h2>Taller 2: Gestión de Almacenamiento en la Nube</h2>
+    <div class="meta-info">
+        <strong>Objetivo:</strong> Implementar un flujo de trabajo colaborativo seguro y eficiente mediante el uso de plataformas de almacenamiento virtual.<br>
+        <strong>Duración Total:</strong> 6 Horas Pedagógicas (6 clases).
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th width="15%">Clase</th>
+                <th width="45%">Tema Principal</th>
+                <th width="40%">Actividad Práctica (1 hr ped.)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Clase 1</strong></td>
+                <td><strong>Introducción a la Nube:</strong> Conceptos básicos (Google Drive / OneDrive) e inicio de sesión.</td>
+                <td>Acceso a la cuenta en la nube y recorrido por la interfaz principal.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 2</strong></td>
+                <td><strong>Estructura y Organización:</strong> Lógica de carpetas, subcarpetas y jerarquías digitales.</td>
+                <td>Creación de la estructura de carpetas de un departamento (Ej: Jefatura).</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 3</strong></td>
+                <td><strong>Carga y Respaldo de Archivos:</strong> Subida y descarga de documentos desde el equipo local.</td>
+                <td>Migración y respaldo de archivos locales a la carpeta creada en la nube.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 4</strong></td>
+                <td><strong>Trabajo Colaborativo:</strong> Manejo de permisos de acceso (Lector, Comentador y Editor).</td>
+                <td>Configuración de permisos específicos para distintos colegas del Liceo.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 5</strong></td>
+                <td><strong>Compartir Información:</strong> Generación de enlaces seguros e invitaciones directas.</td>
+                <td>Envío de un enlace seguro a un colega para trabajo conjunto.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 6</strong></td>
+                <td><strong>Co-edición en Tiempo Real:</strong> Edición simultánea y control de versiones (historial de cambios).</td>
+                <td>Ejercicio de escritura simultánea en un documento y revisión del historial.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <!-- Taller 3 -->
+    <h2>Taller 3: Comunicación Institucional y Seguridad Digital</h2>
+    <div class="meta-info">
+        <strong>Objetivo:</strong> Estandarizar las comunicaciones oficiales a través del correo electrónico y aplicar medidas fundamentales de ciberseguridad.<br>
+        <strong>Duración Total:</strong> 6 Horas Pedagógicas (6 clases).
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th width="15%">Clase</th>
+                <th width="45%">Tema Principal</th>
+                <th width="40%">Actividad Práctica (1 hr ped.)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Clase 1</strong></td>
+                <td><strong>Estructura del Correo Formal:</strong> El asunto, el cuerpo del mensaje y el tono institucional.</td>
+                <td>Redacción y envío de un correo interno formal de prueba.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 2</strong></td>
+                <td><strong>Identidad Corporativa:</strong> Creación y configuración de firmas digitales institucionales.</td>
+                <td>Diseño e inserción de la firma personal con el cargo en el Liceo.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 3</strong></td>
+                <td><strong>Productividad en la Bandeja:</strong> Organización mediante creación de etiquetas, carpetas y destacados.</td>
+                <td>Creación de etiquetas ("Urgente", "Apoderados", "Dirección") y archivo.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 4</strong></td>
+                <td><strong>Automatización del Correo:</strong> Creación de filtros automáticos y respuestas automáticas.</td>
+                <td>Configuración de un filtro para mover automáticamente boletines a una carpeta.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 5</strong></td>
+                <td><strong>Contraseñas Seguras:</strong> Reglas para contraseñas robustas, gestión y actualización.</td>
+                <td>Auditoría de contraseñas propias y creación de una nueva contraseña fuerte.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 6</strong></td>
+                <td><strong>Ciberseguridad y Phishing:</strong> Identificación de correos fraudulentos, enlaces sospechosos y antivirus.</td>
+                <td>Análisis de un "correo trampa" simulado para detectar señales de phishing.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Taller 4 -->
+    <h2>Taller 4: Uso de Plataformas Internas</h2>
+    <div class="meta-info">
+        <strong>Objetivo:</strong> Capacitar al personal en la correcta navegación y registro de datos en los sistemas informáticos específicos del establecimiento.<br>
+        <strong>Duración Total:</strong> 6 Horas Pedagógicas (6 clases).
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th width="15%">Clase</th>
+                <th width="45%">Tema Principal</th>
+                <th width="40%">Actividad Práctica (1 hr ped.)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Clase 1</strong></td>
+                <td><strong>Acceso y Seguridad:</strong> Inicio de sesión seguro, gestión de perfiles y recuperación de credenciales del portal.</td>
+                <td>Recuperación de contraseña y configuración del perfil personal en el sistema.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 2</strong></td>
+                <td><strong>Navegación del Sistema:</strong> Reconocimiento de la interfaz, menús principales y estructura de módulos.</td>
+                <td>Recorrido guiado por el mapa del sitio y ubicación de los módulos clave.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 3</strong></td>
+                <td><strong>Módulo de Gestión 1:</strong> Ingreso y registro de la información habitual (notas, asistencia o reportes, según rol).</td>
+                <td>Práctica de ingreso de datos ficticios en modo prueba / borrador.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 4</strong></td>
+                <td><strong>Módulo de Gestión 2:</strong> Actualización, modificación de datos y guardado seguro de la información.</td>
+                <td>Modificación de registros previamente creados y revisión de su estado.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 5</strong></td>
+                <td><strong>Reportes Institucionales:</strong> Generación, exportación y lectura de informes internos desde el sistema.</td>
+                <td>Exportación exitosa de una planilla de reporte en formato PDF o Excel.</td>
+            </tr>
+            <tr>
+                <td><strong>Clase 6</strong></td>
+                <td><strong>Contingencias y Soporte:</strong> Protocolos de acción frente a caídas del sistema o pérdida de conexión.</td>
+                <td>Simulación de error de red y práctica del protocolo manual de respaldo.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="tip-box">
+        <strong>💡 Metodología de Evaluación Sugerida:</strong><br>
+        Al finalizar la 6ª clase de cada taller, se sugiere destinar los últimos 15 minutos para que el grupo suba o entregue la evidencia de la actividad práctica final, validando así las horas cursadas.
+    </div>
+
+</body>
+</html>

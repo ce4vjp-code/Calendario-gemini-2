@@ -1,0 +1,19 @@
+# Local configuration & IDEs
+local.properties
+.idea/caches/
+.idea/workspace.xml
+*.bak
+
+# Gradle & Build files
+.gradle/
+**/build/
+*.apk
+*.aar
+
+# Temporary & Log files
+*.log
+temp.js
+
+# Keep uploads folder structure but ignore contents
+uploads/*
+!uploads/.gitkeep

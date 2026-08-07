@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { padding: 2rem; background-color: var(--bg-main); display: block; height: auto !important; overflow: auto !important; min-height: 100vh; }
+        .admin-container { background: var(--bg-card); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; }
+        h2 { color: var(--primary-color); margin-bottom: 1rem; }
+        .code-box { background: #f1f5f9; padding: 1rem; border-radius: 0.5rem; text-align: center; font-size: 1.25rem; font-weight: bold; letter-spacing: 2px; margin: 1rem 0; border: 1px dashed var(--primary-color); color: var(--primary-hover); display: none; }
+        @media (max-width: 768px) {
+            .admin-container { padding: 1.5rem; }
+            .responsive-table { width: 100%; display: block; border-collapse: separate; border-spacing: 0; }
+            .responsive-table thead { display: none; }
+            .responsive-table tbody { display: block; width: 100%; }
+            .responsive-table tr { display: block; background: #fff; margin-bottom: 1rem; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+            .responsive-table td { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0 !important; border-bottom: 1px solid #f1f5f9; text-align: right !important; }
+            .responsive-table td:last-child { border-bottom: none; margin-top: 0.5rem; justify-content: flex-end; padding-bottom: 0 !important; gap: 0.5rem; flex-wrap: wrap; }
+            .responsive-table td::before { content: attr(data-label); font-weight: bold; color: var(--text-muted); text-align: left; margin-right: 1rem; }
+            .responsive-table td:last-child::before { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div style="margin-bottom: 2rem;">
+            <div style="margin-bottom: 1.5rem;">
+                <h2>Panel de Administrador</h2>
+                <p style="color: var(--text-muted);">Genera códigos y administra profesores.</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 2rem;">
+                <a href="admin_logs.html?source=app" class="btn-submit" style="text-decoration:none; background:#1e293b; width: 100%; text-align: center;"><i class="fa-solid fa-shield-halved"></i> Auditoría (Logs)</a>
+            </div>
+        </div>
+        
+        <form id="invite-form" class="evaluation-form">
+            <div class="form-group">
+                <label for="email">Correo electrónico del profesor</label>
+                <input type="email" id="email" required placeholder="ejemplo@colegio.cl">
+            </div>
+            <button type="submit" class="btn-submit" id="btn-invite">Generar y Enviar Invitación</button>
+        </form>
+        
+        <div id="invite-message" class="form-message"></div>
+        <div id="generated-code" class="code-box"></div>
+        
+        <div style="margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 2rem;">
+            <h2>Usuarios Registrados</h2>
+            <div style="overflow-x: auto;">
+                <table class="responsive-table" style="width: 100%; border-collapse: collapse; margin-top: 1rem; text-align: left; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="background-color: var(--bg-main); border-bottom: 2px solid var(--border-color);">
+                            <th style="padding: 1rem;">Nombre</th>
+                            <th style="padding: 1rem;">RUT</th>
+                            <th style="padding: 1rem;">Correo</th>
+                            <th style="padding: 1rem; text-align: right;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usuarios-tbody">
+                        <tr><td colspan="4" style="text-align:center; padding: 1rem;">Cargando usuarios...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div style="margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 1rem; display: flex; justify-content: space-between;">
+            <div>
+                <a href="index.html" style="color: var(--text-muted); text-decoration: none; margin-right: 1rem;">← Ir al Calendario</a>
+                <a href="#" onclick="abrirModal2FA(); return false;" style="color: var(--primary-color); text-decoration: none; font-weight: bold;"><i class="fa-solid fa-lock"></i> Configurar 2FA</a>
+            </div>
+            <a href="#" id="btn-logout" style="color: var(--danger); text-decoration: none;">Cerrar Sesión</a>
+        </div>
+    </div>
+
+    <!-- Modal para Asignar Asignaturas -->
+    <div id="modal-asignaturas" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-card); padding:2rem; border-radius:1rem; max-width:600px; width:90%; max-height:80vh; overflow-y:auto; position:relative;">
+            <button onclick="cerrarModalAsignaturas()" style="position:absolute; top:1rem; right:1rem; border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Asignar Asignaturas a <span id="span-nombre-profesor"></span></h3>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">Marca las asignaturas en las que este profesor está autorizado a crear evaluaciones. Si no marcas ninguna, no podrá crear evaluaciones.</p>
+            <input type="hidden" id="asig-user-id">
+            
+            <div id="lista-asignaturas" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;">
+                <!-- Cargadas vía JS -->
+            </div>
+            
+            <button onclick="guardarAsignaturas()" class="btn-submit" id="btn-save-asignaturas">Guardar Asignaturas</button>
+        </div>
+    </div>
+
+    <!-- Modal para Configurar 2FA -->
+    <div id="modal-2fa" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-card); padding:2rem; border-radius:1rem; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; position:relative; text-align: center;">
+            <button onclick="cerrarModal2FA()" style="position:absolute; top:1rem; right:1rem; border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Configurar Autenticación de Dos Factores (2FA)</h3>
+            
+            <div id="2fa-setup-step1">
+                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.5rem;">La Autenticación de Dos Factores agrega una capa adicional de seguridad a tu cuenta utilizando Google Authenticator.</p>
+                <button onclick="iniciarSetup2FA()" class="btn-submit" id="btn-start-2fa">Generar Código QR</button>
+            </div>
+            
+            <div id="2fa-setup-step2" style="display:none;">
+                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">1. Escanea este código QR con la aplicación Google Authenticator o Authy en tu teléfono.</p>
+                <img id="qr-image" src="" alt="Código QR 2FA" style="max-width:200px; border:1px solid #ccc; border-radius:8px; padding:10px; margin-bottom:1rem;">
+                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:0.5rem;">2. Ingresa el código de 6 dígitos que aparece en la aplicación para verificar.</p>
+                <div class="form-group" style="text-align:left;">
+                    <input type="text" id="verify-code-2fa" placeholder="Ej: 123456" maxlength="6" style="text-align:center; font-size:1.2rem; letter-spacing:4px;">
+                </div>
+                <button onclick="verificarYActivar2FA()" class="btn-submit" id="btn-enable-2fa" style="margin-top:1rem;">Verificar y Activar 2FA</button>
+                <div id="2fa-message" class="form-message" style="margin-top: 1rem; display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const TODAS_LAS_ASIGNATURAS = [
+            "Lenguaje y Comunicación", "Inglés", "Matemática", "Historia Geografía y Ciencias Sociales",
+            "Ciencias Naturales", "Tecnología", "Educación Física y Salud", "Artes Visuales", "Música",
+            "Orientación", "Religión", "Taller de Recuperación de Habilidades de Lenguaje",
+            "Taller de Recuperación de Habilidades de Matemática", "DIA", "Velocidad Lectora", "SIMCE",
+            "Lengua y Literatura", "Educación Ciudadana", "Filosofía", "Ciencias para la Ciudadanía", 
+            "Taller de Educación Física y Salud", "Taller de Orientación", "Taller de Inglés", 
+            "Operación y Fundamentos de las Telecomunicaciones", "Instalación y Mantenimiento Básico de un Terminal Informático", 
+            "Instalación y Configuración de Redes", "Mantenimiento de Circuitos Electrónicos Básicos", 
+            "Instalación de Servicios Básicos de Telecomunicaciones", "Abastecimiento y Despacho",
+            "Fabricación de Componentes de Carpintería y Muebles", "Cubicaciones",
+            "Aseguramiento de la Calidad, Seguridad y Cuidado del Medio Ambiente",
+            "Representación Gráfica de Muebles y Elementos de Carpintería",
+            "Aplicación de Cuidados Básicos", "Medición y Control de Parámetros Básicos en Salud",
+            "Promoción de la Salud y Prevención de la Enfermedad",
+            "Higiene y Bioseguridad del Ambiente", "Sistema de Registro e Información en Salud"
+        ];
+        
+        // Quitar duplicados
+        const asignaturasUnicas = [...new Set(TODAS_LAS_ASIGNATURAS)].sort();
+        // Verificar si es admin
+        async function checkAdmin() {
+            try {
+                const response = await fetch('api/check_session.php?t=' + new Date().getTime(), { credentials: 'same-origin' });
+                const text = await response.text();
+                try {
+                    const data = JSON.parse(text);
+                    if (!data.authenticated || data.user.rol !== 'admin') {
+                        window.location.href = 'login.html?redirect=admin_app.html&t=' + new Date().getTime();
+                    } else {
+                        loadUsuarios();
+                    }
+                } catch (e) {
+                    alert('Error del servidor: ' + text);
+                    window.location.href = 'index.html';
+                }
+            } catch (e) {
+                window.location.href = 'login.html?redirect=admin_app.html&t=' + new Date().getTime();
+            }
+        }
+        checkAdmin();
+
+        document.getElementById('invite-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const btn = document.getElementById('btn-invite');
+            const msg = document.getElementById('invite-message');
+            const codeBox = document.getElementById('generated-code');
+            
+            btn.textContent = 'Generando...';
+            btn.disabled = true;
+            msg.style.display = 'none';
+            codeBox.style.display = 'none';
+
+            try {
+                const response = await fetch('api/admin_invitacion.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    msg.textContent = data.message;
+                    msg.className = 'form-message success';
+                    msg.style.display = 'block';
+                    
+                    codeBox.textContent = data.codigo;
+                    codeBox.style.display = 'block';
+                    
+                    document.getElementById('invite-form').reset();
+                } else {
+                    msg.textContent = data.error || 'Error al generar la invitación';
+                    msg.className = 'form-message error';
+                    msg.style.display = 'block';
+                }
+            } catch (error) {
+                msg.textContent = 'Error de conexión con el servidor.';
+                msg.className = 'form-message error';
+                msg.style.display = 'block';
+            } finally {
+                btn.textContent = 'Generar y Enviar Invitación';
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById('btn-logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('api/logout.php', { credentials: 'same-origin' });
+            window.location.href = 'login.html';
+        });
+        
+
+        async function loadUsuarios() {
+            try {
+                const response = await fetch('api/admin_get_usuarios.php?t=' + new Date().getTime(), { credentials: 'same-origin' });
+                const data = await response.json();
+                const tbody = document.getElementById('usuarios-tbody');
+                tbody.innerHTML = '';
+                
+                if (data.success && data.usuarios.length > 0) {
+                    const currentUserId = data.current_user_id;
+                    data.usuarios.forEach(u => {
+                        const tr = document.createElement('tr');
+                        tr.style.borderBottom = '1px solid var(--border-color)';
+                        tr.innerHTML = `
+                            <td style="padding: 1rem;" data-label="Nombre">${u.nombre}</td>
+                            <td style="padding: 1rem;" data-label="RUT">${u.rut}</td>
+                            <td style="padding: 1rem;" data-label="Correo">${u.email || '-'}</td>
+                            <td style="padding: 1rem; text-align: right; display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                <button onclick="abrirModalAsignaturas(${u.id}, '${u.nombre}', '${(u.asignaturas_asignadas || '[]').replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="background: #0ea5e9; color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Asignar Asignaturas"><i class="fa-solid fa-book"></i></button>
+                                <button onclick="editEmail(${u.id}, '${u.nombre}', '${u.email || ''}')" style="background: #f59e0b; color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Editar Correo"><i class="fa-solid fa-envelope"></i></button>
+                                <button onclick="resetClave(${u.id}, '${u.nombre}')" style="background: var(--color-trabajo); color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Restablecer Contraseña"><i class="fa-solid fa-key"></i></button>
+                                ${u.id !== currentUserId ? 
+                                    `<button onclick="deleteUsuario(${u.id}, '${u.nombre}')" style="background: var(--danger); color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Eliminar Usuario"><i class="fa-solid fa-trash"></i></button>`
+                                    : `<span style="padding: 0.5rem; color: #94a3b8; font-size: 0.9em; border: 1px dashed #cbd5e1; border-radius: 0.25rem; cursor: not-allowed;" title="Este es tu usuario actual">Mi Usuario</span>`
+                                }
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 1rem;">No hay profesores registrados aún.</td></tr>';
+                }
+            } catch (e) {
+                console.error("Error al cargar usuarios", e);
+            }
+        }
+        
+        async function editEmail(id, nombre, currentEmail) {
+            const newEmail = prompt(`Editar correo de ${nombre}:`, currentEmail);
+            if (newEmail === null) return; // Cancelado
+            
+            try {
+                const response = await fetch('api/admin_edit_email.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, email: newEmail.trim() }),
+                    credentials: 'same-origin'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    loadUsuarios();
+                } else {
+                    alert("Error: " + data.error);
+                }
+            } catch(e) {
+                alert("Error de red al intentar editar el correo.");
+            }
+        }
+
+        async function resetClave(id, nombre) {
+            if (!confirm(`¿Estás seguro de que deseas generar una nueva contraseña para ${nombre}? Se le enviará por correo.`)) return;
+            try {
+                const response = await fetch('api/admin_reset_clave.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id }),
+                    credentials: 'same-origin'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    let alertMsg = data.message + (data.mailEnviado ? "" : "\n\nATENCIÓN: El servidor no pudo enviar el correo. La nueva contraseña generada es: " + data.nueva_clave);
+                    alert(alertMsg);
+                } else {
+                    alert("Error: " + data.error);
+                }
+            } catch(e) {
+                alert("Error de red al intentar restablecer clave.");
+            }
+        }
+        
+        async function deleteUsuario(id, nombre) {
+            const confirmText = prompt(`ATENCIÓN CRÍTICA: Estás a punto de eliminar definitivamente al usuario ${nombre}.\n\nESTO TAMBIÉN ELIMINARÁ TODAS SUS EVALUACIONES Y REGISTROS DEL CALENDARIO.\n\nEsta acción NO se puede deshacer.\n\nPara confirmar, escribe la palabra ELIMINAR en mayúsculas:`);
+            if (confirmText !== 'ELIMINAR') {
+                if (confirmText !== null) alert("Operación cancelada. La palabra ingresada no coincide.");
+                return;
+            }
+            try {
+                const response = await fetch('api/admin_delete_usuario.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id }),
+                    credentials: 'same-origin'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
+                    loadUsuarios();
+                } else {
+                    alert("Error: " + data.error);
+                }
+            } catch(e) {
+                alert("Error de red al intentar eliminar usuario.");
+            }
+        }
+        
+
+        
+        // --- LOGICA DE ASIGNATURAS ---
+        function abrirModalAsignaturas(userId, nombre, asignaturasAsignadasJson) {
+            document.getElementById('span-nombre-profesor').textContent = nombre;
+            document.getElementById('asig-user-id').value = userId;
+            
+            let asignaturasActuales = [];
+            try { asignaturasActuales = JSON.parse(asignaturasAsignadasJson); } catch(e) {}
+            if(!Array.isArray(asignaturasActuales)) asignaturasActuales = [];
+
+            const contenedor = document.getElementById('lista-asignaturas');
+            contenedor.innerHTML = '';
+            
+            asignaturasUnicas.forEach(asig => {
+                const isChecked = asignaturasActuales.includes(asig) ? 'checked' : '';
+                const label = document.createElement('label');
+                label.style.display = 'flex';
+                label.style.alignItems = 'center';
+                label.style.gap = '0.5rem';
+                label.style.fontSize = '0.85rem';
+                label.innerHTML = `<input type="checkbox" value="${asig}" class="chk-asignatura" ${isChecked}> ${asig}`;
+                contenedor.appendChild(label);
+            });
+            
+            document.getElementById('modal-asignaturas').style.display = 'flex';
+        }
+        
+        function cerrarModalAsignaturas() {
+            document.getElementById('modal-asignaturas').style.display = 'none';
+        }
+        
+        async function guardarAsignaturas() {
+            const userId = document.getElementById('asig-user-id').value;
+            const btn = document.getElementById('btn-save-asignaturas');
+            
+            const checkboxes = document.querySelectorAll('.chk-asignatura:checked');
+            const asignaturas = Array.from(checkboxes).map(c => c.value);
+            
+            btn.textContent = 'Guardando...';
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch('api/admin_assign_subjects.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario_id: userId, asignaturas })
+                });
+                const data = await res.json();
+                
+                if(data.success) {
+                    alert("Asignaturas actualizadas correctamente.");
+                    cerrarModalAsignaturas();
+                    loadUsuarios(); // Recargar tabla
+                } else {
+                    alert("Error: " + data.error);
+                }
+            } catch(e) {
+                alert("Error de red al guardar asignaturas.");
+            } finally {
+                btn.textContent = 'Guardar Asignaturas';
+                btn.disabled = false;
+            }
+        }
+        
+        // --- LOGICA DE 2FA ---
+        function abrirModal2FA() {
+            document.getElementById('modal-2fa').style.display = 'flex';
+            document.getElementById('2fa-setup-step1').style.display = 'block';
+            document.getElementById('2fa-setup-step2').style.display = 'none';
+            document.getElementById('2fa-message').style.display = 'none';
+            document.getElementById('verify-code-2fa').value = '';
+        }
+
+        function cerrarModal2FA() {
+            document.getElementById('modal-2fa').style.display = 'none';
+        }
+
+        async function iniciarSetup2FA() {
+            const btn = document.getElementById('btn-start-2fa');
+            btn.textContent = 'Generando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('api/setup_2fa.php');
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    document.getElementById('qr-image').src = data.qr_url;
+                    document.getElementById('2fa-setup-step1').style.display = 'none';
+                    document.getElementById('2fa-setup-step2').style.display = 'block';
+                } else {
+                    alert('Error al generar código 2FA: ' + (data.error || 'Desconocido'));
+                }
+            } catch (error) {
+                alert('Error de conexión al configurar 2FA');
+            } finally {
+                btn.textContent = 'Generar Código QR';
+                btn.disabled = false;
+            }
+        }
+
+        async function verificarYActivar2FA() {
+            const code = document.getElementById('verify-code-2fa').value.trim();
+            const btn = document.getElementById('btn-enable-2fa');
+            const msg = document.getElementById('2fa-message');
+            
+            if (code.length !== 6) {
+                msg.textContent = 'El código debe tener 6 dígitos.';
+                msg.className = 'form-message error';
+                msg.style.display = 'block';
+                return;
+            }
+
+            btn.textContent = 'Verificando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('api/enable_2fa.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    msg.textContent = '¡2FA configurado y activado exitosamente!';
+                    msg.className = 'form-message success';
+                    msg.style.display = 'block';
+                    setTimeout(() => cerrarModal2FA(), 2500);
+                } else {
+                    msg.textContent = data.error || 'Código incorrecto';
+                    msg.className = 'form-message error';
+                    msg.style.display = 'block';
+                }
+            } catch (error) {
+                msg.textContent = 'Error de conexión';
+                msg.className = 'form-message error';
+                msg.style.display = 'block';
+            } finally {
+                btn.textContent = 'Verificar y Activar 2FA';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

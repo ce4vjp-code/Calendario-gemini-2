@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertidor a WebP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" />
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Convertidor a WebP</h1>
+            <p>Transforma, recorta y optimiza tus imágenes al instante de forma local.</p>
+        </header>
+
+        <main class="glass-panel">
+            <!-- Drop Zone -->
+            <div id="drop-zone" class="drop-zone">
+                <input type="file" id="file-input" accept="image/png, image/jpeg, image/jpg, image/webp" hidden>
+                <div class="drop-content">
+                    <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                    <p>Arrastra y suelta tu imagen aquí<br>o <span>haz clic para explorar</span></p>
+                    <small>Soporta JPG, PNG, WEBP</small>
+                </div>
+            </div>
+
+            <!-- Controls (Preview, Crop, Quality) -->
+            <div id="controls-section" class="controls-section hidden">
+                <div class="preview-container">
+                    <img id="image-preview" src="" alt="Vista previa">
+                </div>
+                
+                <div class="crop-controls">
+                    <p class="section-title">Formato de recorte:</p>
+                    <div class="ratio-buttons">
+                        <button class="ratio-btn active" data-ratio="NaN">Libre</button>
+                        <button class="ratio-btn" data-ratio="1.7777777777777777" data-width="1920" data-height="1080">Banner (1920×1080)</button>
+                        <button class="ratio-btn" data-ratio="1">1:1 (Cuadrado)</button>
+                        <button class="ratio-btn" data-ratio="1.3333333333333333">4:3</button>
+                        <button class="ratio-btn" data-ratio="1.7777777777777777">16:9</button>
+                        <button class="ratio-btn" data-ratio="0.5625">9:16 (Vertical)</button>
+                    </div>
+                </div>
+
+                <div class="quality-control">
+                    <label for="quality-slider">Calidad de compresión WebP: <span id="quality-value">80%</span></label>
+                    <input type="range" id="quality-slider" min="0" max="100" value="80">
+                </div>
+                
+                <div class="actions">
+                    <button id="convert-btn" class="primary-btn">Convertir a WebP</button>
+                    <button id="reset-btn" class="secondary-btn">Cancelar</button>
+                </div>
+            </div>
+            
+            <!-- Result Section -->
+            <div id="result-section" class="result-section hidden">
+                <div class="success-message">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <h2>¡Conversión Exitosa!</h2>
+                    <div class="stats">
+                        <p>Tamaño original: <strong id="size-original">-</strong></p>
+                        <p>Nuevo tamaño: <strong id="size-new">-</strong></p>
+                    </div>
+                </div>
+                <a id="download-link" href="#" download="convertida.webp" class="primary-btn download-btn">Descargar WebP</a>
+                <button id="reset-btn-2" class="secondary-btn">Convertir otra</button>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Cropper.js JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

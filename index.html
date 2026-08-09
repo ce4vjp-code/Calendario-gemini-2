@@ -2,8 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Calendario de Evaluaciones</title>
+    
+    <!-- PWA / iOS App -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Liceo App">
+    <link rel="apple-touch-icon" href="logo.png">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome para iconos -->
@@ -19,7 +26,8 @@
                 <p>Agrega nuevas evaluaciones al calendario escolar.</p>
             </div>
             
-            <button id="btn-config-2fa" onclick="abrirModal2FA()" type="button" class="btn-submit" style="background-color: #0f172a; margin-bottom: 1.5rem;"><i class="fa-solid fa-shield-halved"></i> Configurar Seguridad (2FA)</button>
+            <button id="btn-config-2fa" onclick="abrirModal2FA()" type="button" class="btn-submit" style="background-color: #0f172a; margin-bottom: 0.5rem;"><i class="fa-solid fa-shield-halved"></i> Configurar Seguridad (2FA)</button>
+            <a href="inventario.html?v=2" class="btn-submit" style="display:block; text-align:center; text-decoration:none; background-color: #10b981; margin-bottom: 1.5rem;"><i class="fa-solid fa-boxes-stacked"></i> Módulo Inventario</a>
             
             <form id="evaluation-form" class="evaluation-form">
                 <div class="form-group">
@@ -350,6 +358,6 @@
             });
         }
     </script>
-    <script src="script.js?v=7"></script>
+    <script src="script.js?v=8"></script>
 </body>
 </html>

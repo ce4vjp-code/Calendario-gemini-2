@@ -348,6 +348,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             if (data.authenticated) {
                 currentUser = data.user;
+                
+                // Si el usuario es de inventario, no debería estar en el calendario, enviarlo a su panel
+                if (currentUser.rol === 'inventario') {
+                    window.location.href = 'admin_inventario.html';
+                    return;
+                }
                 sidebar.style.display = 'flex';
                 
                 let adminLink = currentUser.rol === 'admin' ? '<a href="admin.html" style="margin-right: 15px; color: var(--primary-color); font-weight: bold; text-decoration: none;">Panel Admin</a>' : '';

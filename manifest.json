@@ -1,0 +1,16 @@
+{
+  "name": "Plataforma Liceo TPGGM",
+  "short_name": "Liceo App",
+  "description": "Plataforma Institucional del Liceo Técnico Profesional Gonzalo Guglielmi Montiel",
+  "start_url": "./login.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a365d",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}

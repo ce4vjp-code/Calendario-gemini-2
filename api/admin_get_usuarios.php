@@ -9,7 +9,12 @@ if (!isset($_SESSION['user_rol']) || $_SESSION['user_rol'] !== 'admin') {
 }
 
 try {
-    $stmt = $pdo->query("SELECT id, rut, nombre, email, rol, asignaturas_asignadas FROM usuarios ORDER BY nombre ASC");
+    // Se captura puede_pedir_equipos para el front (si no existe devolverá NULL, luego lo controlamos)
+    try {
+        $stmt = $pdo->query("SELECT id, rut, nombre, email, rol, asignaturas_asignadas, puede_pedir_equipos FROM usuarios ORDER BY nombre ASC");
+    } catch (Exception $e) {
+        $stmt = $pdo->query("SELECT id, rut, nombre, email, rol, asignaturas_asignadas, 0 as puede_pedir_equipos FROM usuarios ORDER BY nombre ASC");
+    }
     $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode(['success' => true, 'usuarios' => $usuarios, 'current_user_id' => $_SESSION['user_id']]);
 } catch (Exception $e) {

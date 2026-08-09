@@ -32,12 +32,18 @@ if (isset($_SESSION['user_id'])) {
     // Actualizar última actividad
     $_SESSION['last_activity'] = time();
 
-    // Refrescar asignaturas asignadas en tiempo real para aplicar cambios inmediatamente
+    // Refrescar asignaturas asignadas y permisos en tiempo real
+    $puede_pedir = 0;
     try {
-        $stmtAsig = $pdo->prepare("SELECT asignaturas_asignadas FROM usuarios WHERE id = ?");
+        $stmtAsig = $pdo->prepare("SELECT asignaturas_asignadas, puede_pedir_equipos FROM usuarios WHERE id = ?");
         $stmtAsig->execute([$_SESSION['user_id']]);
-        $asig_db = $stmtAsig->fetchColumn();
-        $_SESSION['user_asignaturas'] = json_decode($asig_db ?? '[]', true) ?: [];
+        $row = $stmtAsig->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            $_SESSION['user_asignaturas'] = json_decode($row['asignaturas_asignadas'] ?? '[]', true) ?: [];
+            $puede_pedir = (int)($row['puede_pedir_equipos'] ?? 0);
+        } else {
+            if (!isset($_SESSION['user_asignaturas'])) $_SESSION['user_asignaturas'] = [];
+        }
     } catch (Exception $e) {
         // Fallback a lo que haya en la sesión
         if (!isset($_SESSION['user_asignaturas'])) $_SESSION['user_asignaturas'] = [];
@@ -48,7 +54,8 @@ if (isset($_SESSION['user_id'])) {
         'user' => [
             'nombre' => $_SESSION['user_nombre'],
             'rol' => $_SESSION['user_rol'],
-            'asignaturas_asignadas' => $_SESSION['user_asignaturas']
+            'asignaturas_asignadas' => $_SESSION['user_asignaturas'],
+            'puede_pedir_equipos' => $puede_pedir
         ]
     ]);
 } else {

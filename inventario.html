@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Inventario de Equipos</title>
+    
+    <!-- PWA / iOS App -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Liceo App">
+    <link rel="apple-touch-icon" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { padding: 1rem; background-color: var(--bg-main); min-height: 100vh; overflow-y: auto !important; height: auto !important; display: block !important; }
+        .app-container { background: var(--bg-card); padding: 1.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; display: block !important; }
+        .equipo-card { background: white; border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        .equipo-card h3 { margin: 0; font-size: 1.1rem; color: var(--text-main); }
+        .equipo-card p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+        .badge { padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: bold; align-self: flex-start; }
+        .badge.disponible { background: #dcfce7; color: #166534; }
+        .badge.prestado, .badge.mantenimiento { background: #fee2e2; color: #991b1b; }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer; text-align: center; }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+        .btn-success { background: #10b981; color: white; }
+        .tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); overflow-x: auto; padding-bottom: 0.5rem; }
+        .tab-btn { padding: 0.5rem 1rem; border: none; background: none; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+        .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2><i class="fa-solid fa-boxes-stacked"></i> Inventario</h2>
+            <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">← Volver</a>
+        </div>
+
+        <div class="tabs" id="main-tabs">
+            <button class="tab-btn active" onclick="switchTab('disponibles', this)">Equipos Disponibles</button>
+            <button class="tab-btn" onclick="switchTab('mis_prestamos', this)" id="tab-mis-prestamos" style="display:none;">Mis Préstamos</button>
+            <button class="tab-btn" onclick="switchTab('directivo_panel', this)" id="tab-directivo" style="display:none; color: #8b5cf6;"><i class="fa-solid fa-key"></i> Autorizaciones Directivo</button>
+        </div>
+
+        <div id="disponibles" class="tab-content active">
+            <div id="no-permiso-msg" style="display:none; background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
+                No tienes permisos para solicitar equipos. Si crees que es un error, contacta al administrador.
+            </div>
+            <div id="lista-equipos">Cargando equipos...</div>
+        </div>
+
+        <div id="mis_prestamos" class="tab-content">
+            <div id="lista-mis-prestamos">Cargando...</div>
+        </div>
+
+        <div id="directivo_panel" class="tab-content">
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom: 1rem;">Genera un código para las solicitudes pendientes para que el administrador pueda entregar el equipo.</p>
+            <div id="lista-pendientes-codigo">Cargando solicitudes...</div>
+        </div>
+    </div>
+
+    <script src="pdf_generator.js"></script>
+    <script>
+        let currentUser = null;
+
+        async function checkSession() {
+            try {
+                const response = await fetch('api/check_session.php?t=' + new Date().getTime());
+                const data = await response.json();
+                const isAuth = data.authenticated || data.logged_in;
+                if (!isAuth) {
+                    window.location.href = 'login.html';
+                } else {
+                    currentUser = data.user; // Necesita devolver 'puede_pedir_equipos'
+                    
+                    if (currentUser.puede_pedir_equipos || currentUser.rol === 'admin') {
+                        document.getElementById('tab-mis-prestamos').style.display = 'block';
+                    } else {
+                        document.getElementById('no-permiso-msg').style.display = 'block';
+                    }
+
+                    if (currentUser.rol === 'directivo' || currentUser.rol === 'admin') {
+                        document.getElementById('tab-directivo').style.display = 'block';
+                    }
+
+                    loadEquipos();
+                    if (currentUser.puede_pedir_equipos || currentUser.rol === 'admin') loadMisPrestamos();
+                    if (currentUser.rol === 'directivo' || currentUser.rol === 'admin') loadPendientesDirectivo();
+                }
+            } catch (e) {
+                alert("Error de sesión: " + e.message);
+                window.location.href = 'login.html';
+            }
+        }
+        
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        async function loadEquipos() {
+            try {
+                const res = await fetch('api/inventario/get_equipos.php?t=' + new Date().getTime());
+                const data = await res.json();
+                const container = document.getElementById('lista-equipos');
+                container.innerHTML = '';
+                
+                if (data.equipos && data.equipos.length > 0) {
+                    data.equipos.forEach(e => {
+                        const canRequest = (currentUser.puede_pedir_equipos || currentUser.rol === 'admin') && e.estado === 'disponible' && e.cantidad_disponible > 0;
+                        const btn = canRequest ? `<button class="btn btn-primary" style="width:100%" onclick="solicitarPrestamo(${e.id}, '${e.nombre}', ${e.cantidad_disponible})">Solicitar Préstamo</button>` : 
+                                   (`<button class="btn btn-primary" style="width:100%" disabled>No Disponible</button>`);
+                        
+                        container.innerHTML += `
+                            <div class="equipo-card">
+                                <div style="display:flex; justify-content:space-between;">
+                                    <h3>${e.nombre}</h3>
+                                    <span class="badge ${e.estado}">${e.estado.toUpperCase()}</span>
+                                </div>
+                                <p style="font-weight:bold; color:var(--primary-color);">Stock: ${e.cantidad_disponible} / ${e.cantidad}</p>
+                                <p>${e.descripcion || ''}</p>
+                                ${btn}
+                            </div>
+                        `;
+                    });
+                } else {
+                    container.innerHTML = '<p style="text-align:center;">No hay equipos en el inventario.</p>';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function solicitarPrestamo(equipo_id, nombre, max_cantidad) {
+            const dias = prompt(`¿Por cuántos días necesitas el equipo "${nombre}"? (Máx 365)`, "1");
+            if (!dias || isNaN(dias) || dias < 1 || dias > 365) {
+                alert('Días inválidos. Debe ser entre 1 y 365.');
+                return;
+            }
+            
+            const cantidad = prompt(`¿Cuántas unidades necesitas? (Máximo disponible: ${max_cantidad})`, "1");
+            if (!cantidad || isNaN(cantidad) || cantidad < 1 || cantidad > max_cantidad) {
+                alert('Cantidad inválida o superior al stock disponible.');
+                return;
+            }
+
+            try {
+                const res = await fetch('api/inventario/user_request_prestamo.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ equipo_id: equipo_id, dias: dias, cantidad: cantidad })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Solicitud enviada correctamente. Espera la autorización del directivo y administrador.');
+                    loadEquipos();
+                    loadMisPrestamos();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+
+        async function loadMisPrestamos() {
+            try {
+                const res = await fetch('api/inventario/user_get_my_prestamos.php?t=' + new Date().getTime());
+                const data = await res.json();
+                const container = document.getElementById('lista-mis-prestamos');
+                container.innerHTML = '';
+                
+                if (data.prestamos && data.prestamos.length > 0) {
+                    data.prestamos.forEach(p => {
+                        container.innerHTML += `
+                            <div class="equipo-card">
+                                <div style="display:flex; justify-content:space-between;">
+                                    <h3>${p.equipo_nombre} (Cant: ${p.cantidad})</h3>
+                                    <span class="badge" style="background:#f3f4f6; color:#4b5563;">${p.estado.toUpperCase().replace('_', ' ')}</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-top:0.5rem; align-items:center;">
+                                    <div>
+                                        <p style="font-size:0.8rem; margin:0;"><i class="fa-regular fa-clock"></i> Solicitado el: ${p.fecha_solicitud_fmt}</p>
+                                        ${p.codigo_aprobacion && p.estado === 'pendiente_aprobacion' ? `<p style="font-size:0.8rem; color:#10b981; margin:0;"><i class="fa-solid fa-check"></i> Código generado, esperando administrador.</p>` : ''}
+                                    </div>
+                                    <div>
+                                        ${(p.estado === 'prestado' || p.estado === 'pendiente_aprobacion' || p.estado === 'atrasado' || p.estado === 'devuelto') ? `<button onclick="generarPDF('prestamo', ${p.id}, '${currentUser.nombre}', '${p.equipo_nombre}')" class="btn btn-primary" style="font-size:0.8rem; padding: 0.3rem 0.6rem; margin-bottom: 0.2rem;"><i class="fa-solid fa-file-pdf"></i> Acta de Préstamo</button><br>` : ''}
+                                        ${(p.estado === 'devuelto') ? `<button onclick="generarPDF('recepcion', ${p.id}, '${currentUser.nombre}', '${p.equipo_nombre}')" class="btn btn-success" style="font-size:0.8rem; padding: 0.3rem 0.6rem;"><i class="fa-solid fa-file-pdf"></i> Acta de Recepción</button>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    container.innerHTML = '<p style="text-align:center;">No tienes préstamos solicitados.</p>';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function loadPendientesDirectivo() {
+            try {
+                const res = await fetch('api/inventario/directivo_get_pendientes.php?t=' + new Date().getTime());
+                const data = await res.json();
+                const container = document.getElementById('lista-pendientes-codigo');
+                container.innerHTML = '';
+                
+                if (data.pendientes && data.pendientes.length > 0) {
+                    data.pendientes.forEach(p => {
+                        container.innerHTML += `
+                            <div class="equipo-card" style="border-left: 4px solid #8b5cf6;">
+                                <div style="display:flex; justify-content:space-between;">
+                                    <h3>${p.usuario_nombre} solicita ${p.equipo_nombre}</h3>
+                                </div>
+                                <p><i class="fa-regular fa-clock"></i> ${p.fecha_solicitud_fmt}</p>
+                                <button class="btn btn-success" style="width:100%; margin-top:0.5rem;" onclick="generarCodigo(${p.id})"><i class="fa-solid fa-key"></i> Generar y Enviar Código</button>
+                            </div>
+                        `;
+                    });
+                } else {
+                    container.innerHTML = '<p style="text-align:center;">No hay solicitudes pendientes de autorización.</p>';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function generarCodigo(prestamo_id) {
+            try {
+                const res = await fetch('api/inventario/directivo_generate_code.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ prestamo_id: prestamo_id })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`Código generado exitosamente: ${data.codigo}\n\nEste código debe ser entregado al administrador para liberar el equipo.`);
+                    loadPendientesDirectivo();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+
+        window.onload = checkSession;
+    </script>
+</body>
+</html>

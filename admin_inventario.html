@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administración de Inventario</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { padding: 2rem; background-color: var(--bg-main); display: block; height: auto !important; min-height: 100vh; overflow: auto !important;}
+        .admin-container { background: var(--bg-card); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); max-width: 900px; margin: 0 auto; }
+        .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .tab-btn { padding: 0.5rem 1rem; cursor: pointer; border: none; background: none; font-weight: 600; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.3s; }
+        .tab-btn.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; text-align: left; }
+        th, td { padding: 1rem; border-bottom: 1px solid var(--border-color); }
+        th { background-color: var(--bg-main); }
+        .badge { padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.85rem; font-weight: bold; }
+        .badge.disponible { background: #dcfce7; color: #166534; }
+        .badge.prestado { background: #fee2e2; color: #991b1b; }
+        .badge.mantenimiento { background: #fef9c3; color: #854d0e; }
+        .badge.pendiente_codigo { background: #e0e7ff; color: #3730a3; }
+        .badge.pendiente_aprobacion { background: #ffedd5; color: #9a3412; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h2><i class="fa-solid fa-boxes-stacked"></i> Administración de Inventario</h2>
+            <a href="admin.html" id="link-volver" style="color: var(--text-muted); text-decoration: none;">← Volver al Panel</a>
+            <a href="api/logout.php" id="link-logout" style="color: var(--danger); text-decoration: none; display: none;">Cerrar Sesión</a>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('equipos', this)">Catálogo de Equipos</button>
+            <button class="tab-btn" id="tab-prestamos" onclick="switchTab('prestamos', this)">Préstamos y Solicitudes</button>
+        </div>
+
+        <!-- Pestaña: Equipos -->
+        <div id="equipos" class="tab-content active">
+            <form id="form-equipo" onsubmit="saveEquipo(event)" style="background: var(--bg-main); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+                <input type="hidden" id="equipo-id">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Nombre del Equipo</label>
+                        <input type="text" id="equipo-nombre" required placeholder="Ej: Proyector Epson L200">
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select id="equipo-estado">
+                            <option value="disponible">Disponible</option>
+                            <option value="mantenimiento">En Mantenimiento</option>
+                            <option value="no_disponible">No Disponible</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cantidad Total</label>
+                        <input type="number" id="equipo-cantidad" required min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Marca</label>
+                        <input type="text" id="equipo-marca" placeholder="Ej: HP, Epson, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo</label>
+                        <input type="text" id="equipo-modelo" placeholder="Ej: ProBook 440 G8">
+                    </div>
+                    <div class="form-group">
+                        <label>N° de Serie</label>
+                        <input type="text" id="equipo-serie" placeholder="Ej: SN123456789">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Descripción / Observaciones</label>
+                    <textarea id="equipo-descripcion" rows="2" placeholder="Detalles, nro de serie, etc."></textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button type="button" onclick="resetFormEquipo()" style="padding: 0.5rem 1rem; border: none; background: #e2e8f0; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
+                    <button type="submit" style="padding: 0.5rem 1rem; border: none; background: var(--primary-color); color: white; border-radius: 0.5rem; cursor: pointer;">Guardar Equipo</button>
+                </div>
+            </form>
+
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <button onclick="descargarPlantilla()" style="padding: 0.5rem 1rem; border: none; background: #6b7280; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-download"></i> Plantilla Excel</button>
+                <input type="file" id="file-excel" accept=".xlsx, .xls, .csv" style="display: none;" onchange="procesarExcel(this)">
+                <button onclick="document.getElementById('file-excel').click()" style="padding: 0.5rem 1rem; border: none; background: #3b82f6; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-arrow-up"></i> Importar Excel</button>
+                <button onclick="exportarInventario('excel')" style="padding: 0.5rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Exportar CSV</button>
+                <button onclick="exportarInventario('pdf')" style="padding: 0.5rem 1rem; border: none; background: #ef4444; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Estado</th>
+                            <th>Stock (Disp / Total)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-equipos">
+                        <tr><td colspan="4" style="text-align: center;">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pestaña: Préstamos -->
+        <div id="prestamos" class="tab-content">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Usuario</th>
+                            <th>Equipo (Cant.)</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-prestamos">
+                        <tr><td colspan="5" style="text-align: center;">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ingresar código del directivo y aprobar -->
+    <div id="modal-aprobacion" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+        <div style="background: white; padding: 2rem; border-radius: 1rem; width: 90%; max-width: 400px;">
+            <h3 style="margin-top: 0;">Aprobar Préstamo</h3>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Ingrese el código de aprobación generado por el directivo.</p>
+            <input type="hidden" id="aprobacion-prestamo-id">
+            <div class="form-group">
+                <label>Código de Aprobación</label>
+                <input type="text" id="aprobacion-codigo" required style="text-align: center; font-size: 1.25rem; letter-spacing: 2px;">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                <button onclick="document.getElementById('modal-aprobacion').style.display='none'" style="padding: 0.5rem 1rem; border: none; background: #e2e8f0; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
+                <button onclick="submitAprobacion()" style="padding: 0.5rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer;">Aprobar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function checkSession() {
+            try {
+                const response = await fetch('api/check_session.php?t=' + new Date().getTime());
+                const data = await response.json();
+                const isAuth = data.authenticated || data.logged_in;
+                if (!isAuth || (data.user.rol !== 'admin' && data.user.rol !== 'inventario')) {
+                    window.location.href = 'login.html';
+                } else {
+                    if (data.user.rol === 'inventario') {
+                        document.getElementById('tab-prestamos').style.display = 'none';
+                        document.getElementById('link-volver').style.display = 'none';
+                        document.getElementById('link-logout').style.display = 'inline-block';
+                    } else {
+                        loadPrestamosAdmin();
+                    }
+                    loadEquipos();
+                }
+            } catch (e) {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        async function loadEquipos() {
+            try {
+                const res = await fetch('api/inventario/get_equipos.php?t=' + new Date().getTime());
+                const data = await res.json();
+                const tbody = document.getElementById('tbody-equipos');
+                tbody.innerHTML = '';
+                
+                if (data.equipos && data.equipos.length > 0) {
+                    window.equiposData = data.equipos;
+                    data.equipos.forEach(e => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>#${e.id}</td>
+                                <td>
+                                    <strong>${e.nombre}</strong><br>
+                                    <small style="color:var(--text-muted)">${e.descripcion || ''}</small>
+                                </td>
+                                <td><span class="badge ${e.estado}">${e.estado.toUpperCase()}</span></td>
+                                <td>${e.cantidad_disponible} / ${e.cantidad}</td>
+                                <td>
+                                    <button onclick="editEquipoById(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer;"><i class="fa-solid fa-edit"></i></button>
+                                    <button onclick="deleteEquipo(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer; color: var(--danger);"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay equipos registrados</td></tr>';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function saveEquipo(e) {
+            e.preventDefault();
+            const id = document.getElementById('equipo-id').value;
+            const action = id ? 'edit' : 'add';
+            
+            const payload = {
+                action: action,
+                id: id,
+                nombre: document.getElementById('equipo-nombre').value,
+                marca: document.getElementById('equipo-marca').value,
+                modelo: document.getElementById('equipo-modelo').value,
+                numero_serie: document.getElementById('equipo-serie').value,
+                descripcion: document.getElementById('equipo-descripcion').value,
+                estado: document.getElementById('equipo-estado').value,
+                cantidad: document.getElementById('equipo-cantidad').value
+            };
+
+            try {
+                const res = await fetch('api/inventario/admin_manage_equipos.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    resetFormEquipo();
+                    loadEquipos();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+
+        function editEquipoById(id) {
+            const e = window.equiposData.find(eq => eq.id == id);
+            if (e) {
+                document.getElementById('equipo-id').value = e.id;
+                document.getElementById('equipo-nombre').value = e.nombre;
+                document.getElementById('equipo-marca').value = e.marca || '';
+                document.getElementById('equipo-modelo').value = e.modelo || '';
+                document.getElementById('equipo-serie').value = e.numero_serie || '';
+                document.getElementById('equipo-descripcion').value = e.descripcion || '';
+                document.getElementById('equipo-estado').value = e.estado;
+                document.getElementById('equipo-cantidad').value = e.cantidad || 1;
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function resetFormEquipo() {
+            document.getElementById('equipo-id').value = '';
+            document.getElementById('form-equipo').reset();
+        }
+
+        async function deleteEquipo(id) {
+            if (!confirm('¿Seguro que deseas eliminar este equipo?')) return;
+            try {
+                const res = await fetch('api/inventario/admin_manage_equipos.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({action: 'delete', id: id})
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadEquipos();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+
+        async function exportarInventario(formato) {
+            if (!window.equiposData || window.equiposData.length === 0) {
+                alert("No hay datos para exportar.");
+                return;
+            }
+
+            if (formato === 'excel') {
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "ID,Nombre,Marca,Modelo,No_Serie,Estado,Stock_Disponible,Stock_Total,Descripcion\n";
+                
+                window.equiposData.forEach(function(e) {
+                    let row = [
+                        e.id,
+                        `"${(e.nombre||'').replace(/"/g, '""')}"`,
+                        `"${(e.marca||'').replace(/"/g, '""')}"`,
+                        `"${(e.modelo||'').replace(/"/g, '""')}"`,
+                        `"${(e.numero_serie||'').replace(/"/g, '""')}"`,
+                        e.estado,
+                        e.cantidad_disponible,
+                        e.cantidad,
+                        `"${(e.descripcion||'').replace(/"/g, '""')}"`
+                    ].join(",");
+                    csvContent += row + "\r\n";
+                });
+                
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "Inventario_Equipos.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else if (formato === 'pdf') {
+                await loadPdfLibrary();
+                const container = document.createElement('div');
+                container.style.position = 'absolute';
+                container.style.left = '-9999px';
+                container.style.top = '0';
+                
+                let filasHtml = '';
+                window.equiposData.forEach(e => {
+                    filasHtml += `
+                        <tr>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.id}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.nombre}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.marca || ''} ${e.modelo || ''}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.numero_serie || ''}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.estado.toUpperCase()}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.cantidad_disponible} / ${e.cantidad}</td>
+                        </tr>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <div id="pdf-inv-content" style="width: 21cm; padding: 1cm; background: white; font-family: sans-serif; box-sizing: border-box;">
+                        <h2 style="color: #1a365d; text-align: center;">Inventario de Equipos TI</h2>
+                        <p style="text-align: center; font-size: 12px;">Fecha: ${new Date().toLocaleDateString('es-CL')}</p>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 20px; text-align: left;">
+                            <tr style="background: #2b6cb0; color: white;">
+                                <th style="padding: 5px;">ID</th>
+                                <th style="padding: 5px;">Nombre</th>
+                                <th style="padding: 5px;">Marca/Modelo</th>
+                                <th style="padding: 5px;">Nº Serie</th>
+                                <th style="padding: 5px;">Estado</th>
+                                <th style="padding: 5px;">Stock (Disp/Tot)</th>
+                            </tr>
+                            ${filasHtml}
+                        </table>
+                    </div>
+                `;
+                document.body.appendChild(container);
+                
+                // Pequeña pausa para que el navegador renderice el DOM antes de capturarlo
+                await new Promise(r => setTimeout(r, 200));
+                
+                const opt = {
+                    margin:       0.5,
+                    filename:     'Inventario_Equipos.pdf',
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+
+                try {
+                    await html2pdf().set(opt).from(container.querySelector('#pdf-inv-content')).save();
+                } catch (err) {
+                    alert('Error generando PDF de inventario');
+                } finally {
+                    document.body.removeChild(container);
+                }
+            }
+        }
+
+        const loadXlsxLibrary = () => {
+            return new Promise((resolve, reject) => {
+                if (window.XLSX) return resolve(window.XLSX);
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+                script.onload = () => resolve(window.XLSX);
+                script.onerror = () => reject(new Error('No se pudo cargar la librería XLSX.'));
+                document.head.appendChild(script);
+            });
+        };
+
+        function descargarPlantilla() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Nombre,Marca,Modelo,No_Serie,Cantidad,Estado,Descripcion\n";
+            csvContent += "Notebook Pro,HP,G8,SN123,5,disponible,Equipo nuevo\n";
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Plantilla_Inventario.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function procesarExcel(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            try {
+                const XLSX = await loadXlsxLibrary();
+                const reader = new FileReader();
+                
+                reader.onload = async (e) => {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+                    if (json.length === 0) {
+                        alert("El archivo está vacío.");
+                        input.value = "";
+                        return;
+                    }
+
+                    // Formatear columnas al formato esperado por el backend
+                    const equiposImportar = json.map(row => ({
+                        nombre: row['Nombre'] || row['nombre'] || '',
+                        marca: row['Marca'] || row['marca'] || '',
+                        modelo: row['Modelo'] || row['modelo'] || '',
+                        numero_serie: row['No_Serie'] || row['no_serie'] || row['Serie'] || '',
+                        cantidad: parseInt(row['Cantidad'] || row['cantidad']) || 1,
+                        estado: (row['Estado'] || row['estado'] || 'disponible').toLowerCase(),
+                        descripcion: row['Descripcion'] || row['descripcion'] || ''
+                    })).filter(eq => eq.nombre.trim() !== ''); // Descartar filas sin nombre
+
+                    if (equiposImportar.length === 0) {
+                        alert("No se encontraron equipos con 'Nombre'. Revisa la plantilla.");
+                        input.value = "";
+                        return;
+                    }
+
+                    if (confirm(`Se encontraron ${equiposImportar.length} equipos para importar. ¿Deseas continuar?`)) {
+                        await enviarImportacion(equiposImportar);
+                    }
+                    input.value = "";
+                };
+                
+                reader.readAsArrayBuffer(file);
+            } catch (err) {
+                alert("Hubo un error leyendo el archivo: " + err.message);
+                input.value = "";
+            }
+        }
+
+        async function enviarImportacion(equipos) {
+            try {
+                const res = await fetch('api/inventario/admin_import_equipos.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ equipos: equipos })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    let msg = `Importación completada.\n\nÉxito: ${data.insertados}\nErrores: ${data.errores}`;
+                    if (data.logErrores && data.logErrores.length > 0) {
+                        msg += `\n\nDetalles de errores:\n` + data.logErrores.join('\n');
+                    }
+                    alert(msg);
+                    loadEquipos();
+                } else {
+                    alert('Error en importación: ' + data.error);
+                }
+            } catch (e) {
+                alert('Error de conexión con el servidor al importar.');
+            }
+        }
+
+        async function loadPrestamosAdmin() {
+            try {
+                const res = await fetch('api/inventario/admin_get_prestamos.php?t=' + new Date().getTime());
+                const data = await res.json();
+                const tbody = document.getElementById('tbody-prestamos');
+                tbody.innerHTML = '';
+                
+                if (data.prestamos && data.prestamos.length > 0) {
+                    data.prestamos.forEach(p => {
+                        let btnAccion = '';
+                        let btnPdf = '';
+
+                        let btnDelete = `<button onclick="borrarPrestamo(${p.id})" style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-trash"></i> Borrar</button>`;
+
+                        if (p.estado === 'prestado' || p.estado === 'pendiente_aprobacion' || p.estado === 'atrasado' || p.estado === 'devuelto') {
+                            btnPdf += `<button onclick="generarPDF('prestamo', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #3b82f6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-file-pdf"></i> Acta Préstamo</button>`;
+                        }
+                        if (p.estado === 'devuelto') {
+                            btnPdf += `<button onclick="generarPDF('recepcion', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #10b981; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-file-pdf"></i> Acta Recepción</button>`;
+                        }
+
+                        if (p.estado === 'pendiente_aprobacion' || p.estado === 'pendiente_codigo') {
+                            btnAccion = `<button onclick="aprobarDirectamente(${p.id})" style="background: #8b5cf6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-bottom: 0.25rem; display: block; width: 100%;">Aprobar Directamente</button>
+                                         <div style="display:flex; gap:0.5rem; margin-top:0.25rem;">
+                                            <button onclick="abrirAprobacion(${p.id})" style="background: #10b981; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; flex: 1;">Usar Código</button>
+                                            <button onclick="rechazarPrestamo(${p.id})" style="background: var(--danger); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; flex: 1;">Rechazar</button>
+                                         </div>`;
+                        } else if (p.estado === 'prestado' || p.estado === 'atrasado') {
+                            btnAccion = `<button onclick="marcarDevuelto(${p.id})" style="background: var(--primary-color); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; display: block; width: 100%;">Marcar Devuelto</button>`;
+                        }
+
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${p.fecha_solicitud}</td>
+                                <td>${p.usuario_nombre}</td>
+                                <td>${p.equipo_nombre} (Cant: ${p.cantidad})</td>
+                                <td><span class="badge ${p.estado}">${p.estado.toUpperCase().replace('_', ' ')}</span></td>
+                                <td style="display: flex; flex-direction: column;">
+                                    ${btnAccion}
+                                    ${btnPdf}
+                                    ${btnDelete}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay préstamos</td></tr>';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function aprobarDirectamente(id) {
+            if (!confirm("¿Aprobar directamente este préstamo como Administrador? No necesitarás código.")) return;
+            try {
+                const res = await fetch('api/inventario/admin_manage_prestamos.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'direct_approve', id: id })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadPrestamosAdmin();
+                    loadEquipos();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+
+        function abrirAprobacion(id) {
+            document.getElementById('aprobacion-prestamo-id').value = id;
+            document.getElementById('aprobacion-codigo').value = '';
+            document.getElementById('modal-aprobacion').style.display = 'flex';
+        }
+
+        async function submitAprobacion() {
+            const id = document.getElementById('aprobacion-prestamo-id').value;
+            const code = document.getElementById('aprobacion-codigo').value;
+            if (!code) { alert("Ingresa el código"); return; }
+
+            try {
+                const res = await fetch('api/inventario/admin_manage_prestamos.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'approve', id: id, codigo: code })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('modal-aprobacion').style.display = 'none';
+                    loadPrestamosAdmin();
+                    loadEquipos();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+
+        async function rechazarPrestamo(id) {
+            if(!confirm('¿Rechazar este préstamo?')) return;
+            try {
+                const res = await fetch('api/inventario/admin_manage_prestamos.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'reject', id: id })
+                });
+                const data = await res.json();
+                if(data.success) { loadPrestamosAdmin(); loadEquipos(); }
+            } catch (e) { alert('Error de conexión'); }
+        }
+
+        async function marcarDevuelto(id) {
+            if(!confirm('¿Confirmar que el equipo ha sido devuelto en buenas condiciones?')) return;
+            try {
+                const res = await fetch('api/inventario/admin_manage_prestamos.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'return', id: id })
+                });
+                const data = await res.json();
+                if(data.success) { loadPrestamosAdmin(); loadEquipos(); }
+            } catch (e) { alert('Error de conexión'); }
+        }
+
+        async function borrarPrestamo(id) {
+            if(!confirm('¿ATENCIÓN: Estás seguro de que deseas eliminar permanentemente este registro de préstamo del sistema? Esta acción no se puede deshacer.')) return;
+            try {
+                const res = await fetch('api/inventario/admin_manage_prestamos.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'delete', id: id })
+                });
+                const data = await res.json();
+                if(data.success) { 
+                    loadPrestamosAdmin(); 
+                    loadEquipos(); 
+                } else {
+                    alert('Error al borrar: ' + (data.error || 'Desconocido'));
+                }
+            } catch (e) { alert('Error de conexión'); }
+        }
+
+        window.onload = checkSession;
+    </script>
+    <script src="pdf_generator.js"></script>
+</body>
+</html>

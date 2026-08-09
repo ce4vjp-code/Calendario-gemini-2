@@ -33,10 +33,10 @@
                 <p style="color: var(--text-muted);">Genera códigos y administra profesores.</p>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-
                 <a href="admin_encuestas.html" class="btn-submit" style="text-decoration:none; background:var(--color-control);">Módulo Encuestas</a>
                 <a href="admin_horarios.html" class="btn-submit" style="text-decoration:none; background:var(--primary-color);">Gestión de Horarios</a>
                 <a href="admin_diplomas.html" class="btn-submit" style="text-decoration:none; background:var(--color-trabajo);">Módulo Diplomas</a>
+                <a href="admin_inventario.html?v=2" class="btn-submit" style="text-decoration:none; background:#10b981;"><i class="fa-solid fa-boxes-stacked"></i> Inventario</a>
                 <a href="admin_logs.html" class="btn-submit" style="text-decoration:none; background:#1e293b;"><i class="fa-solid fa-shield-halved"></i> Auditoría (Logs)</a>
             </div>
         </div>
@@ -61,11 +61,13 @@
                             <th style="padding: 1rem;">Nombre</th>
                             <th style="padding: 1rem;">RUT</th>
                             <th style="padding: 1rem;">Correo</th>
+                            <th style="padding: 1rem;">Rol</th>
+                            <th style="padding: 1rem;">Inventario</th>
                             <th style="padding: 1rem; text-align: right;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="usuarios-tbody">
-                        <tr><td colspan="4" style="text-align:center; padding: 1rem;">Cargando usuarios...</td></tr>
+                        <tr><td colspan="6" style="text-align:center; padding: 1rem;">Cargando usuarios...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -229,15 +231,38 @@
                     data.usuarios.forEach(u => {
                         const tr = document.createElement('tr');
                         tr.style.borderBottom = '1px solid var(--border-color)';
+                        
+                        const isAdmin = u.rol === 'admin';
+                        const isSelf = u.id === currentUserId;
+                        
+                        // Select de roles
+                        const rolOptions = ['admin', 'profesor', 'diplomas', 'auxiliar', 'asistente_educacion', 'externo', 'directivo', 'inventario']
+                            .map(r => `<option value="${r}" ${u.rol === r ? 'selected' : ''}>${r}</option>`)
+                            .join('');
+                            
+                        // Checkbox permisos de inventario
+                        const puedePedir = (u.puede_pedir_equipos == 1) ? 'checked' : '';
+                        
                         tr.innerHTML = `
                             <td style="padding: 1rem;" data-label="Nombre">${u.nombre}</td>
                             <td style="padding: 1rem;" data-label="RUT">${u.rut}</td>
                             <td style="padding: 1rem;" data-label="Correo">${u.email || '-'}</td>
+                            <td style="padding: 1rem;" data-label="Rol">
+                                <select onchange="updateUserRolPermisos(${u.id}, this.value, document.getElementById('chk-inv-${u.id}').checked)" style="padding: 0.25rem; border-radius: 0.25rem; border: 1px solid var(--border-color);" ${isSelf ? 'disabled' : ''}>
+                                    ${rolOptions}
+                                </select>
+                            </td>
+                            <td style="padding: 1rem;" data-label="Inventario">
+                                <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem;">
+                                    <input type="checkbox" id="chk-inv-${u.id}" ${puedePedir} onchange="updateUserRolPermisos(${u.id}, this.closest('tr').querySelector('select').value, this.checked)">
+                                    Permitir pedir
+                                </label>
+                            </td>
                             <td style="padding: 1rem; text-align: right; display: flex; gap: 0.5rem; justify-content: flex-end;">
                                 <button onclick="abrirModalAsignaturas(${u.id}, '${u.nombre}', '${(u.asignaturas_asignadas || '[]').replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="background: #0ea5e9; color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Asignar Asignaturas"><i class="fa-solid fa-book"></i></button>
                                 <button onclick="editEmail(${u.id}, '${u.nombre}', '${u.email || ''}')" style="background: #f59e0b; color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Editar Correo"><i class="fa-solid fa-envelope"></i></button>
                                 <button onclick="resetClave(${u.id}, '${u.nombre}')" style="background: var(--color-trabajo); color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Restablecer Contraseña"><i class="fa-solid fa-key"></i></button>
-                                ${u.id !== currentUserId ? 
+                                ${!isSelf ? 
                                     `<button onclick="deleteUsuario(${u.id}, '${u.nombre}')" style="background: var(--danger); color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Eliminar Usuario"><i class="fa-solid fa-trash"></i></button>`
                                     : `<span style="padding: 0.5rem; color: #94a3b8; font-size: 0.9em; border: 1px dashed #cbd5e1; border-radius: 0.25rem; cursor: not-allowed;" title="Este es tu usuario actual">Mi Usuario</span>`
                                 }
@@ -246,10 +271,28 @@
                         tbody.appendChild(tr);
                     });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 1rem;">No hay profesores registrados aún.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 1rem;">No hay usuarios registrados aún.</td></tr>';
                 }
             } catch (e) {
                 console.error("Error al cargar usuarios", e);
+            }
+        }
+        
+        async function updateUserRolPermisos(id, rol, puedePedir) {
+            try {
+                const response = await fetch('api/admin_edit_rol_permisos.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id, rol: rol, puede_pedir_equipos: puedePedir ? 1 : 0 })
+                });
+                const data = await response.json();
+                if (!data.success) {
+                    alert('Error: ' + (data.error || 'No se pudieron actualizar los permisos'));
+                    loadUsuarios(); // Recargar para revertir cambios visuales fallidos
+                }
+            } catch (error) {
+                console.error("Error updating permissions:", error);
+                alert("Error de conexión");
             }
         }
         

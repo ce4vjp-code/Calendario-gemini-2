@@ -66,3 +66,5 @@ Durante el desarrollo y pruebas en entornos de hosting compartidos (cPanel/LiteS
 4. (Opcional) Ejecuta `importar_datos_horarios.php` para cargar automáticamente todos los cursos y asignaturas por defecto en el sistema de horarios.
 5. **Crítico:** Borra todos los archivos que comiencen con `parche_db...` y `importar_datos...` del servidor para prevenir alteraciones futuras.
 6. Indícale a tus usuarios que fuercen el borrado de caché de sus navegadores locales (Ctrl + F5) para asegurar la carga del último `script.js`.
+
+> 🔒 **Nota de Seguridad:** Las credenciales de base de datos se leen ahora de forma segura desde variables de entorno (`.env`).

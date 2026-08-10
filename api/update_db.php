@@ -3,8 +3,6 @@ require_once '../config.php';
 header('Content-Type: application/json');
 
 try {
-    $pdo->beginTransaction();
-
     // 1. Agregar la columna cursos_asignados si no existe
     try {
         $pdo->exec("ALTER TABLE usuarios ADD COLUMN cursos_asignados TEXT DEFAULT NULL");
@@ -21,8 +19,6 @@ try {
         $msg2 = "Error al actualizar los roles: " . $e->getMessage();
     }
 
-    $pdo->commit();
-
     echo json_encode([
         'success' => true, 
         'message' => 'Base de datos de producción actualizada correctamente.',
@@ -30,9 +26,6 @@ try {
     ]);
 
 } catch (Exception $e) {
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
     http_response_code(500);
     echo json_encode(['error' => 'Fallo crítico al actualizar base de datos: ' . $e->getMessage()]);
 }

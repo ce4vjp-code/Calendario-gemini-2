@@ -43,24 +43,32 @@ if (str_starts_with($signature, 'sha256=')) {
 }
 
 // ── 3. Ejecutar el despliegue de forma segura ────────────
-// NUNCA usar shell_exec con entrada de usuario.
-// Definir el comando de deploy de forma estática y acotada.
 $projectDir = escapeshellarg(__DIR__);
-$logFile    = sys_get_temp_dir() . '/deploy_' . date('Ymd_His') . '.log';
+$logFile    = __DIR__ . '/deploy_audit.log'; // Guardar en la misma carpeta para poder verlo
 
-// Comando fijo sin interpolación de datos del usuario
-$cmd = "cd $projectDir && git pull origin main >> " . escapeshellarg($logFile) . " 2>&1";
+// Eliminar el archivo problemático que Git dice que no quiere sobreescribir
+if (file_exists($projectDir . '/.env.example')) {
+    unlink($projectDir . '/.env.example');
+}
+
+// Capturar toda la salida de git (errores incluidos)
+// Se usa fetch + reset --hard para forzar la actualización y evitar el error "Your local changes would be overwritten"
+$cmd = "cd $projectDir && git fetch origin main && git reset --hard FETCH_HEAD 2>&1";
 $output = shell_exec($cmd);
 
 // Registrar en log de auditoría
 $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 $timestamp = date('Y-m-d H:i:s');
 file_put_contents(
-    sys_get_temp_dir() . '/deploy_audit.log',
-    "[$timestamp] Deploy ejecutado desde IP: $ip\n",
+    $logFile,
+    "[$timestamp] IP: $ip\nResultado de Git:\n$output\n------------------\n",
     FILE_APPEND
 );
 
 http_response_code(200);
-echo json_encode(['status' => 'ok', 'message' => 'Deploy ejecutado correctamente']);
+echo json_encode([
+    'status' => 'ok', 
+    'message' => 'Comando ejecutado', 
+    'git_output' => trim($output)
+]);
 ?>

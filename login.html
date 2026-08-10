@@ -15,8 +15,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        body { justify-content: center; align-items: center; background: url('bg_login.jpg') no-repeat center center fixed; background-size: cover; }
-        .auth-container { background: var(--bg-card); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        body { 
+            display: flex;
+            justify-content: center; 
+            align-items: flex-start; 
+            background: url('bg_login.jpg') no-repeat center center fixed; 
+            background-size: cover; 
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            box-sizing: border-box;
+        }
+        .auth-container { background: var(--bg-card); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; margin: auto; }
         .auth-container h2 { color: var(--primary-color); margin-bottom: 0.5rem; }
         .auth-container p { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
         .auth-form { display: flex; flex-direction: column; gap: 1.25rem; text-align: left; }

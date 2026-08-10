@@ -38,7 +38,7 @@
     <div class="app-container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <h2><i class="fa-solid fa-boxes-stacked"></i> Inventario</h2>
-            <a href="index.html" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">← Volver</a>
+            <a href="index.html" id="btn-volver-gral" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">← Volver</a>
         </div>
 
         <div class="tabs" id="main-tabs">
@@ -86,6 +86,17 @@
 
                     if (currentUser.rol === 'directivo' || currentUser.rol === 'admin') {
                         document.getElementById('tab-directivo').style.display = 'block';
+                    }
+
+                    const btnVolver = document.getElementById('btn-volver-gral');
+                    if (btnVolver) {
+                        if (currentUser.rol === 'admin') {
+                            btnVolver.href = 'admin.html';
+                            btnVolver.innerHTML = '<i class="fa-solid fa-gear"></i> Volver al Panel Admin';
+                        } else {
+                            btnVolver.href = 'panel_profesor.html';
+                            btnVolver.innerHTML = '<i class="fa-solid fa-house-user"></i> Volver al Panel de Inicio';
+                        }
                     }
 
                     loadEquipos();
@@ -254,5 +265,5 @@
 
         window.onload = checkSession;
     </script>
-</body>
+<script src="scrolltop.js?v=2"></script>`n</body>
 </html>

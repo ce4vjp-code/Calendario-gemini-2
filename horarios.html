@@ -36,7 +36,9 @@
 <body>
     <div class="public-container">
         <div class="no-print" style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="index.html" class="btn-submit" style="text-decoration: none; padding: 0.5rem 1rem; background: var(--primary-color);">← Calendario de Evaluaciones</a>
+            <div id="horarios-controls" style="display: flex; gap: 10px;">
+                <a href="index.html" id="btn-volver-gral" class="btn-submit" style="text-decoration: none; padding: 0.5rem 1rem; background: var(--primary-color);">← Volver al Calendario</a>
+            </div>
             <a href="https://new.liceotpggm.cl" title="Ir al Sitio Principal del Liceo">
                 <img src="logo.png" alt="Logo" style="height: 50px; cursor: pointer;">
             </a>
@@ -166,6 +168,27 @@
 
         // Initialize
         loadCursos();
+        
+        // Modify Volver link if logged in
+        async function checkSessionHorario() {
+            try {
+                const response = await fetch('api/check_session.php?t=' + new Date().getTime(), { credentials: 'same-origin' });
+                const data = await response.json();
+                const btn = document.getElementById('btn-volver-gral');
+                if (data.authenticated && btn) {
+                    if (data.user.rol === 'admin') {
+                        btn.href = 'admin.html';
+                        btn.innerHTML = '<i class="fa-solid fa-gear"></i> Volver al Panel Admin';
+                    } else {
+                        btn.href = 'panel_profesor.html';
+                        btn.innerHTML = '<i class="fa-solid fa-house-user"></i> Volver al Panel de Inicio';
+                    }
+                }
+            } catch (e) {
+                console.error("Error checking session", e);
+            }
+        }
+        checkSessionHorario();
     </script>
-</body>
+<script src="scrolltop.js?v=2"></script>`n</body>
 </html>

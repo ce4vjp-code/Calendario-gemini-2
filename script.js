@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnExportPdf = document.getElementById('btn-export-pdf');
     const form = document.getElementById('evaluation-form');
     const formMessage = document.getElementById('form-message');
-    const sidebar = document.getElementById('sidebar');
     const userControls = document.getElementById('user-controls');
     const modalFooter = document.getElementById('modal-footer');
     
@@ -311,16 +310,44 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('api/horarios/public_get_cursos.php');
             const data = await res.json();
-            if(data.success && filterCurso) {
-                const options = Array.from(filterCurso.options);
+            if(data.success) {
+                const formCurso = document.getElementById('curso');
+                const filterCurso = document.getElementById('filter-curso');
+                
+                if (formCurso) formCurso.innerHTML = '<option value="" disabled selected>Selecciona un curso...</option>';
+                if (filterCurso) filterCurso.innerHTML = '<option value="all" selected>Todos los cursos</option>';
+                
+                let assignedCourses = [];
+                if (currentUser && currentUser.rol === 'profesor' && currentUser.cursos_asignados) {
+                    try { assignedCourses = JSON.parse(currentUser.cursos_asignados); } catch(e) {}
+                    if (!Array.isArray(assignedCourses)) assignedCourses = [];
+                }
+                
                 data.data.forEach(c => {
-                    // Match by name
-                    const opt = options.find(o => o.value === c.nombre);
-                    if(opt) opt.dataset.dbId = c.id;
+                    // Populate filter (everyone sees all courses for filtering)
+                    if (filterCurso) {
+                        const optF = document.createElement('option');
+                        optF.value = c.nombre;
+                        optF.textContent = c.nombre;
+                        optF.dataset.dbId = c.id;
+                        filterCurso.appendChild(optF);
+                    }
+                    
+                    // Populate form (restrict to assigned courses for professors)
+                    if (formCurso) {
+                        const isProf = (currentUser && currentUser.rol === 'profesor');
+                        if (!isProf || assignedCourses.includes(c.nombre)) {
+                            const opt = document.createElement('option');
+                            opt.value = c.nombre;
+                            opt.textContent = c.nombre;
+                            opt.dataset.dbId = c.id;
+                            formCurso.appendChild(opt);
+                        }
+                    }
                 });
             }
         } catch(e) {
-            console.error("Error cargando IDs de cursos de DB");
+            console.error("Error cargando IDs de cursos de DB", e);
         }
     }
 
@@ -354,20 +381,49 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = 'admin_inventario.html';
                     return;
                 }
-                sidebar.style.display = 'flex';
                 
-                let adminLink = currentUser.rol === 'admin' ? '<a href="admin.html" style="margin-right: 15px; color: var(--primary-color); font-weight: bold; text-decoration: none;">Panel Admin</a>' : '';
+                // Ocultar la opción de horarios en el calendario para usuarios logueados (profesores/admin)
+                const viewTypeSelector = document.getElementById('view-type-selector');
+                if (viewTypeSelector) {
+                    const optHorarios = viewTypeSelector.querySelector('option[value="horarios"]');
+                    if (optHorarios) {
+                        optHorarios.remove();
+                    }
+                }
+                
+                let panelLink = '';
+                if (currentUser.rol === 'admin') {
+                    panelLink = '<a href="admin.html" style="margin-right: 15px; color: var(--primary-color); font-weight: bold; text-decoration: none;"><i class="fa-solid fa-gear"></i> Panel Admin</a>';
+                } else {
+                    panelLink = '<a href="panel_profesor.html" style="margin-right: 15px; color: var(--primary-color); font-weight: bold; text-decoration: none;"><i class="fa-solid fa-house-user"></i> Panel de Inicio</a>';
+                }
                 
                 userControls.innerHTML = `
-                    ${adminLink}
-                    <span style="margin-right: 15px;">Hola, <strong>${currentUser.nombre}</strong></span>
+                    ${panelLink}
+                    <span style="margin-right: 15px; display:inline-block;">Hola, <strong>${currentUser.nombre}</strong></span>
                     <button id="btn-logout-main" class="btn-danger" style="padding: 0.5rem 1rem;">Cerrar Sesión</button>
                 `;
                 
-
+                const actionBarEval = document.getElementById('action-bar-eval');
+                if (actionBarEval) {
+                    actionBarEval.style.display = 'flex';
+                    actionBarEval.style.justifyContent = 'center';
+                }
+                
                 document.getElementById('btn-logout-main').addEventListener('click', async () => {
                     await fetch(`${API_BASE}logout.php`);
                     window.location.reload();
+                });
+
+                document.getElementById('btn-open-add-eval').addEventListener('click', () => {
+                    // Resetear formulario para nueva entrada
+                    form.reset();
+                    document.getElementById('profesor').value = currentUser.nombre;
+                    currentEventIdToEdit = null;
+                    const btnSubmit = form.querySelector('.btn-submit');
+                    btnSubmit.innerHTML = '<i class="fa-solid fa-plus"></i> Agregar Evaluación';
+                    
+                    document.getElementById('add-eval-modal').style.display = 'flex';
                 });
                 
                 // Rellenar el nombre del profesor automáticamente en el formulario
@@ -658,6 +714,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if(currentUser && document.getElementById('profesor')) {
                         document.getElementById('profesor').value = currentUser.nombre;
                     }
+                    
+                    const addModal = document.getElementById('add-eval-modal');
+                    if (addModal) addModal.style.display = 'none';
+                    
                     fetchEvaluations(); // Recargar datos
                 } else {
                     showMessage(data.error || 'Error al agregar', 'error');
@@ -719,9 +779,20 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.classList.remove('show');
     });
 
+    const closeAddModal = document.getElementById('close-add-modal');
+    if (closeAddModal) {
+        closeAddModal.addEventListener('click', () => {
+            document.getElementById('add-eval-modal').style.display = 'none';
+        });
+    }
+
     window.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.classList.remove('show');
+        }
+        const addModal = document.getElementById('add-eval-modal');
+        if (e.target === addModal) {
+            addModal.style.display = 'none';
         }
     });
 
@@ -750,7 +821,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btnSubmit.innerHTML = '<i class="fa-solid fa-save"></i> Actualizar Evaluación';
             
             modal.classList.remove('show');
-            document.querySelector('.sidebar').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('add-eval-modal').style.display = 'flex';
         });
     }
 
@@ -809,7 +880,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // Initialize Base Data
-    loadDbCursos();
-    fetchEvaluations();
-    checkAuth();
+    (async function init() {
+        await checkAuth();
+        await loadDbCursos();
+        await fetchEvaluations();
+    })();
 });

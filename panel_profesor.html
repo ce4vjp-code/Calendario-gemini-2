@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Profesor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
+    <style>
+        body { padding: 2rem; background-color: var(--bg-main); display: block; height: auto !important; overflow: auto !important; min-height: 100vh; }
+        .panel-container { background: var(--bg-card); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); max-width: 800px; margin: 0 auto; text-align: center; }
+        h2 { color: var(--primary-color); margin-bottom: 0.5rem; }
+        .welcome-msg { color: var(--text-muted); margin-bottom: 2rem; }
+        
+        .panel-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .panel-buttons-grid .btn-submit {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 1rem;
+            font-size: 1rem;
+            gap: 8px;
+            border-radius: 12px;
+        }
+        
+        .panel-buttons-grid .btn-submit i {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .panel-buttons-grid { grid-template-columns: 1fr; }
+            .panel-buttons-grid .btn-submit { height: 80px; flex-direction: row; font-size: 1.1rem; justify-content: flex-start; padding-left: 2rem; }
+            .panel-buttons-grid .btn-submit i { font-size: 1.5rem; margin-bottom: 0; margin-right: 15px; width: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="panel-container">
+        <h2>Panel de Inicio</h2>
+        <p class="welcome-msg">Bienvenido(a), <strong id="user-name">Usuario</strong>. Selecciona a dónde deseas ir:</p>
+        
+        <div class="panel-buttons-grid">
+            <a href="index.html" id="btn-calendario" class="btn-submit" style="text-decoration:none; background:var(--primary-color);">
+                <i class="fa-solid fa-calendar-days"></i> Calendario de Evaluaciones
+            </a>
+            
+            <a href="horarios.html" id="btn-horarios" class="btn-submit" style="text-decoration:none; background:#0ea5e9;">
+                <i class="fa-solid fa-clock"></i> Horario de Clases
+            </a>
+            
+            <a href="inventario.html" id="btn-inventario" class="btn-submit" style="text-decoration:none; background:#10b981; display: none;">
+                <i class="fa-solid fa-boxes-stacked"></i> Pedir Equipos (Inventario)
+            </a>
+                        <a href="#" onclick="abrirModal2FA(); return false;" class="btn-submit" style="text-decoration:none; background:#f59e0b;">
+                <i class="fa-solid fa-shield-halved"></i> Configurar Seguridad 2FA
+            </a>
+
+            <a href="#" onclick="abrirModalClave(); return false;" class="btn-submit" style="text-decoration:none; background:#8b5cf6;">
+                <i class="fa-solid fa-key"></i> Cambiar Contraseña
+            </a>
+        </div>
+        
+        <div style="margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <a href="#" id="btn-logout" style="color: var(--danger); text-decoration: none; font-weight: bold; font-size: 1.1rem;">
+                <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+            </a>
+        </div>
+    </div>
+
+    <!-- Modal para Configurar 2FA -->
+    <div id="modal-2fa" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-card); padding:2rem; border-radius:1rem; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; position:relative; text-align: center;">
+            <button onclick="cerrarModal2FA()" style="position:absolute; top:1rem; right:1rem; border:none; background:none; font-size:1.5rem; cursor:pointer; color: var(--text-muted);">&times;</button>
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Configurar Autenticación de Dos Factores (2FA)</h3>
+            
+            <div id="2fa-setup-step1">
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.95rem;">Protege tu cuenta con un nivel adicional de seguridad. Al activarlo, se te pedirá un código desde tu aplicación autenticadora (Google Authenticator, Authy, etc.) cada vez que inicies sesión.</p>
+                <button id="btn-start-2fa" onclick="iniciarSetup2FA()" class="btn-submit" style="width: 100%;">Generar Código QR</button>
+            </div>
+
+            <div id="2fa-setup-step2" style="display:none;">
+                <p style="color: var(--text-muted); margin-bottom: 1rem; font-size: 0.95rem;">Escanea este código QR con tu aplicación autenticadora:</p>
+                <img id="qr-image" src="" alt="QR Code" style="margin-bottom: 1rem; border: 1px solid #e2e8f0; padding: 10px; border-radius: 10px;">
+                
+                <div style="margin-top: 1rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: bold; color: var(--text-main);">Ingresa el código generado:</label>
+                    <input type="text" id="verify-code-2fa" placeholder="Ej: 123456" maxlength="6" style="width: 150px; text-align: center; font-size: 1.2rem; letter-spacing: 2px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <button id="btn-enable-2fa" onclick="verificarYActivar2FA()" class="btn-submit" style="width: 100%;">Verificar y Activar 2FA</button>
+                </div>
+            </div>
+            
+            <div id="2fa-message" style="margin-top: 1rem; display: none; font-weight: bold;"></div>
+        </div>
+    </div>
+
+    <!-- Modal para Cambiar Contraseña -->
+    <div id="modal-clave" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-card); padding:2rem; border-radius:1rem; max-width:400px; width:90%; max-height:80vh; overflow-y:auto; position:relative; text-align: left;">
+            <button onclick="cerrarModalClave()" style="position:absolute; top:1rem; right:1rem; border:none; background:none; font-size:1.5rem; cursor:pointer; color: var(--text-muted);">&times;</button>
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Cambiar Contraseña</h3>
+            
+            <div style="margin-bottom: 1rem;">
+                <label style="display:block; margin-bottom:0.5rem; color:var(--text-main); font-weight:bold;">Contraseña Actual</label>
+                <div style="position: relative;">
+                    <input type="password" id="current-password" style="width: 100%; padding: 0.5rem; padding-right: 2.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    <button type="button" onclick="togglePasswordVisibility('current-password', this)" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0;"><i class="fa-solid fa-eye"></i></button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <label style="display:block; margin-bottom:0.5rem; color:var(--text-main); font-weight:bold;">Nueva Contraseña</label>
+                <div style="position: relative;">
+                    <input type="password" id="new-password" oninput="checkPasswordStrength()" style="width: 100%; padding: 0.5rem; padding-right: 2.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    <button type="button" onclick="togglePasswordVisibility('new-password', this)" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0;"><i class="fa-solid fa-eye"></i></button>
+                </div>
+                
+                <div style="margin-top: 0.5rem; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                    <div id="strength-bar" style="height: 100%; width: 0%; background: red; transition: width 0.3s, background 0.3s;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.25rem;">
+                    <span id="strength-text" style="font-size: 0.8rem; font-weight: 500;">Nivel de seguridad: 0/100</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">Mínimo: 60</span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display:block; margin-bottom:0.5rem; color:var(--text-main); font-weight:bold;">Confirmar Nueva Contraseña</label>
+                <div style="position: relative;">
+                    <input type="password" id="confirm-password" style="width: 100%; padding: 0.5rem; padding-right: 2.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    <button type="button" onclick="togglePasswordVisibility('confirm-password', this)" style="position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0;"><i class="fa-solid fa-eye"></i></button>
+                </div>
+            </div>
+
+            <button id="btn-save-password" onclick="guardarClave()" class="btn-submit" style="width: 100%;">Guardar Contraseña</button>
+            <div id="clave-message" style="margin-top: 1rem; display: none; font-weight: bold; text-align: center;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Verificar sesión y cargar permisos
+        async function checkSession() {
+            try {
+                const response = await fetch('api/check_session.php?t=' + new Date().getTime(), { credentials: 'same-origin' });
+                const data = await response.json();
+                
+                if (!data.authenticated) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                // Mostrar nombre
+                if(data.user && data.user.nombre) {
+                    document.getElementById('user-name').textContent = data.user.nombre;
+                }
+
+                // Ocultar calendario y horarios para roles que no sean profesor o admin
+                if (data.user.rol !== 'profesor' && data.user.rol !== 'admin') {
+                    document.getElementById('btn-calendario').style.display = 'none';
+                    document.getElementById('btn-horarios').style.display = 'none';
+                }
+
+                // Lógica de permisos para Inventario
+                if (data.user.rol === 'inventario' || data.user.puede_pedir_equipos == 1 || data.user.rol === 'admin' || data.user.rol === 'directivo') {
+                    const btnInv = document.getElementById('btn-inventario');
+                    btnInv.style.display = 'flex'; // Volver a mostrar el botón
+                    
+                    // Si es admin o encargado de inventario, redirigir al panel admin de inventario
+                    if (data.user.rol === 'admin' || data.user.rol === 'inventario') {
+                        btnInv.href = "admin_inventario.html";
+                        btnInv.innerHTML = '<i class="fa-solid fa-boxes-stacked"></i> Administrar Inventario';
+                    }
+                }
+            } catch (error) {
+                console.error("Error validando sesión", error);
+                window.location.href = 'login.html';
+            }
+        }
+        
+        checkSession();
+
+        // Cerrar sesión
+        document.getElementById('btn-logout').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('api/logout.php', { credentials: 'same-origin' });
+            window.location.href = 'login.html';
+        });
+
+        // --- LOGICA DE 2FA ---
+        function abrirModal2FA() {
+            document.getElementById('modal-2fa').style.display = 'flex';
+            document.getElementById('2fa-setup-step1').style.display = 'block';
+            document.getElementById('2fa-setup-step2').style.display = 'none';
+            document.getElementById('2fa-message').style.display = 'none';
+            document.getElementById('verify-code-2fa').value = '';
+        }
+
+        function cerrarModal2FA() {
+            document.getElementById('modal-2fa').style.display = 'none';
+        }
+
+        async function iniciarSetup2FA() {
+            const btn = document.getElementById('btn-start-2fa');
+            btn.textContent = 'Generando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('api/setup_2fa.php');
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    document.getElementById('qr-image').src = data.qr_url;
+                    document.getElementById('2fa-setup-step1').style.display = 'none';
+                    document.getElementById('2fa-setup-step2').style.display = 'block';
+                } else {
+                    alert('Error al generar código 2FA: ' + (data.error || 'Desconocido'));
+                }
+            } catch (error) {
+                alert('Error de conexión al configurar 2FA');
+            } finally {
+                btn.textContent = 'Generar Código QR';
+                btn.disabled = false;
+            }
+        }
+
+        async function verificarYActivar2FA() {
+            const code = document.getElementById('verify-code-2fa').value.trim();
+            const btn = document.getElementById('btn-enable-2fa');
+            const msg = document.getElementById('2fa-message');
+            
+            if (code.length !== 6) {
+                msg.textContent = 'El código debe tener 6 dígitos.';
+                msg.style.color = 'var(--danger)';
+                msg.style.display = 'block';
+                return;
+            }
+
+            btn.textContent = 'Verificando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('api/enable_2fa.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    msg.textContent = '¡2FA configurado y activado exitosamente!';
+                    msg.style.color = 'green';
+                    msg.style.display = 'block';
+                    setTimeout(() => cerrarModal2FA(), 2500);
+                } else {
+                    msg.textContent = data.error || 'Código incorrecto';
+                    msg.style.color = 'var(--danger)';
+                    msg.style.display = 'block';
+                }
+            } catch (error) {
+                msg.textContent = 'Error de conexión';
+                msg.style.color = 'var(--danger)';
+                msg.style.display = 'block';
+            } finally {
+                btn.textContent = 'Verificar y Activar 2FA';
+                btn.disabled = false;
+            }
+        }
+        // Modal de Contraseña
+        let currentPasswordScore = 0;
+
+        function abrirModalClave() {
+            document.getElementById('modal-clave').style.display = 'flex';
+            document.getElementById('current-password').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-password').value = '';
+            document.getElementById('clave-message').style.display = 'none';
+            checkPasswordStrength(); // reset UI
+        }
+
+        function cerrarModalClave() {
+            document.getElementById('modal-clave').style.display = 'none';
+        }
+
+        function checkPasswordStrength() {
+            const val = document.getElementById('new-password').value;
+            const bar = document.getElementById('strength-bar');
+            const text = document.getElementById('strength-text');
+            
+            if (!val) {
+                currentPasswordScore = 0;
+                bar.style.width = '0%';
+                bar.style.background = 'red';
+                text.textContent = 'Nivel de seguridad: 0/100';
+                text.style.color = 'var(--text-main)';
+                return;
+            }
+
+            // zxcvbn evaluation
+            const result = typeof zxcvbn !== 'undefined' ? zxcvbn(val) : { guesses_log10: val.length };
+            
+            // Map guesses_log10 to 0-100 scale (log10 of 1 million is 6, so 6 -> 60)
+            let score = Math.min(100, Math.floor(result.guesses_log10 * 10));
+            currentPasswordScore = score;
+            
+            bar.style.width = `${score}%`;
+            
+            if (score < 30) {
+                bar.style.background = 'red';
+                text.style.color = 'red';
+            } else if (score < 60) {
+                bar.style.background = 'orange';
+                text.style.color = 'orange';
+            } else if (score < 80) {
+                bar.style.background = '#10b981'; // green
+                text.style.color = '#10b981';
+            } else {
+                bar.style.background = '#0ea5e9'; // blue for strong
+                text.style.color = '#0ea5e9';
+            }
+            
+            text.textContent = `Nivel de seguridad: ${score}/100`;
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        async function guardarClave() {
+            const curr = document.getElementById('current-password').value;
+            const newPass = document.getElementById('new-password').value;
+            const conf = document.getElementById('confirm-password').value;
+            const msg = document.getElementById('clave-message');
+            const btn = document.getElementById('btn-save-password');
+            
+            msg.style.display = 'block';
+
+            if (!curr || !newPass || !conf) {
+                msg.textContent = 'Todos los campos son obligatorios.';
+                msg.style.color = 'var(--danger)';
+                return;
+            }
+
+            if (newPass !== conf) {
+                msg.textContent = 'Las contraseñas nuevas no coinciden.';
+                msg.style.color = 'var(--danger)';
+                return;
+            }
+
+            if (currentPasswordScore < 60) {
+                msg.textContent = 'La contraseña nueva es muy débil (mínimo 60).';
+                msg.style.color = 'var(--danger)';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Guardando...';
+
+            try {
+                const res = await fetch('api/user_change_password.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_password: curr, new_password: newPass })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    msg.textContent = 'Contraseña actualizada correctamente.';
+                    msg.style.color = 'green';
+                    setTimeout(cerrarModalClave, 2000);
+                } else {
+                    msg.textContent = data.error || 'Error al cambiar la contraseña.';
+                    msg.style.color = 'var(--danger)';
+                }
+            } catch(e) {
+                msg.textContent = 'Error de conexión.';
+                msg.style.color = 'var(--danger)';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Guardar Contraseña';
+            }
+        }
+    </script>
+<script src="scrolltop.js?v=2"></script>`n</body>
+</html>

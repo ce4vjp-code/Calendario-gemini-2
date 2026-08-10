@@ -23,6 +23,29 @@
             .responsive-table td::before { content: attr(data-label); font-weight: bold; color: var(--text-muted); text-align: left; margin-right: 1rem; }
             .responsive-table td:last-child::before { display: none; }
         }
+        .admin-buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .admin-buttons-grid .btn-submit {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0.8rem 0.5rem;
+            font-size: 0.85rem;
+        }
+        @media (max-width: 768px) {
+            .admin-buttons-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .admin-buttons-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -32,12 +55,15 @@
                 <h2>Panel de Administrador</h2>
                 <p style="color: var(--text-muted);">Genera códigos y administra profesores.</p>
             </div>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <div class="admin-buttons-grid">
+                <a href="index.html" class="btn-submit" style="text-decoration:none; background:#64748b;"><i class="fa-solid fa-arrow-left"></i> Calendario</a>
                 <a href="admin_encuestas.html" class="btn-submit" style="text-decoration:none; background:var(--color-control);">Módulo Encuestas</a>
                 <a href="admin_horarios.html" class="btn-submit" style="text-decoration:none; background:var(--primary-color);">Gestión de Horarios</a>
                 <a href="admin_diplomas.html" class="btn-submit" style="text-decoration:none; background:var(--color-trabajo);">Módulo Diplomas</a>
                 <a href="admin_inventario.html?v=2" class="btn-submit" style="text-decoration:none; background:#10b981;"><i class="fa-solid fa-boxes-stacked"></i> Inventario</a>
                 <a href="admin_logs.html" class="btn-submit" style="text-decoration:none; background:#1e293b;"><i class="fa-solid fa-shield-halved"></i> Auditoría (Logs)</a>
+                <a href="#" onclick="abrirModal2FA(); return false;" class="btn-submit" style="text-decoration:none; background:#f59e0b;"><i class="fa-solid fa-lock"></i> Configurar 2FA</a>
+                <a href="#" id="btn-logout" class="btn-submit" style="text-decoration:none; background:var(--danger);"><i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión</a>
             </div>
         </div>
         
@@ -53,7 +79,13 @@
         <div id="generated-code" class="code-box"></div>
         
         <div style="margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 2rem;">
-            <h2>Usuarios Registrados</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; gap: 1rem;">
+                <h2 style="margin-bottom: 0;">Usuarios Registrados</h2>
+                <div style="position: relative; max-width: 350px; width: 100%;">
+                    <input type="text" id="search-usuarios" placeholder="Buscar por nombre, RUT o correo..." style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border-radius: 0.5rem; border: 1px solid var(--border-color); font-family: 'Inter', sans-serif; box-sizing: border-box; font-size: 0.9rem;">
+                    <i class="fa-solid fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                </div>
+            </div>
             <div style="overflow-x: auto;">
                 <table class="responsive-table" style="width: 100%; border-collapse: collapse; margin-top: 1rem; text-align: left; font-size: 0.9rem;">
                     <thead>
@@ -73,12 +105,8 @@
             </div>
         </div>
         
-        <div style="margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 1rem; display: flex; justify-content: space-between;">
-            <div>
-                <a href="index.html" style="color: var(--text-muted); text-decoration: none; margin-right: 1rem;">← Ir al Calendario</a>
-                <a href="#" onclick="abrirModal2FA(); return false;" style="color: var(--primary-color); text-decoration: none; font-weight: bold;"><i class="fa-solid fa-lock"></i> Configurar 2FA</a>
-            </div>
-            <a href="#" id="btn-logout" style="color: var(--danger); text-decoration: none;">Cerrar Sesión</a>
+        <div style="margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 1rem; text-align: right;">
+            <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" style="color: var(--primary-color); text-decoration: none; font-weight: bold; font-size: 1.1rem;"><i class="fa-solid fa-arrow-up"></i> Volver arriba</a>
         </div>
     </div>
 
@@ -95,6 +123,22 @@
             </div>
             
             <button onclick="guardarAsignaturas()" class="btn-submit" id="btn-save-asignaturas">Guardar Asignaturas</button>
+        </div>
+    </div>
+
+    <!-- Modal para Asignar Cursos -->
+    <div id="modal-cursos" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:999; justify-content:center; align-items:center;">
+        <div style="background:var(--bg-card); padding:2rem; border-radius:1rem; max-width:600px; width:90%; max-height:80vh; overflow-y:auto; position:relative;">
+            <button onclick="cerrarModalCursos()" style="position:absolute; top:1rem; right:1rem; border:none; background:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Asignar Cursos a <span id="span-nombre-profesor-cursos"></span></h3>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">Marca los cursos en los que este profesor está autorizado a crear evaluaciones.</p>
+            <input type="hidden" id="curso-user-id">
+            
+            <div id="lista-cursos-asignar" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;">
+                <!-- Cargadas vía JS -->
+            </div>
+            
+            <button onclick="guardarCursos()" class="btn-submit" id="btn-save-cursos">Guardar Cursos</button>
         </div>
     </div>
 
@@ -143,6 +187,8 @@
         
         // Quitar duplicados
         const asignaturasUnicas = [...new Set(TODAS_LAS_ASIGNATURAS)].sort();
+        let cursosUnicos = [];
+
         // Verificar si es admin
         async function checkAdmin() {
             try {
@@ -154,6 +200,7 @@
                         alert('Acceso denegado. Solo administradores. Datos recibidos: ' + JSON.stringify(data));
                         window.location.href = 'index.html';
                     } else {
+                        await loadCursosAdmin();
                         loadUsuarios();
                     }
                 } catch (e) {
@@ -163,6 +210,18 @@
             } catch (e) {
                 alert('Error de red al comprobar sesión.');
                 window.location.href = 'index.html';
+            }
+        }
+        
+        async function loadCursosAdmin() {
+            try {
+                const res = await fetch('api/horarios/public_get_cursos.php');
+                const data = await res.json();
+                if(data.success) {
+                    cursosUnicos = data.data.map(c => c.nombre).sort();
+                }
+            } catch(e) {
+                console.error("Error al cargar cursos", e);
             }
         }
         checkAdmin();
@@ -219,6 +278,25 @@
         });
         
 
+        document.getElementById('search-usuarios').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#usuarios-tbody tr');
+            
+            rows.forEach(row => {
+                if (row.cells.length === 1 && row.cells[0].colSpan > 1) return; // Ignorar fila de "cargando"
+                
+                const nombre = row.cells[0]?.textContent.toLowerCase() || '';
+                const rut = row.cells[1]?.textContent.toLowerCase() || '';
+                const correo = row.cells[2]?.textContent.toLowerCase() || '';
+                
+                if (nombre.includes(query) || rut.includes(query) || correo.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
         async function loadUsuarios() {
             try {
                 const response = await fetch('api/admin_get_usuarios.php?t=' + new Date().getTime(), { credentials: 'same-origin' });
@@ -259,6 +337,7 @@
                                 </label>
                             </td>
                             <td style="padding: 1rem; text-align: right; display: flex; gap: 0.5rem; justify-content: flex-end;">
+                                <button onclick="abrirModalCursos(${u.id}, '${u.nombre}', '${(u.cursos_asignados || '[]').replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="background: #10b981; color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Asignar Cursos"><i class="fa-solid fa-users-rectangle"></i></button>
                                 <button onclick="abrirModalAsignaturas(${u.id}, '${u.nombre}', '${(u.asignaturas_asignadas || '[]').replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="background: #0ea5e9; color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Asignar Asignaturas"><i class="fa-solid fa-book"></i></button>
                                 <button onclick="editEmail(${u.id}, '${u.nombre}', '${u.email || ''}')" style="background: #f59e0b; color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Editar Correo"><i class="fa-solid fa-envelope"></i></button>
                                 <button onclick="resetClave(${u.id}, '${u.nombre}')" style="background: var(--color-trabajo); color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Restablecer Contraseña"><i class="fa-solid fa-key"></i></button>
@@ -429,6 +508,73 @@
             }
         }
         
+        // --- LOGICA DE CURSOS ---
+        function abrirModalCursos(userId, nombre, cursosAsignadosJson) {
+            document.getElementById('span-nombre-profesor-cursos').textContent = nombre;
+            document.getElementById('curso-user-id').value = userId;
+            
+            let cursosActuales = [];
+            try { cursosActuales = JSON.parse(cursosAsignadosJson); } catch(e) {}
+            if(!Array.isArray(cursosActuales)) cursosActuales = [];
+
+            const contenedor = document.getElementById('lista-cursos-asignar');
+            contenedor.innerHTML = '';
+            
+            if (cursosUnicos.length === 0) {
+                contenedor.innerHTML = '<p style="grid-column: 1 / -1; color: var(--text-muted);">No hay cursos creados. Crea cursos primero en la Gestión de Horarios.</p>';
+            } else {
+                cursosUnicos.forEach(curso => {
+                    const isChecked = cursosActuales.includes(curso) ? 'checked' : '';
+                    const label = document.createElement('label');
+                    label.style.display = 'flex';
+                    label.style.alignItems = 'center';
+                    label.style.gap = '0.5rem';
+                    label.style.fontSize = '0.85rem';
+                    label.innerHTML = `<input type="checkbox" value="${curso}" class="chk-curso" ${isChecked}> ${curso}`;
+                    contenedor.appendChild(label);
+                });
+            }
+            
+            document.getElementById('modal-cursos').style.display = 'flex';
+        }
+        
+        function cerrarModalCursos() {
+            document.getElementById('modal-cursos').style.display = 'none';
+        }
+        
+        async function guardarCursos() {
+            const userId = document.getElementById('curso-user-id').value;
+            const btn = document.getElementById('btn-save-cursos');
+            
+            const checkboxes = document.querySelectorAll('.chk-curso:checked');
+            const cursos = Array.from(checkboxes).map(c => c.value);
+            
+            btn.textContent = 'Guardando...';
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch('api/admin_assign_courses.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario_id: userId, cursos })
+                });
+                const data = await res.json();
+                
+                if(data.success) {
+                    alert("Cursos actualizados correctamente.");
+                    cerrarModalCursos();
+                    loadUsuarios(); // Recargar tabla
+                } else {
+                    alert("Error: " + data.error);
+                }
+            } catch(e) {
+                alert("Error de red al guardar cursos.");
+            } finally {
+                btn.textContent = 'Guardar Cursos';
+                btn.disabled = false;
+            }
+        }
+        
         // --- LOGICA DE 2FA ---
         function abrirModal2FA() {
             document.getElementById('modal-2fa').style.display = 'flex';
@@ -510,5 +656,5 @@
             }
         }
     </script>
-</body>
+<script src="scrolltop.js?v=2"></script>`n</body>
 </html>

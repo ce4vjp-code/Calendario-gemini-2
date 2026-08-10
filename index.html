@@ -19,39 +19,20 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar para agregar evaluaciones -->
-        <aside class="sidebar" id="sidebar" style="display: none;">
-            <div class="sidebar-header">
-                <h2><i class="fa-solid fa-calendar-days"></i> Evaluaciones</h2>
-                <p>Agrega nuevas evaluaciones al calendario escolar.</p>
+    <!-- Modal para Agregar/Editar Evaluación -->
+    <div id="add-eval-modal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal" id="close-add-modal">&times;</span>
+            <div class="sidebar-header" style="margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color); display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-calendar-days"></i> Evaluaciones</h2>
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">Agrega nuevas evaluaciones al calendario escolar.</p>
             </div>
-            
-            <button id="btn-config-2fa" onclick="abrirModal2FA()" type="button" class="btn-submit" style="background-color: #0f172a; margin-bottom: 0.5rem;"><i class="fa-solid fa-shield-halved"></i> Configurar Seguridad (2FA)</button>
-            <a href="inventario.html?v=2" class="btn-submit" style="display:block; text-align:center; text-decoration:none; background-color: #10b981; margin-bottom: 1.5rem;"><i class="fa-solid fa-boxes-stacked"></i> Módulo Inventario</a>
             
             <form id="evaluation-form" class="evaluation-form">
                 <div class="form-group">
                     <label for="curso">Curso / Grado</label>
                     <select id="curso" required>
-                        <option value="" disabled selected>Selecciona un curso...</option>
-                        <option value="1° Básico">1° Básico</option>
-                        <option value="2° Básico">2° Básico</option>
-                        <option value="3° Básico">3° Básico</option>
-                        <option value="4° Básico">4° Básico</option>
-                        <option value="5° Básico">5° Básico</option>
-                        <option value="6° Básico">6° Básico</option>
-                        <option value="7° Básico">7° Básico</option>
-                        <option value="8° Básico">8° Básico</option>
-                        <option value="1° Medio A">1° Medio A</option>
-                        <option value="1° Medio B">1° Medio B</option>
-                        <option value="2° Medio A">2° Medio A</option>
-                        <option value="2° Medio B">2° Medio B</option>
-                        <option value="3° Medio A - Telecomunicaciones">3° Medio A - Telecomunicaciones</option>
-                        <option value="3° Medio B - Muebles y Terminaciones en Madera">3° Medio B - Muebles y Terminaciones en Madera</option>
-                        <option value="3° Medio C - Atención de Enfermería">3° Medio C - Atención de Enfermería</option>
-                        <option value="4° Medio A - Telecomunicaciones">4° Medio A - Telecomunicaciones</option>
-                        <option value="4° Medio B - Muebles y Terminaciones en Madera">4° Medio B - Muebles y Terminaciones en Madera</option>
-                        <option value="4° Medio C - Atención de Enfermería">4° Medio C - Atención de Enfermería</option>
+                        <option value="" disabled selected>Cargando cursos...</option>
                     </select>
                 </div>
 
@@ -120,14 +101,13 @@
                 </button>
             </form>
             <div id="form-message" class="form-message"></div>
-        </aside>
+        </div>
+    </div>
 
         <!-- Contenedor principal (Calendario) -->
         <main class="main-content">
             <div style="display: flex; justify-content: flex-end; padding-bottom: 1rem; align-items: center; gap: 1rem;">
-                <div>
-                    <a href="https://new.liceotpggm.cl" class="btn-icon" style="text-decoration: none; display: flex; align-items: center; justify-content: center;" title="Ir al Sitio Principal del Liceo"><i class="fa-solid fa-house"></i></a>
-                </div>
+
                 <div id="public-horarios" style="display:none;">
                     <!-- Botón movido al selector de vistas -->
                 </div>
@@ -142,11 +122,7 @@
                     <h1 id="month-year">Cargando...</h1>
                     <button id="next-month" class="btn-icon"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
-                <div id="view-toggle">
-                    <button id="btn-export-pdf" class="btn-danger" style="border: none; padding: 0.6rem 1.2rem; font-weight: bold; border-radius: 8px; cursor: pointer;">
-                        <i class="fa-solid fa-file-pdf"></i> Exportar a PDF
-                    </button>
-                </div>
+                <!-- View toggle / Print button removed as requested -->
             </div>
             
             <div class="filter-bar">
@@ -160,8 +136,7 @@
                 <div class="filter-group">
                     <label for="filter-curso">Curso</label>
                     <select id="filter-curso">
-                        <option value="all" selected>Todos los cursos</option>
-                        <!-- Opciones clonadas desde JS -->
+                        <option value="all" selected>Cargando cursos...</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -176,6 +151,12 @@
                         <option value="all" selected>Todos los profesores</option>
                     </select>
                 </div>
+            </div>
+
+            <div id="action-bar-eval" class="no-print" style="display: none; text-align: center; margin: 1.5rem 0;">
+                <button id="btn-open-add-eval" class="btn-submit" style="font-size: 1.15rem; padding: 0.75rem 2rem; border-radius: 50px; background-color: var(--primary-color); box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.2s;">
+                    <i class="fa-solid fa-plus-circle" style="margin-right: 8px;"></i> Agregar Evaluación
+                </button>
             </div>
 
             <div class="calendar-container">
@@ -359,5 +340,5 @@
         }
     </script>
     <script src="script.js?v=8"></script>
-</body>
+<script src="scrolltop.js?v=2"></script>`n</body>
 </html>

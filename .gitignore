@@ -17,3 +17,14 @@ temp.js
 # Keep uploads folder structure but ignore contents
 uploads/*
 !uploads/.gitkeep
+
+# ─── Seguridad: credenciales y archivos sensibles ───────
+.env
+*.env
+
+# Dumps de BD generados por db_dump.php (nunca al repo)
+*_dump.json
+old_evals_dump.json
+new_evals_dump.json
+dups_dump.json
+db_error.txt

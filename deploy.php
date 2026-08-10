@@ -1,69 +1,66 @@
 <?php
-/**
- * Script de Auto-Despliegue (Webhook) para GitHub
- * Sube este archivo a la carpeta pública de tu servidor (ej: public_html)
- */
+// deploy.php — Webhook de despliegue seguro
+// ─────────────────────────────────────────────────────────
+// Valida la firma HMAC-SHA256 del payload de GitHub/GitLab.
+// El token secreto se configura en .env como DEPLOY_SECRET.
+// NUNCA poner el token en la URL como querystring.
+// ─────────────────────────────────────────────────────────
 
-// =========================================================================
-// 1. CONFIGURACIÓN
-// =========================================================================
-// Inventa una contraseña larga y difícil (Letras y números sin espacios)
-// Deberás poner esta misma clave secreta en GitHub.
-$secret = 'LiceoTPG_AutoDeploy_2026_Secreto!'; 
+require_once __DIR__ . '/config.php';  // carga .env y sesión
 
-// La rama que quieres desplegar (usualmente 'main' o 'master')
-$branch = 'main';
+// ── 1. Solo aceptar POST ──────────────────────────────────
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    die(json_encode(['error' => 'Method Not Allowed']));
+}
 
-// =========================================================================
-// 2. SEGURIDAD: VERIFICACIÓN DE GITHUB (Criptografía HMAC)
-// =========================================================================
-$headers = getallheaders();
-$hub_signature = isset($headers['X-Hub-Signature-256']) ? $headers['X-Hub-Signature-256'] : '';
+// ── 2. Validar firma HMAC del payload ────────────────────
+$secret = getenv('DEPLOY_SECRET');
+if (empty($secret)) {
+    http_response_code(500);
+    die(json_encode(['error' => 'DEPLOY_SECRET no configurado en el servidor']));
+}
 
-if (empty($hub_signature)) {
-    // Modo alternativo (Menos seguro, por URL): Si pasas ?token=TuClave
-    if (!isset($_GET['token']) || $_GET['token'] !== $secret) {
+$rawPayload = file_get_contents('php://input');
+$signature  = $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ?? '';  // GitHub
+if (empty($signature)) {
+    $signature = $_SERVER['HTTP_X_GITLAB_TOKEN'] ?? '';     // GitLab (token directo)
+}
+
+// Validar HMAC para GitHub-style (X-Hub-Signature-256)
+if (str_starts_with($signature, 'sha256=')) {
+    $expected = 'sha256=' . hash_hmac('sha256', $rawPayload, $secret);
+    if (!hash_equals($expected, $signature)) {
         http_response_code(403);
-        die("Acceso denegado. No se proporcionó firma ni token válido.");
+        die(json_encode(['error' => 'Firma inválida']));
     }
 } else {
-    // Modo Seguro (Recomendado): GitHub envía una firma encriptada
-    $payload = file_get_contents('php://input');
-    $hash = 'sha256=' . hash_hmac('sha256', $payload, $secret, false);
-    
-    if (!hash_equals($hash, $hub_signature)) {
+    // GitLab-style: token directo comparado con tiempo constante
+    if (!hash_equals($secret, $signature)) {
         http_response_code(403);
-        die("Acceso denegado. La firma criptográfica no coincide.");
+        die(json_encode(['error' => 'Token inválido']));
     }
 }
 
-// =========================================================================
-// 3. EJECUCIÓN DEL DESPLIEGUE (GIT PULL)
-// =========================================================================
-// Asegurarse de estar en el directorio correcto (la raíz donde está este script)
-$dir = __DIR__;
-chdir($dir);
+// ── 3. Ejecutar el despliegue de forma segura ────────────
+// NUNCA usar shell_exec con entrada de usuario.
+// Definir el comando de deploy de forma estática y acotada.
+$projectDir = escapeshellarg(__DIR__);
+$logFile    = sys_get_temp_dir() . '/deploy_' . date('Ymd_His') . '.log';
 
-// Comandos a ejecutar. (2>&1 redirige errores para poder leerlos)
-$commands = [
-    'git fetch --all 2>&1',
-    'git reset --hard origin/' . $branch . ' 2>&1',
-    'git pull origin ' . $branch . ' 2>&1'
-];
+// Comando fijo sin interpolación de datos del usuario
+$cmd = "cd $projectDir && git pull origin main >> " . escapeshellarg($logFile) . " 2>&1";
+$output = shell_exec($cmd);
 
-$output_text = "=== Iniciando Despliegue en $dir ===\n";
+// Registrar en log de auditoría
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$timestamp = date('Y-m-d H:i:s');
+file_put_contents(
+    sys_get_temp_dir() . '/deploy_audit.log',
+    "[$timestamp] Deploy ejecutado desde IP: $ip\n",
+    FILE_APPEND
+);
 
-foreach ($commands as $command) {
-    $output = shell_exec($command);
-    $output_text .= "\n$ $command\n";
-    $output_text .= htmlentities(trim($output)) . "\n";
-}
-
-$output_text .= "\n=== Despliegue Finalizado ===\n";
-
-// Guardar un log localmente por si quieres revisar qué pasó
-file_put_contents('deploy_log.txt', date('Y-m-d H:i:s') . "\n" . $output_text . "\n\n", FILE_APPEND);
-
-// Enviar respuesta a GitHub
-echo "<pre>$output_text</pre>";
+http_response_code(200);
+echo json_encode(['status' => 'ok', 'message' => 'Deploy ejecutado correctamente']);
 ?>

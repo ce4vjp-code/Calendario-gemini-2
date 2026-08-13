@@ -183,7 +183,7 @@
                     // Si es admin o encargado de inventario, agregar un SEGUNDO botón para administrar
                     if (data.user.rol === 'admin' || data.user.rol === 'inventario') {
                         const btnAdmin = document.createElement('a');
-                        btnAdmin.href = "admin_inventario.html";
+                        btnAdmin.href = "admin_inventario.html?v=3";
                         btnAdmin.className = "btn-submit";
                         btnAdmin.style.cssText = "text-decoration:none; background:#0f766e;";
                         btnAdmin.innerHTML = '<i class="fa-solid fa-boxes-stacked"></i> Administrar Inventario';

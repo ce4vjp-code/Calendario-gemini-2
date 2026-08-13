@@ -22,7 +22,11 @@
         th, td { padding: 1rem; border-bottom: 1px solid var(--border-color); }
         th { background-color: var(--bg-main); }
         .badge { padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.85rem; font-weight: bold; }
+        .badge.inventario { background: #e2e8f0; color: #475569; }
         .badge.disponible { background: #dcfce7; color: #166534; }
+        .badge.no_disponible { background: #f3f4f6; color: #374151; }
+        .badge.en_prestamo { background: #fee2e2; color: #991b1b; }
+        .badge.en_mantenimiento { background: #fef9c3; color: #854d0e; }
         .badge.prestado { background: #fee2e2; color: #991b1b; }
         .badge.mantenimiento { background: #fef9c3; color: #854d0e; }
         .badge.pendiente_codigo { background: #e0e7ff; color: #3730a3; }
@@ -54,9 +58,11 @@
                     <div class="form-group">
                         <label>Estado</label>
                         <select id="equipo-estado">
+                            <option value="inventario">Inventario</option>
                             <option value="disponible">Disponible</option>
-                            <option value="mantenimiento">En Mantenimiento</option>
                             <option value="no_disponible">No Disponible</option>
+                            <option value="en_mantenimiento">En Mantenimiento</option>
+                            <option value="en_prestamo">En Préstamo</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -92,6 +98,10 @@
                 <button onclick="document.getElementById('file-excel').click()" style="padding: 0.5rem 1rem; border: none; background: #3b82f6; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-arrow-up"></i> Importar Excel</button>
                 <button onclick="exportarInventario('excel')" style="padding: 0.5rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Exportar CSV</button>
                 <button onclick="exportarInventario('pdf')" style="padding: 0.5rem 1rem; border: none; background: #ef4444; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <input type="text" id="buscar-admin-equipo" placeholder="Buscar por nombre, estado, marca..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;" onkeyup="filtrarAdminEquipos()">
             </div>
 
             <div style="overflow-x: auto;">
@@ -190,6 +200,11 @@
                 if (data.equipos && data.equipos.length > 0) {
                     window.equiposData = data.equipos;
                     data.equipos.forEach(e => {
+                        let badgeHtml = `<span class="badge ${e.estado}">${e.estado.toUpperCase().replace('_', ' ')}</span>`;
+                        if (e.estado === 'en_prestamo') {
+                            badgeHtml = `<span class="badge ${e.estado}" style="cursor: pointer; text-decoration: underline;" onclick="verPrestamo('${e.nombre.replace(/'/g, "\\'")}')" title="Ver detalle del préstamo">${e.estado.toUpperCase().replace('_', ' ')}</span>`;
+                        }
+                        
                         tbody.innerHTML += `
                             <tr>
                                 <td>#${e.id}</td>
@@ -197,7 +212,7 @@
                                     <strong>${e.nombre}</strong><br>
                                     <small style="color:var(--text-muted)">${e.descripcion || ''}</small>
                                 </td>
-                                <td><span class="badge ${e.estado}">${e.estado.toUpperCase()}</span></td>
+                                <td>${badgeHtml}</td>
                                 <td>${e.cantidad_disponible} / ${e.cantidad}</td>
                                 <td>
                                     <button onclick="editEquipoById(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer;"><i class="fa-solid fa-edit"></i></button>
@@ -212,6 +227,38 @@
             } catch (e) {
                 console.error(e);
             }
+        }
+
+        function filtrarAdminEquipos() {
+            const query = document.getElementById('buscar-admin-equipo').value.toLowerCase();
+            const rows = document.querySelectorAll('#tbody-equipos tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function verPrestamo(nombreEquipo) {
+            // Cambiar a la pestaña de préstamos
+            const btnPrestamos = document.getElementById('tab-prestamos');
+            if (btnPrestamos) switchTab('prestamos', btnPrestamos);
+            
+            // Filtrar la tabla de préstamos
+            const query = nombreEquipo.toLowerCase();
+            const rows = document.querySelectorAll('#tbody-prestamos tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            window.scrollTo(0, 0);
         }
 
         async function saveEquipo(e) {
@@ -433,7 +480,7 @@
                         modelo: row['Modelo'] || row['modelo'] || '',
                         numero_serie: row['No_Serie'] || row['no_serie'] || row['Serie'] || '',
                         cantidad: parseInt(row['Cantidad'] || row['cantidad']) || 1,
-                        estado: (row['Estado'] || row['estado'] || 'disponible').toLowerCase(),
+                        estado: (row['Estado'] || row['estado'] || 'inventario').toLowerCase(),
                         descripcion: row['Descripcion'] || row['descripcion'] || ''
                     })).filter(eq => eq.nombre.trim() !== ''); // Descartar filas sin nombre
 
@@ -630,5 +677,5 @@
         window.onload = checkSession;
     </script>
     <script src="pdf_generator.js"></script>
-<script src="scrolltop.js?v=2"></script>`n</body>
+</body>
 </html>

@@ -16,7 +16,7 @@ $marca = trim($data['marca'] ?? '');
 $modelo = trim($data['modelo'] ?? '');
 $numero_serie = trim($data['numero_serie'] ?? '');
 $descripcion = trim($data['descripcion'] ?? '');
-$estado = $data['estado'] ?? 'disponible';
+$estado = $data['estado'] ?? 'inventario';
 $cantidad = isset($data['cantidad']) ? (int)$data['cantidad'] : 1;
 
 try {

@@ -178,12 +178,16 @@
                 // Lógica de permisos para Inventario
                 if (data.user.rol === 'inventario' || data.user.puede_pedir_equipos == 1 || data.user.rol === 'admin' || data.user.rol === 'directivo') {
                     const btnInv = document.getElementById('btn-inventario');
-                    btnInv.style.display = 'flex'; // Volver a mostrar el botón
+                    btnInv.style.display = 'flex'; // Mostrar el botón normal de Pedir Equipos
                     
-                    // Si es admin o encargado de inventario, redirigir al panel admin de inventario
+                    // Si es admin o encargado de inventario, agregar un SEGUNDO botón para administrar
                     if (data.user.rol === 'admin' || data.user.rol === 'inventario') {
-                        btnInv.href = "admin_inventario.html";
-                        btnInv.innerHTML = '<i class="fa-solid fa-boxes-stacked"></i> Administrar Inventario';
+                        const btnAdmin = document.createElement('a');
+                        btnAdmin.href = "admin_inventario.html";
+                        btnAdmin.className = "btn-submit";
+                        btnAdmin.style.cssText = "text-decoration:none; background:#0f766e;";
+                        btnAdmin.innerHTML = '<i class="fa-solid fa-boxes-stacked"></i> Administrar Inventario';
+                        btnInv.parentNode.insertBefore(btnAdmin, btnInv.nextSibling);
                     }
                 }
             } catch (error) {

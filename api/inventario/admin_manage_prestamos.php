@@ -42,6 +42,9 @@ try {
         $stmtUp = $pdo->prepare("UPDATE inventario_prestamos SET estado = 'prestado' WHERE id = ?");
         $stmtUp->execute([$id]);
         
+        $stmtUpEq = $pdo->prepare("UPDATE inventario_equipos SET estado = 'en_prestamo' WHERE id = ?");
+        $stmtUpEq->execute([$prestamo['equipo_id']]);
+        
         $stmtLog = $pdo->prepare("INSERT INTO registro_actividades (usuario_rut, usuario_nombre, modulo, accion, detalles, ip_address) VALUES (?, ?, 'Préstamos', 'Aprobar Préstamo', ?, ?)");
         $stmtLog->execute([$_SESSION['user_rut'] ?? '', $_SESSION['user_nombre'] ?? '', "Aprobado con código. ID Préstamo: $id", $_SERVER['REMOTE_ADDR'] ?? '']);
         
@@ -55,6 +58,9 @@ try {
         // Aprobar directamente sin requerir código
         $stmtUp = $pdo->prepare("UPDATE inventario_prestamos SET estado = 'prestado', codigo_aprobacion = 'ADMIN', directivo_id = ? WHERE id = ?");
         $stmtUp->execute([$_SESSION['user_id'], $id]);
+        
+        $stmtUpEq = $pdo->prepare("UPDATE inventario_equipos SET estado = 'en_prestamo' WHERE id = ?");
+        $stmtUpEq->execute([$prestamo['equipo_id']]);
         
         $stmtLog = $pdo->prepare("INSERT INTO registro_actividades (usuario_rut, usuario_nombre, modulo, accion, detalles, ip_address) VALUES (?, ?, 'Préstamos', 'Aprobar Préstamo', ?, ?)");
         $stmtLog->execute([$_SESSION['user_rut'] ?? '', $_SESSION['user_nombre'] ?? '', "Aprobado directamente (Admin). ID Préstamo: $id", $_SERVER['REMOTE_ADDR'] ?? '']);
@@ -104,6 +110,9 @@ try {
         
         $stmtUp = $pdo->prepare("UPDATE inventario_prestamos SET estado = 'devuelto', fecha_devolucion_real = NOW() WHERE id = ?");
         $stmtUp->execute([$id]);
+        
+        $stmtUpEq = $pdo->prepare("UPDATE inventario_equipos SET estado = 'inventario' WHERE id = ?");
+        $stmtUpEq->execute([$prestamo['equipo_id']]);
         
         $stmtLog = $pdo->prepare("INSERT INTO registro_actividades (usuario_rut, usuario_nombre, modulo, accion, detalles, ip_address) VALUES (?, ?, 'Préstamos', 'Devolución Equipo', ?, ?)");
         $stmtLog->execute([$_SESSION['user_rut'] ?? '', $_SESSION['user_nombre'] ?? '', "Marcado como devuelto. ID Préstamo: $id", $_SERVER['REMOTE_ADDR'] ?? '']);

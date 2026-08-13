@@ -38,7 +38,7 @@ try {
         $modelo = trim($eq['modelo'] ?? '');
         $serie = trim($eq['numero_serie'] ?? '');
         $cantidad = isset($eq['cantidad']) ? (int)$eq['cantidad'] : 1;
-        $estado = trim($eq['estado'] ?? 'disponible');
+        $estado = trim($eq['estado'] ?? 'inventario');
         $descripcion = trim($eq['descripcion'] ?? '');
 
         // Validaciones básicas
@@ -51,9 +51,9 @@ try {
         if ($cantidad < 1) $cantidad = 1;
 
         // Validar que el estado sea uno de los permitidos por el ENUM
-        $estadosPermitidos = ['disponible', 'prestado', 'mantenimiento', 'no_disponible'];
+        $estadosPermitidos = ['inventario', 'disponible', 'en_prestamo', 'en_mantenimiento', 'no_disponible', 'prestado', 'mantenimiento'];
         if (!in_array($estado, $estadosPermitidos)) {
-            $estado = 'disponible';
+            $estado = 'inventario';
         }
 
         try {

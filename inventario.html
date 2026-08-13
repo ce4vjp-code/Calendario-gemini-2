@@ -26,6 +26,7 @@
         .badge.no_disponible { background: #f3f4f6; color: #374151; }
         .badge.en_prestamo, .badge.prestado { background: #fee2e2; color: #991b1b; }
         .badge.en_mantenimiento, .badge.mantenimiento { background: #fef9c3; color: #854d0e; }
+        .badge.desconocido { background: #e5e7eb; color: #374151; }
         .btn { padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; font-weight: 500; cursor: pointer; text-align: center; }
         .btn-primary { background: var(--primary-color); color: white; }
         .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
@@ -120,15 +121,20 @@
                 
                 if (data.equipos && data.equipos.length > 0) {
                     data.equipos.forEach(e => {
-                        const canRequest = (currentUser.puede_pedir_equipos || currentUser.rol === 'admin') && (e.estado === 'disponible' || e.estado === 'inventario') && e.cantidad_disponible > 0;
-                        const btn = canRequest ? `<button class="btn btn-primary" style="width:100%" onclick="solicitarPrestamo(${e.id}, '${e.nombre}', ${e.cantidad_disponible})">Solicitar Préstamo</button>` : 
+                        let estadoDb = (e.estado || 'desconocido').toLowerCase().trim();
+                        if (estadoDb === '') estadoDb = 'desconocido';
+                        
+                        let estadoTexto = estadoDb.toUpperCase().replace(/_/g, ' ');
+
+                        const canRequest = (currentUser.puede_pedir_equipos || currentUser.rol === 'admin') && (estadoDb === 'disponible' || estadoDb === 'inventario') && e.cantidad_disponible > 0;
+                        const btn = canRequest ? `<button class="btn btn-primary" style="width:100%" onclick="solicitarPrestamo(${e.id}, '${e.nombre.replace(/'/g, "\\'")}', ${e.cantidad_disponible})">Solicitar Préstamo</button>` : 
                                    (`<button class="btn btn-primary" style="width:100%" disabled>No Disponible</button>`);
                         
                         container.innerHTML += `
                             <div class="equipo-card">
                                 <div style="display:flex; justify-content:space-between;">
                                     <h3>${e.nombre}</h3>
-                                    <span class="badge ${e.estado}">${e.estado.toUpperCase().replace('_', ' ')}</span>
+                                    <span class="badge ${estadoDb}">${estadoTexto}</span>
                                 </div>
                                 <p style="font-weight:bold; color:var(--primary-color);">Stock: ${e.cantidad_disponible} / ${e.cantidad}</p>
                                 <p>${e.descripcion || ''}</p>

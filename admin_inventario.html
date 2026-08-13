@@ -29,6 +29,7 @@
         .badge.en_mantenimiento { background: #fef9c3; color: #854d0e; }
         .badge.prestado { background: #fee2e2; color: #991b1b; }
         .badge.mantenimiento { background: #fef9c3; color: #854d0e; }
+        .badge.desconocido { background: #e5e7eb; color: #374151; }
         .badge.pendiente_codigo { background: #e0e7ff; color: #3730a3; }
         .badge.pendiente_aprobacion { background: #ffedd5; color: #9a3412; }
     </style>
@@ -200,9 +201,14 @@
                 if (data.equipos && data.equipos.length > 0) {
                     window.equiposData = data.equipos;
                     data.equipos.forEach(e => {
-                        let badgeHtml = `<span class="badge ${e.estado}">${e.estado.toUpperCase().replace('_', ' ')}</span>`;
-                        if (e.estado === 'en_prestamo') {
-                            badgeHtml = `<span class="badge ${e.estado}" style="cursor: pointer; text-decoration: underline;" onclick="verPrestamo('${e.nombre.replace(/'/g, "\\'")}')" title="Ver detalle del préstamo">${e.estado.toUpperCase().replace('_', ' ')}</span>`;
+                        let estadoDb = (e.estado || 'desconocido').toLowerCase().trim();
+                        if (estadoDb === '') estadoDb = 'desconocido';
+                        
+                        let estadoTexto = estadoDb.toUpperCase().replace(/_/g, ' ');
+                        
+                        let badgeHtml = `<span class="badge ${estadoDb}">${estadoTexto}</span>`;
+                        if (estadoDb === 'en_prestamo') {
+                            badgeHtml = `<span class="badge ${estadoDb}" style="cursor: pointer; text-decoration: underline;" onclick="verPrestamo('${e.nombre.replace(/'/g, "\\'")}')" title="Ver detalle del préstamo">${estadoTexto}</span>`;
                         }
                         
                         tbody.innerHTML += `

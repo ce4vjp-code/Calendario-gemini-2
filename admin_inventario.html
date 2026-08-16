@@ -145,6 +145,16 @@
 
         <!-- Pestaña: Préstamos -->
         <div id="prestamos" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                <div style="position: relative; max-width: 380px; width: 100%;">
+                    <input type="text" id="buscar-admin-prestamo" placeholder="Buscar por usuario, RUT, equipo o estado..." style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;" onkeyup="filtrarAdminPrestamos()">
+                    <i class="fa-solid fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                </div>
+                <button type="button" onclick="abrirModalNuevoPrestamo()" style="padding: 0.75rem 1.25rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <i class="fa-solid fa-hand-holding-hand"></i> Nuevo Préstamo Directo
+                </button>
+            </div>
+
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
@@ -161,6 +171,57 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal para Nuevo Préstamo Directo (Admin) -->
+    <div id="modal-nuevo-prestamo" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(2px);">
+        <div style="background: white; padding: 2rem; border-radius: 1rem; width: 92%; max-width: 550px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25); position: relative;">
+            <button onclick="cerrarModalNuevoPrestamo()" style="position: absolute; top: 1.2rem; right: 1.2rem; border: none; background: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            <h3 style="margin: 0 0 0.25rem 0; color: var(--primary-color); display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-hand-holding-hand"></i> Nuevo Préstamo Directo
+            </h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0 0 1.5rem 0;">
+                Asigna y entrega un equipo inmediatamente a un usuario sin requerir códigos de autorización.
+            </p>
+
+            <form id="form-nuevo-prestamo" onsubmit="guardarNuevoPrestamoDirecto(event)">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="direct-prestamo-equipo" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Seleccionar Equipo</label>
+                    <select id="direct-prestamo-equipo" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;" onchange="actualizarMaxCantidadDirect()">
+                        <option value="">-- Cargando equipos disponibles... --</option>
+                    </select>
+                    <small id="direct-equipo-info" style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 0.25rem;"></small>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label for="direct-prestamo-usuario" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Asignar a Usuario / Profesor</label>
+                    <select id="direct-prestamo-usuario" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                        <option value="">-- Cargando usuarios... --</option>
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="direct-prestamo-cantidad" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Cantidad</label>
+                        <input type="number" id="direct-prestamo-cantidad" min="1" value="1" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="direct-prestamo-dias" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Días de Préstamo</label>
+                        <input type="number" id="direct-prestamo-dias" min="1" max="365" value="1" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label for="direct-prestamo-obs" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Observaciones / Motivo (opcional)</label>
+                    <textarea id="direct-prestamo-obs" rows="2" placeholder="Ej: Préstamo para clase de ciencias o acto" style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;"></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                    <button type="button" onclick="cerrarModalNuevoPrestamo()" style="padding: 0.6rem 1.2rem; border: 1px solid var(--border-color); background: white; border-radius: 0.5rem; cursor: pointer; font-weight: 500;">Cancelar</button>
+                    <button type="submit" id="btn-submit-direct-prestamo" style="padding: 0.6rem 1.5rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">Asignar y Entregar Equipo</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -605,6 +666,146 @@
             }
         }
 
+        window.prestamosData = [];
+        window.usuariosPrestamos = [];
+
+        function filtrarAdminPrestamos() {
+            const query = document.getElementById('buscar-admin-prestamo').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#tbody-prestamos tr');
+            rows.forEach(row => {
+                if (row.cells.length === 1) return; // Fila de 'No hay préstamos' o 'Cargando'
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        async function abrirModalNuevoPrestamo() {
+            const selectEquipo = document.getElementById('direct-prestamo-equipo');
+            const selectUsuario = document.getElementById('direct-prestamo-usuario');
+            const infoEquipo = document.getElementById('direct-equipo-info');
+            
+            selectEquipo.innerHTML = '<option value="">-- Cargando equipos con stock disponible... --</option>';
+            selectUsuario.innerHTML = '<option value="">-- Cargando usuarios... --</option>';
+            infoEquipo.textContent = '';
+            document.getElementById('direct-prestamo-cantidad').value = 1;
+            document.getElementById('direct-prestamo-dias').value = 1;
+            document.getElementById('direct-prestamo-obs').value = '';
+            
+            document.getElementById('modal-nuevo-prestamo').style.display = 'flex';
+
+            try {
+                // 1. Cargar equipos
+                const resEq = await fetch('api/inventario/get_equipos.php?t=' + new Date().getTime());
+                const dataEq = await resEq.json();
+                
+                selectEquipo.innerHTML = '<option value="">-- Selecciona un equipo --</option>';
+                if (dataEq.success && dataEq.equipos) {
+                    const disponibles = dataEq.equipos.filter(e => e.cantidad_disponible > 0 && e.estado !== 'mantenimiento' && e.estado !== 'no_disponible');
+                    
+                    if (disponibles.length === 0) {
+                        selectEquipo.innerHTML = '<option value="">No hay equipos disponibles en inventario</option>';
+                    } else {
+                        disponibles.forEach(e => {
+                            const opt = document.createElement('option');
+                            opt.value = e.id;
+                            opt.dataset.disponible = e.cantidad_disponible;
+                            opt.dataset.ubicacion = e.ubicacion || '';
+                            const ubic = e.ubicacion ? ` [${e.ubicacion}]` : '';
+                            opt.textContent = `${e.nombre} (${e.marca || ''} ${e.modelo || ''})${ubic} — Disp: ${e.cantidad_disponible}`;
+                            selectEquipo.appendChild(opt);
+                        });
+                    }
+                }
+                
+                // 2. Cargar usuarios
+                const resUsr = await fetch('api/inventario/get_usuarios_prestamos.php?t=' + new Date().getTime());
+                const dataUsr = await resUsr.json();
+                
+                selectUsuario.innerHTML = '<option value="">-- Selecciona un usuario / profesor --</option>';
+                if (dataUsr.success && dataUsr.usuarios) {
+                    window.usuariosPrestamos = dataUsr.usuarios;
+                    dataUsr.usuarios.forEach(u => {
+                        const opt = document.createElement('option');
+                        opt.value = u.id;
+                        opt.textContent = `${u.nombre} (RUT: ${u.rut}) [${u.rol}]`;
+                        selectUsuario.appendChild(opt);
+                    });
+                }
+            } catch (err) {
+                console.error("Error al cargar datos para préstamo directo:", err);
+                alert("Error al cargar la lista de equipos o usuarios.");
+            }
+        }
+
+        function cerrarModalNuevoPrestamo() {
+            document.getElementById('modal-nuevo-prestamo').style.display = 'none';
+        }
+
+        function actualizarMaxCantidadDirect() {
+            const select = document.getElementById('direct-prestamo-equipo');
+            const selectedOpt = select.options[select.selectedIndex];
+            const cantInput = document.getElementById('direct-prestamo-cantidad');
+            const info = document.getElementById('direct-equipo-info');
+            
+            if (selectedOpt && selectedOpt.dataset.disponible) {
+                const disp = parseInt(selectedOpt.dataset.disponible) || 1;
+                cantInput.max = disp;
+                if (parseInt(cantInput.value) > disp) cantInput.value = disp;
+                const ubic = selectedOpt.dataset.ubicacion ? ` | Ubicación física: ${selectedOpt.dataset.ubicacion}` : '';
+                info.textContent = `Stock disponible: ${disp} unidad(es)${ubic}`;
+            } else {
+                cantInput.removeAttribute('max');
+                info.textContent = '';
+            }
+        }
+
+        async function guardarNuevoPrestamoDirecto(e) {
+            e.preventDefault();
+            const equipoId = document.getElementById('direct-prestamo-equipo').value;
+            const usuarioId = document.getElementById('direct-prestamo-usuario').value;
+            const cantidad = parseInt(document.getElementById('direct-prestamo-cantidad').value) || 1;
+            const dias = parseInt(document.getElementById('direct-prestamo-dias').value) || 1;
+            const observaciones = document.getElementById('direct-prestamo-obs').value.trim();
+            const btnSubmit = document.getElementById('btn-submit-direct-prestamo');
+            
+            if (!equipoId || !usuarioId) {
+                alert('Debes seleccionar tanto el equipo como el usuario receptor.');
+                return;
+            }
+
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Asignando y entregando...';
+
+            try {
+                const res = await fetch('api/inventario/admin_manage_prestamos.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'direct_create',
+                        equipo_id: equipoId,
+                        usuario_id: usuarioId,
+                        cantidad: cantidad,
+                        dias: dias,
+                        observaciones: observaciones
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(data.message || 'Préstamo asignado y entregado directamente con éxito.');
+                    cerrarModalNuevoPrestamo();
+                    loadPrestamosAdmin();
+                    loadEquipos();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo crear el préstamo'));
+                }
+            } catch (err) {
+                alert('Error de conexión al procesar el préstamo directo.');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Asignar y Entregar Equipo';
+            }
+        }
+
         async function loadPrestamosAdmin() {
             try {
                 const res = await fetch('api/inventario/admin_get_prestamos.php?t=' + new Date().getTime());
@@ -613,45 +814,49 @@
                 tbody.innerHTML = '';
                 
                 if (data.prestamos && data.prestamos.length > 0) {
+                    window.prestamosData = data.prestamos;
                     data.prestamos.forEach(p => {
                         let btnAccion = '';
                         let btnPdf = '';
 
-                        let btnDelete = `<button onclick="borrarPrestamo(${p.id})" style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-trash"></i> Borrar</button>`;
+                        let btnDelete = `<button onclick="borrarPrestamo(${p.id})" style="background: #ef4444; color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%; font-size: 0.8rem;"><i class="fa-solid fa-trash"></i> Borrar</button>`;
 
                         if (p.estado === 'prestado' || p.estado === 'pendiente_aprobacion' || p.estado === 'atrasado' || p.estado === 'devuelto') {
-                            btnPdf += `<button onclick="generarPDF('prestamo', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #3b82f6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-file-pdf"></i> Acta Préstamo</button>`;
+                            btnPdf += `<button onclick="generarPDF('prestamo', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #3b82f6; color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%; font-size: 0.8rem;"><i class="fa-solid fa-file-pdf"></i> Acta Préstamo</button>`;
                         }
                         if (p.estado === 'devuelto') {
-                            btnPdf += `<button onclick="generarPDF('recepcion', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #10b981; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-file-pdf"></i> Acta Recepción</button>`;
+                            btnPdf += `<button onclick="generarPDF('recepcion', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #10b981; color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%; font-size: 0.8rem;"><i class="fa-solid fa-file-pdf"></i> Acta Recepción</button>`;
                         }
 
                         if (p.estado === 'pendiente_aprobacion' || p.estado === 'pendiente_codigo') {
-                            btnAccion = `<button onclick="aprobarDirectamente(${p.id})" style="background: #8b5cf6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-bottom: 0.25rem; display: block; width: 100%;">Aprobar Directamente</button>
+                            btnAccion = `<button onclick="aprobarDirectamente(${p.id})" style="background: #8b5cf6; color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 4px; cursor: pointer; margin-bottom: 0.25rem; display: block; width: 100%; font-size: 0.8rem;"><i class="fa-solid fa-check"></i> Aprobar Directamente</button>
                                          <div style="display:flex; gap:0.5rem; margin-top:0.25rem;">
-                                            <button onclick="abrirAprobacion(${p.id})" style="background: #10b981; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; flex: 1;">Usar Código</button>
-                                            <button onclick="rechazarPrestamo(${p.id})" style="background: var(--danger); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; flex: 1;">Rechazar</button>
+                                            <button onclick="abrirAprobacion(${p.id})" style="background: #10b981; color: white; border: none; padding: 0.35rem 0.5rem; border-radius: 4px; cursor: pointer; flex: 1; font-size: 0.8rem;">Código</button>
+                                            <button onclick="rechazarPrestamo(${p.id})" style="background: var(--danger); color: white; border: none; padding: 0.35rem 0.5rem; border-radius: 4px; cursor: pointer; flex: 1; font-size: 0.8rem;">Rechazar</button>
                                          </div>`;
                         } else if (p.estado === 'prestado' || p.estado === 'atrasado') {
-                            btnAccion = `<button onclick="marcarDevuelto(${p.id})" style="background: var(--primary-color); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; display: block; width: 100%;">Marcar Devuelto</button>`;
+                            btnAccion = `<button onclick="marcarDevuelto(${p.id})" style="background: var(--primary-color); color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 4px; cursor: pointer; display: block; width: 100%; font-size: 0.8rem;"><i class="fa-solid fa-rotate-left"></i> Marcar Devuelto</button>`;
                         }
 
-                        tbody.innerHTML += `
-                            <tr>
-                                <td>${p.fecha_solicitud}</td>
-                                <td>${p.usuario_nombre}</td>
-                                <td>${p.equipo_nombre} (Cant: ${p.cantidad})</td>
-                                <td><span class="badge ${p.estado}">${p.estado.toUpperCase().replace('_', ' ')}</span></td>
-                                <td style="display: flex; flex-direction: column;">
-                                    ${btnAccion}
-                                    ${btnPdf}
-                                    ${btnDelete}
-                                </td>
-                            </tr>
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${p.fecha_solicitud}</td>
+                            <td>
+                                <strong>${p.usuario_nombre}</strong>
+                                <div style="font-size:0.8rem; color:var(--text-muted); font-family:monospace;">${p.rut || ''}</div>
+                            </td>
+                            <td>${p.equipo_nombre} (Cant: ${p.cantidad})</td>
+                            <td><span class="badge ${p.estado}">${p.estado.toUpperCase().replace('_', ' ')}</span></td>
+                            <td style="display: flex; flex-direction: column; min-width: 140px;">
+                                ${btnAccion}
+                                ${btnPdf}
+                                ${btnDelete}
+                            </td>
                         `;
+                        tbody.appendChild(tr);
                     });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay préstamos</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 1.5rem; color: var(--text-muted);">No hay préstamos registrados</td></tr>';
                 }
             } catch (e) {
                 console.error(e);

@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Modal elements
     const modal = document.getElementById('eval-modal');
-    const closeModal = document.querySelector('.close-modal');
+    const closeModal = document.querySelector('#eval-modal .close-modal');
     const modalAsignatura = document.getElementById('modal-asignatura');
     const modalCurso = document.getElementById('modal-curso');
     const modalProfesor = document.getElementById('modal-profesor');

@@ -1,21 +1,22 @@
 :root {
-    --primary-color: #4f46e5;
-    --primary-hover: #4338ca;
-    --secondary-color: #f8fafc;
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --bg-main: #f1f5f9;
-    --bg-card: #ffffff;
-    --border-color: #e2e8f0;
-    --danger: #ef4444;
-    --danger-hover: #dc2626;
+    /* Cream Theme (SDD Match) */
+    --primary-color: #CF6631;
+    --primary-hover: #b5592a;
+    --secondary-color: #F2EEE8;
+    --text-main: #1A1614;
+    --text-muted: #7A7068;
+    --bg-main: #F7F4EF;
+    --bg-card: #FFFFFF;
+    --border-color: #E3DDD5;
+    --danger: #A4161A;
+    --danger-hover: #801114;
     
-    /* Tipos de evaluación colores */
-    --color-prueba: #ef4444;
-    --color-trabajo: #3b82f6;
-    --color-disertacion: #f59e0b;
-    --color-control: #10b981;
-    --color-otro: #8b5cf6;
+    /* Tipos de evaluación colores (Muted/Elegant) */
+    --color-prueba: #A4161A;
+    --color-trabajo: #1B5FA8;
+    --color-disertacion: #CF6631;
+    --color-control: #1A6B3C;
+    --color-otro: #5E2D91;
 }
 
 * {
@@ -470,6 +471,7 @@ body {
     border-radius: 4px;
     color: white;
     cursor: pointer;
+    display: block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

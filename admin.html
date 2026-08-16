@@ -81,26 +81,26 @@
         
         <div style="margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 2rem;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; gap: 1rem;">
-                <h2 style="margin-bottom: 0;">Usuarios Registrados</h2>
+                <div>
+                    <h2 style="margin-bottom: 0.25rem;">Usuarios Registrados</h2>
+                    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">Haz clic en el nombre o RUT de cualquier usuario para ver y modificar todos sus datos.</p>
+                </div>
                 <div style="position: relative; max-width: 350px; width: 100%;">
-                    <input type="text" id="search-usuarios" placeholder="Buscar por nombre, RUT o correo..." style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border-radius: 0.5rem; border: 1px solid var(--border-color); font-family: 'Inter', sans-serif; box-sizing: border-box; font-size: 0.9rem;">
+                    <input type="text" id="search-usuarios" placeholder="Buscar por nombre o RUT..." style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border-radius: 0.5rem; border: 1px solid var(--border-color); font-family: 'Inter', sans-serif; box-sizing: border-box; font-size: 0.9rem;">
                     <i class="fa-solid fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
                 </div>
             </div>
             <div style="overflow-x: auto;">
-                <table class="responsive-table" style="width: 100%; border-collapse: collapse; margin-top: 1rem; text-align: left; font-size: 0.9rem;">
+                <table class="responsive-table" style="width: 100%; border-collapse: collapse; margin-top: 1rem; text-align: left; font-size: 0.95rem;">
                     <thead>
                         <tr style="background-color: var(--bg-main); border-bottom: 2px solid var(--border-color);">
-                            <th style="padding: 1rem;">Nombre</th>
+                            <th style="padding: 1rem;">Nombre del Usuario</th>
                             <th style="padding: 1rem;">RUT</th>
-                            <th style="padding: 1rem;">Correo</th>
-                            <th style="padding: 1rem;">Rol</th>
-                            <th style="padding: 1rem;">Inventario</th>
-                            <th style="padding: 1rem; text-align: right;">Acciones</th>
+                            <th style="padding: 1rem; text-align: right;">Acción</th>
                         </tr>
                     </thead>
                     <tbody id="usuarios-tbody">
-                        <tr><td colspan="6" style="text-align:center; padding: 1rem;">Cargando usuarios...</td></tr>
+                        <tr><td colspan="3" style="text-align:center; padding: 1rem;">Cargando usuarios...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -108,6 +108,104 @@
         
         <div style="margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 1rem; text-align: right;">
             <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" style="color: var(--primary-color); text-decoration: none; font-weight: bold; font-size: 1.1rem;"><i class="fa-solid fa-arrow-up"></i> Volver arriba</a>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Usuario Completo -->
+    <div id="modal-editar-usuario" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:999; justify-content:center; align-items:center; backdrop-filter: blur(2px);">
+        <div style="background:var(--bg-card); padding:2rem; border-radius:1rem; max-width:650px; width:92%; max-height:90vh; overflow-y:auto; position:relative; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25);">
+            <button onclick="cerrarModalEditarUsuario()" style="position:absolute; top:1.2rem; right:1.2rem; border:none; background:none; font-size:1.6rem; cursor:pointer; color:var(--text-muted); line-height: 1;">&times;</button>
+            <h3 style="margin: 0 0 0.25rem 0; color: var(--primary-color);"><i class="fa-solid fa-user-pen"></i> Editar Usuario</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin: 0 0 1.5rem 0;">Modifica los datos personales, contraseña, estado de 2FA y permisos del usuario.</p>
+            
+            <form id="form-editar-usuario" onsubmit="guardarUsuarioCompleto(event)">
+                <input type="hidden" id="edit-user-id">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label for="edit-user-nombre" style="font-weight:600; font-size:0.85rem; margin-bottom:0.3rem; display:block;">Nombre Completo</label>
+                        <input type="text" id="edit-user-nombre" required style="width:100%; padding:0.65rem; border:1px solid var(--border-color); border-radius:0.5rem; box-sizing:border-box;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label for="edit-user-rut" style="font-weight:600; font-size:0.85rem; margin-bottom:0.3rem; display:block;">RUT</label>
+                        <input type="text" id="edit-user-rut" required placeholder="Ej: 12345678-9" style="width:100%; padding:0.65rem; border:1px solid var(--border-color); border-radius:0.5rem; box-sizing:border-box;">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label for="edit-user-email" style="font-weight:600; font-size:0.85rem; margin-bottom:0.3rem; display:block;">Correo Electrónico</label>
+                        <input type="email" id="edit-user-email" placeholder="ejemplo@liceotpggm.cl" style="width:100%; padding:0.65rem; border:1px solid var(--border-color); border-radius:0.5rem; box-sizing:border-box;">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0;">
+                        <label for="edit-user-rol" style="font-weight:600; font-size:0.85rem; margin-bottom:0.3rem; display:block;">Rol en el Sistema</label>
+                        <select id="edit-user-rol" style="width:100%; padding:0.65rem; border:1px solid var(--border-color); border-radius:0.5rem; box-sizing:border-box;">
+                            <option value="profesor">profesor</option>
+                            <option value="admin">admin</option>
+                            <option value="diplomas">diplomas</option>
+                            <option value="auxiliar">auxiliar</option>
+                            <option value="asistente_educacion">asistente_educacion</option>
+                            <option value="externo">externo</option>
+                            <option value="directivo">directivo</option>
+                            <option value="inventario">inventario</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="background:var(--bg-main); padding:0.75rem 1rem; border-radius:0.5rem; margin-bottom:1rem; border:1px solid var(--border-color);">
+                    <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; font-weight:500; cursor:pointer;">
+                        <input type="checkbox" id="edit-user-puede-pedir" style="width:1.1rem; height:1.1rem;">
+                        Permitir solicitar equipos en el Módulo de Inventario
+                    </label>
+                </div>
+
+                <!-- Sección Contraseña -->
+                <div style="border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; background: var(--bg-main);">
+                    <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: var(--primary-color); display:flex; align-items:center; gap:0.5rem;">
+                        <i class="fa-solid fa-key"></i> Gestión de Contraseña
+                    </h4>
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: flex-end;">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label for="edit-user-nueva-clave" style="font-size:0.8rem; font-weight:500; display:block; margin-bottom:0.25rem;">Cambiar contraseña manualmente:</label>
+                            <input type="text" id="edit-user-nueva-clave" placeholder="Dejar en blanco para mantener actual" style="width:100%; padding:0.6rem; border:1px solid var(--border-color); border-radius:0.5rem; box-sizing:border-box;">
+                        </div>
+                        <button type="button" onclick="modalResetClave()" style="background: var(--color-trabajo); color: white; border: none; padding: 0.65rem 0.9rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; font-weight: 500; white-space: nowrap; height: fit-content;" title="Generar clave aleatoria y enviar por correo">
+                            <i class="fa-solid fa-arrows-rotate"></i> Restablecer Clave
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sección 2FA -->
+                <div style="border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1.25rem; background: var(--bg-main);">
+                    <h4 style="margin: 0 0 0.5rem 0; font-size: 0.9rem; color: var(--primary-color); display:flex; align-items:center; gap:0.5rem;">
+                        <i class="fa-solid fa-shield-halved"></i> Autenticación de Dos Factores (2FA)
+                    </h4>
+                    <div id="modal-2fa-status-box" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                        <div id="modal-2fa-text" style="font-size: 0.85rem;"></div>
+                        <button type="button" id="btn-quitar-2fa" onclick="modalQuitar2FA()" style="background: #ef4444; color: white; border: none; padding: 0.45rem 0.85rem; border-radius: 0.375rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; display: none;">
+                            <i class="fa-solid fa-shield-slash"></i> Quitar 2FA (Dejar solo con contraseña)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Asignaturas y Cursos -->
+                <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+                    <button type="button" onclick="modalAbrirAsignaturas()" style="background: #0ea5e9; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
+                        <i class="fa-solid fa-book"></i> Asignar Asignaturas
+                    </button>
+                    <button type="button" onclick="modalAbrirCursos()" style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.4rem;">
+                        <i class="fa-solid fa-users-rectangle"></i> Asignar Cursos
+                    </button>
+                    <button type="button" id="btn-modal-eliminar" onclick="modalDeleteUsuario()" style="background: var(--danger); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; font-weight: 500; margin-left: auto; display: inline-flex; align-items: center; gap: 0.4rem;">
+                        <i class="fa-solid fa-trash"></i> Eliminar Usuario
+                    </button>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                    <button type="button" onclick="cerrarModalEditarUsuario()" style="padding: 0.6rem 1.2rem; border: 1px solid var(--border-color); background: white; border-radius: 0.5rem; cursor: pointer; font-weight: 500;">Cancelar</button>
+                    <button type="submit" id="btn-submit-edit-user" class="btn-submit" style="margin: 0; width: auto; padding: 0.6rem 1.5rem;">Guardar Cambios</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -279,8 +377,12 @@
         });
         
 
+        window.usuariosData = [];
+        window.currentUserId = null;
+        window.activeEditingUser = null;
+
         document.getElementById('search-usuarios').addEventListener('input', function() {
-            const query = this.value.toLowerCase();
+            const query = this.value.toLowerCase().trim();
             const rows = document.querySelectorAll('#usuarios-tbody tr');
             
             rows.forEach(row => {
@@ -288,9 +390,8 @@
                 
                 const nombre = row.cells[0]?.textContent.toLowerCase() || '';
                 const rut = row.cells[1]?.textContent.toLowerCase() || '';
-                const correo = row.cells[2]?.textContent.toLowerCase() || '';
                 
-                if (nombre.includes(query) || rut.includes(query) || correo.includes(query)) {
+                if (nombre.includes(query) || rut.includes(query)) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';
@@ -299,103 +400,211 @@
         });
 
         async function loadUsuarios() {
+            const tbody = document.getElementById('usuarios-tbody');
             try {
                 const response = await fetch('api/admin_get_usuarios.php?t=' + new Date().getTime(), { credentials: 'same-origin' });
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding: 1.5rem; color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Error al cargar usuarios: ${errData.error || 'Error ' + response.status}</td></tr>`;
+                    return;
+                }
                 const data = await response.json();
-                const tbody = document.getElementById('usuarios-tbody');
                 tbody.innerHTML = '';
                 
-                if (data.success && data.usuarios.length > 0) {
-                    const currentUserId = data.current_user_id;
+                if (data.success && data.usuarios && data.usuarios.length > 0) {
+                    window.usuariosData = data.usuarios;
+                    window.currentUserId = data.current_user_id;
+                    
                     data.usuarios.forEach(u => {
                         const tr = document.createElement('tr');
                         tr.style.borderBottom = '1px solid var(--border-color)';
+                        tr.style.cursor = 'pointer';
+                        tr.style.transition = 'background-color 0.15s ease';
+                        tr.onmouseover = () => { tr.style.backgroundColor = 'var(--bg-main)'; };
+                        tr.onmouseout = () => { tr.style.backgroundColor = ''; };
                         
-                        const isAdmin = u.rol === 'admin';
-                        const isSelf = u.id === currentUserId;
+                        tr.onclick = (e) => {
+                            abrirModalEditarUsuario(u.id);
+                        };
                         
-                        // Select de roles
-                        const rolOptions = ['admin', 'profesor', 'diplomas', 'auxiliar', 'asistente_educacion', 'externo', 'directivo', 'inventario']
-                            .map(r => `<option value="${r}" ${u.rol === r ? 'selected' : ''}>${r}</option>`)
-                            .join('');
-                            
-                        // Checkbox permisos de inventario
-                        const puedePedir = (u.puede_pedir_equipos == 1) ? 'checked' : '';
+                        let tag2fa = (u.is_2fa_enabled == 1) ? `<span class="badge" style="background:#dcfce7; color:#166534; font-size:0.75rem; margin-left:0.5rem;"><i class="fa-solid fa-shield"></i> 2FA Activo</span>` : '';
+                        let rolBadge = `<span class="badge" style="background:#f1f5f9; color:#475569; font-size:0.75rem; margin-left:0.5rem;">${u.rol}</span>`;
                         
                         tr.innerHTML = `
-                            <td style="padding: 1rem;" data-label="Nombre">${u.nombre}</td>
-                            <td style="padding: 1rem;" data-label="RUT">${u.rut}</td>
-                            <td style="padding: 1rem;" data-label="Correo">${u.email || '-'}</td>
-                            <td style="padding: 1rem;" data-label="Rol">
-                                <select onchange="updateUserRolPermisos(${u.id}, this.value, document.getElementById('chk-inv-${u.id}').checked)" style="padding: 0.25rem; border-radius: 0.25rem; border: 1px solid var(--border-color);" ${isSelf ? 'disabled' : ''}>
-                                    ${rolOptions}
-                                </select>
+                            <td style="padding: 1rem; font-weight: 500;" data-label="Nombre">
+                                <a href="javascript:void(0)" onclick="abrirModalEditarUsuario(${u.id}); event.stopPropagation();" style="color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 1rem; display: inline-flex; align-items: center;">
+                                    <i class="fa-solid fa-user" style="margin-right: 0.5rem; color: var(--text-muted);"></i>
+                                    ${u.nombre}
+                                </a>
+                                ${rolBadge}
+                                ${tag2fa}
                             </td>
-                            <td style="padding: 1rem;" data-label="Inventario">
-                                <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem;">
-                                    <input type="checkbox" id="chk-inv-${u.id}" ${puedePedir} onchange="updateUserRolPermisos(${u.id}, this.closest('tr').querySelector('select').value, this.checked)">
-                                    Permitir pedir
-                                </label>
+                            <td style="padding: 1rem; color: var(--text-main); font-family: monospace; font-size: 0.95rem;" data-label="RUT">
+                                <a href="javascript:void(0)" onclick="abrirModalEditarUsuario(${u.id}); event.stopPropagation();" style="color: inherit; text-decoration: none;">
+                                    ${u.rut}
+                                </a>
                             </td>
-                            <td style="padding: 1rem; text-align: right; display: flex; gap: 0.5rem; justify-content: flex-end;">
-                                <button onclick="abrirModalCursos(${u.id}, '${u.nombre}', '${(u.cursos_asignados || '[]').replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="background: #10b981; color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Asignar Cursos"><i class="fa-solid fa-users-rectangle"></i></button>
-                                <button onclick="abrirModalAsignaturas(${u.id}, '${u.nombre}', '${(u.asignaturas_asignadas || '[]').replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" style="background: #0ea5e9; color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Asignar Asignaturas"><i class="fa-solid fa-book"></i></button>
-                                <button onclick="editEmail(${u.id}, '${u.nombre}', '${u.email || ''}')" style="background: #f59e0b; color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Editar Correo"><i class="fa-solid fa-envelope"></i></button>
-                                <button onclick="resetClave(${u.id}, '${u.nombre}')" style="background: var(--color-trabajo); color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Restablecer Contraseña"><i class="fa-solid fa-key"></i></button>
-                                ${!isSelf ? 
-                                    `<button onclick="deleteUsuario(${u.id}, '${u.nombre}')" style="background: var(--danger); color: white; border: none; padding: 0.5rem; border-radius: 0.25rem; cursor: pointer;" title="Eliminar Usuario"><i class="fa-solid fa-trash"></i></button>`
-                                    : `<span style="padding: 0.5rem; color: #94a3b8; font-size: 0.9em; border: 1px dashed #cbd5e1; border-radius: 0.25rem; cursor: not-allowed;" title="Este es tu usuario actual">Mi Usuario</span>`
-                                }
+                            <td style="padding: 1rem; text-align: right;" data-label="Editar">
+                                <button type="button" onclick="event.stopPropagation(); abrirModalEditarUsuario(${u.id})" style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.45rem 0.9rem; border-radius: 0.375rem; cursor: pointer; color: var(--primary-color); font-size: 0.85rem; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.05);" title="Ver y editar datos completos de ${u.nombre}">
+                                    <i class="fa-solid fa-pen-to-square"></i> Ver / Modificar
+                                </button>
                             </td>
                         `;
                         tbody.appendChild(tr);
                     });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 1rem;">No hay usuarios registrados aún.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 1.5rem; color:var(--text-muted);">No hay usuarios registrados aún.</td></tr>';
                 }
             } catch (e) {
                 console.error("Error al cargar usuarios", e);
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding: 1.5rem; color:var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Error al conectar con el servidor.</td></tr>';
             }
         }
-        
-        async function updateUserRolPermisos(id, rol, puedePedir) {
-            try {
-                const response = await fetch('api/admin_edit_rol_permisos.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: id, rol: rol, puede_pedir_equipos: puedePedir ? 1 : 0 })
-                });
-                const data = await response.json();
-                if (!data.success) {
-                    alert('Error: ' + (data.error || 'No se pudieron actualizar los permisos'));
-                    loadUsuarios(); // Recargar para revertir cambios visuales fallidos
-                }
-            } catch (error) {
-                console.error("Error updating permissions:", error);
-                alert("Error de conexión");
-            }
-        }
-        
-        async function editEmail(id, nombre, currentEmail) {
-            const newEmail = prompt(`Editar correo de ${nombre}:`, currentEmail);
-            if (newEmail === null) return; // Cancelado
+
+        function abrirModalEditarUsuario(id) {
+            const user = window.usuariosData.find(u => u.id == id);
+            if (!user) return;
             
+            window.activeEditingUser = user;
+            
+            document.getElementById('edit-user-id').value = user.id;
+            document.getElementById('edit-user-nombre').value = user.nombre || '';
+            document.getElementById('edit-user-rut').value = user.rut || '';
+            document.getElementById('edit-user-email').value = user.email || '';
+            document.getElementById('edit-user-rol').value = user.rol || 'profesor';
+            document.getElementById('edit-user-puede-pedir').checked = (user.puede_pedir_equipos == 1);
+            document.getElementById('edit-user-nueva-clave').value = '';
+            
+            // Estado de 2FA
+            const is2FA = (user.is_2fa_enabled == 1);
+            const statusText = document.getElementById('modal-2fa-text');
+            const btnQuitar2FA = document.getElementById('btn-quitar-2fa');
+            
+            if (is2FA) {
+                statusText.innerHTML = `<span style="color:#166534; font-weight:600;"><i class="fa-solid fa-circle-check"></i> 2FA Activado</span> — El usuario requiere código TOTP de Google Authenticator para ingresar.`;
+                btnQuitar2FA.style.display = 'inline-block';
+            } else {
+                statusText.innerHTML = `<span style="color:var(--text-muted); font-weight:500;"><i class="fa-solid fa-lock-open"></i> 2FA Desactivado</span> — El usuario inicia sesión únicamente con su RUT y Contraseña.`;
+                btnQuitar2FA.style.display = 'none';
+            }
+            
+            // Botón eliminar: deshabilitar si es el propio usuario
+            const btnEliminar = document.getElementById('btn-modal-eliminar');
+            if (user.id == window.currentUserId) {
+                btnEliminar.style.display = 'none';
+            } else {
+                btnEliminar.style.display = 'inline-flex';
+            }
+            
+            document.getElementById('modal-editar-usuario').style.display = 'flex';
+        }
+
+        function cerrarModalEditarUsuario() {
+            document.getElementById('modal-editar-usuario').style.display = 'none';
+            window.activeEditingUser = null;
+        }
+
+        async function guardarUsuarioCompleto(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-user-id').value;
+            const nombre = document.getElementById('edit-user-nombre').value.trim();
+            const rut = document.getElementById('edit-user-rut').value.trim();
+            const email = document.getElementById('edit-user-email').value.trim();
+            const rol = document.getElementById('edit-user-rol').value;
+            const puedePedir = document.getElementById('edit-user-puede-pedir').checked ? 1 : 0;
+            const nuevaClave = document.getElementById('edit-user-nueva-clave').value.trim();
+            
+            const btnSubmit = document.getElementById('btn-submit-edit-user');
+            btnSubmit.disabled = true;
+            btnSubmit.textContent = 'Guardando...';
+
+            const payload = {
+                id: id,
+                nombre: nombre,
+                rut: rut,
+                email: email,
+                rol: rol,
+                puede_pedir_equipos: puedePedir,
+                nueva_clave: nuevaClave
+            };
+
             try {
-                const response = await fetch('api/admin_edit_email.php', {
+                const res = await fetch('api/admin_update_usuario.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id, email: newEmail.trim() }),
+                    body: JSON.stringify(payload),
                     credentials: 'same-origin'
                 });
-                const data = await response.json();
+                const data = await res.json();
+                
                 if (data.success) {
+                    alert('Usuario actualizado correctamente.');
+                    cerrarModalEditarUsuario();
                     loadUsuarios();
                 } else {
-                    alert("Error: " + data.error);
+                    alert('Error: ' + (data.error || 'No se pudo actualizar el usuario'));
                 }
-            } catch(e) {
-                alert("Error de red al intentar editar el correo.");
+            } catch (err) {
+                alert('Error de conexión al guardar los datos.');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = 'Guardar Cambios';
             }
+        }
+
+        async function modalQuitar2FA() {
+            if (!window.activeEditingUser) return;
+            const u = window.activeEditingUser;
+            
+            if (!confirm(`¿Estás seguro de que deseas desactivar el 2FA para ${u.nombre}?\n\nEl usuario volverá a iniciar sesión únicamente con su RUT y Contraseña.`)) {
+                return;
+            }
+            
+            try {
+                const res = await fetch('api/admin_disable_2fa.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: u.id }),
+                    credentials: 'same-origin'
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(data.message);
+                    u.is_2fa_enabled = 0;
+                    document.getElementById('modal-2fa-text').innerHTML = `<span style="color:var(--text-muted); font-weight:500;"><i class="fa-solid fa-lock-open"></i> 2FA Desactivado</span> — El usuario inicia sesión únicamente con su RUT y Contraseña.`;
+                    document.getElementById('btn-quitar-2fa').style.display = 'none';
+                    loadUsuarios();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (err) {
+                alert('Error de conexión al desactivar 2FA.');
+            }
+        }
+
+        async function modalResetClave() {
+            if (!window.activeEditingUser) return;
+            const u = window.activeEditingUser;
+            await resetClave(u.id, u.nombre);
+        }
+
+        async function modalDeleteUsuario() {
+            if (!window.activeEditingUser) return;
+            const u = window.activeEditingUser;
+            cerrarModalEditarUsuario();
+            await deleteUsuario(u.id, u.nombre);
+        }
+
+        function modalAbrirAsignaturas() {
+            if (!window.activeEditingUser) return;
+            const u = window.activeEditingUser;
+            abrirModalAsignaturas(u.id, u.nombre, u.asignaturas_asignadas || '[]');
+        }
+
+        function modalAbrirCursos() {
+            if (!window.activeEditingUser) return;
+            const u = window.activeEditingUser;
+            abrirModalCursos(u.id, u.nombre, u.cursos_asignados || '[]');
         }
 
         async function resetClave(id, nombre) {
@@ -657,5 +866,6 @@
             }
         }
     </script>
-<script src="scrolltop.js?v=2"></script>`n</body>
+    <script src="scrolltop.js?v=2"></script>
+</body>
 </html>

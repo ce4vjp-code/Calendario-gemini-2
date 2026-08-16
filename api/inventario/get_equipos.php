@@ -13,7 +13,11 @@ try {
     // quizás queramos mostrar solo los 'disponibles' o todo para que sepan qué existe.
     // Vamos a mostrar todo, pero el admin tiene más control
     $stmt = $pdo->query("
-        SELECT e.id, e.nombre, e.marca, e.modelo, e.numero_serie, e.descripcion, e.estado, e.fecha_registro, e.cantidad,
+        SELECT e.id, e.nombre, e.marca, e.modelo, e.numero_serie, 
+               COALESCE(e.ubicacion, '') AS ubicacion,
+               COALESCE(e.acceso_internet, 'Permanente') AS acceso_internet,
+               COALESCE(e.sensibilidad, 'Publico') AS sensibilidad,
+               e.descripcion, e.estado, e.fecha_registro, e.cantidad,
                (e.cantidad - COALESCE((SELECT SUM(p.cantidad) FROM inventario_prestamos p WHERE p.equipo_id = e.id AND p.estado IN ('prestado', 'pendiente_aprobacion', 'pendiente_codigo', 'atrasado')), 0)) AS cantidad_disponible
         FROM inventario_equipos e ORDER BY e.nombre ASC
     ");

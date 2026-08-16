@@ -130,14 +130,29 @@
                         const btn = canRequest ? `<button class="btn btn-primary" style="width:100%" onclick="solicitarPrestamo(${e.id}, '${e.nombre.replace(/'/g, "\\'")}', ${e.cantidad_disponible})">Solicitar Préstamo</button>` : 
                                    (`<button class="btn btn-primary" style="width:100%" disabled>No Disponible</button>`);
                         
+                        let sens = e.sensibilidad || 'Publico';
+                        let sensColor = sens === 'Confidencial' ? '#fee2e2; color:#991b1b;' : (sens === 'Restringido' ? '#fef3c7; color:#92400e;' : '#f1f5f9; color:#475569;');
+                        let sensBadge = `<span class="badge" style="background:${sensColor}"><i class="fa-solid fa-shield"></i> ${sens}</span>`;
+
+                        let net = e.acceso_internet || 'Permanente';
+                        let netBadge = `<span class="badge" style="background:#e0f2fe; color:#0369a1;"><i class="fa-solid fa-wifi"></i> ${net}</span>`;
+                        let ubicTxt = e.ubicacion ? `<p style="font-size:0.85rem; margin:0; color:var(--text-muted);"><i class="fa-solid fa-location-dot"></i> Ubicación: <strong>${e.ubicacion}</strong></p>` : '';
+
                         container.innerHTML += `
                             <div class="equipo-card">
-                                <div style="display:flex; justify-content:space-between;">
-                                    <h3>${e.nombre}</h3>
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                    <div>
+                                        <h3>${e.nombre}</h3>
+                                        ${ubicTxt}
+                                    </div>
                                     <span class="badge ${estadoDb}">${estadoTexto}</span>
                                 </div>
-                                <p style="font-weight:bold; color:var(--primary-color);">Stock: ${e.cantidad_disponible} / ${e.cantidad}</p>
-                                <p>${e.descripcion || ''}</p>
+                                <div style="display:flex; gap:0.4rem; flex-wrap:wrap; margin: 0.25rem 0;">
+                                    ${sensBadge}
+                                    ${netBadge}
+                                </div>
+                                <p style="font-weight:bold; color:var(--primary-color); margin:0;">Stock: ${e.cantidad_disponible} / ${e.cantidad}</p>
+                                <p style="margin:0;">${e.descripcion || ''}</p>
                                 ${btn}
                             </div>
                         `;

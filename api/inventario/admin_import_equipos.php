@@ -28,8 +28,8 @@ try {
 
     $stmt = $pdo->prepare("
         INSERT INTO inventario_equipos 
-        (nombre, marca, modelo, numero_serie, cantidad, estado, descripcion) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        (nombre, marca, modelo, numero_serie, ubicacion, acceso_internet, sensibilidad, cantidad, estado, descripcion) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ");
 
     foreach ($equipos as $index => $eq) {
@@ -37,6 +37,9 @@ try {
         $marca = trim($eq['marca'] ?? '');
         $modelo = trim($eq['modelo'] ?? '');
         $serie = trim($eq['numero_serie'] ?? '');
+        $ubicacion = trim($eq['ubicacion'] ?? '');
+        $acceso_internet = trim($eq['acceso_internet'] ?? 'Permanente');
+        $sensibilidad = trim($eq['sensibilidad'] ?? 'Publico');
         $cantidad = isset($eq['cantidad']) ? (int)$eq['cantidad'] : 1;
         $estado = trim($eq['estado'] ?? 'inventario');
         $descripcion = trim($eq['descripcion'] ?? '');
@@ -56,8 +59,20 @@ try {
             $estado = 'inventario';
         }
 
+        // Validar acceso a internet
+        $accesosPermitidos = ['Permanente', 'Ocasional', 'Ninguno'];
+        if (!in_array($acceso_internet, $accesosPermitidos)) {
+            $acceso_internet = 'Permanente';
+        }
+
+        // Validar sensibilidad
+        $sensibilidadesPermitidas = ['Confidencial', 'Restringido', 'Publico'];
+        if (!in_array($sensibilidad, $sensibilidadesPermitidas)) {
+            $sensibilidad = 'Publico';
+        }
+
         try {
-            $stmt->execute([$nombre, $marca, $modelo, $serie, $cantidad, $estado, $descripcion]);
+            $stmt->execute([$nombre, $marca, $modelo, $serie, $ubicacion, $acceso_internet, $sensibilidad, $cantidad, $estado, $descripcion]);
             $insertados++;
         } catch (Exception $ex) {
             $errores++;

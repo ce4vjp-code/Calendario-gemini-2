@@ -82,10 +82,30 @@
                         <label>N° de Serie</label>
                         <input type="text" id="equipo-serie" placeholder="Ej: SN123456789">
                     </div>
+                    <div class="form-group">
+                        <label>Ubicación del Equipo</label>
+                        <input type="text" id="equipo-ubicacion" placeholder="Ej: Sala de Profesores, Laboratorio 1">
+                    </div>
+                    <div class="form-group">
+                        <label>Acceso a Internet</label>
+                        <select id="equipo-internet">
+                            <option value="Permanente">Permanente</option>
+                            <option value="Ocasional">Ocasional</option>
+                            <option value="Ninguno">Ninguno</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Sensibilidad</label>
+                        <select id="equipo-sensibilidad">
+                            <option value="Confidencial">Confidencial</option>
+                            <option value="Restringido">Restringido</option>
+                            <option value="Publico">Público</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Descripción / Observaciones</label>
-                    <textarea id="equipo-descripcion" rows="2" placeholder="Detalles, nro de serie, etc."></textarea>
+                    <textarea id="equipo-descripcion" rows="2" placeholder="Detalles, características, etc."></textarea>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 1rem;">
                     <button type="button" onclick="resetFormEquipo()" style="padding: 0.5rem 1rem; border: none; background: #e2e8f0; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
@@ -94,10 +114,10 @@
             </form>
 
             <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                <button onclick="descargarPlantilla()" style="padding: 0.5rem 1rem; border: none; background: #6b7280; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-download"></i> Plantilla Excel</button>
+                <button onclick="descargarPlantilla()" style="padding: 0.5rem 1rem; border: none; background: #6b7280; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-download"></i> Plantilla Excel (.xlsx)</button>
                 <input type="file" id="file-excel" accept=".xlsx, .xls, .csv" style="display: none;" onchange="procesarExcel(this)">
                 <button onclick="document.getElementById('file-excel').click()" style="padding: 0.5rem 1rem; border: none; background: #3b82f6; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-arrow-up"></i> Importar Excel</button>
-                <button onclick="exportarInventario('excel')" style="padding: 0.5rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Exportar CSV</button>
+                <button onclick="exportarInventario('excel')" style="padding: 0.5rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Exportar Excel (.xlsx)</button>
                 <button onclick="exportarInventario('pdf')" style="padding: 0.5rem 1rem; border: none; background: #ef4444; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
             </div>
 
@@ -208,27 +228,40 @@
                         
                         let badgeHtml = `<span class="badge ${estadoDb}">${estadoTexto}</span>`;
                         if (estadoDb === 'en_prestamo') {
-                            badgeHtml = `<span class="badge ${estadoDb}" style="cursor: pointer; text-decoration: underline;" onclick="verPrestamo('${e.nombre.replace(/'/g, "\\'")}')" title="Ver detalle del préstamo">${estadoTexto}</span>`;
+                            badgeHtml = `<span class="badge ${estadoDb}" style="cursor: pointer; text-decoration: underline;" onclick="verPrestamo('${(e.nombre||'').replace(/'/g, "\\'")}')" title="Ver detalle del préstamo">${estadoTexto}</span>`;
                         }
+
+                        let sens = e.sensibilidad || 'Publico';
+                        let sensColor = sens === 'Confidencial' ? '#fee2e2; color:#991b1b;' : (sens === 'Restringido' ? '#fef3c7; color:#92400e;' : '#f1f5f9; color:#475569;');
+                        let sensBadge = `<span class="badge" style="background:${sensColor}"><i class="fa-solid fa-shield"></i> ${sens}</span>`;
+
+                        let net = e.acceso_internet || 'Permanente';
+                        let netBadge = `<span class="badge" style="background:#e0f2fe; color:#0369a1;"><i class="fa-solid fa-wifi"></i> ${net}</span>`;
+                        let ubicTxt = e.ubicacion ? `<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;"><i class="fa-solid fa-location-dot"></i> ${e.ubicacion}</div>` : '';
                         
                         tbody.innerHTML += `
                             <tr>
                                 <td>#${e.id}</td>
                                 <td>
-                                    <strong>${e.nombre}</strong><br>
+                                    <strong>${e.nombre}</strong>
+                                    ${ubicTxt}
+                                    <div style="margin-top: 4px; display: flex; gap: 4px; flex-wrap: wrap;">
+                                        ${sensBadge}
+                                        ${netBadge}
+                                    </div>
                                     <small style="color:var(--text-muted)">${e.descripcion || ''}</small>
                                 </td>
                                 <td>${badgeHtml}</td>
                                 <td>${e.cantidad_disponible} / ${e.cantidad}</td>
                                 <td>
-                                    <button onclick="editEquipoById(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer;"><i class="fa-solid fa-edit"></i></button>
-                                    <button onclick="deleteEquipo(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer; color: var(--danger);"><i class="fa-solid fa-trash"></i></button>
+                                    <button onclick="editEquipoById(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer;" title="Editar Equipo"><i class="fa-solid fa-edit"></i></button>
+                                    <button onclick="deleteEquipo(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer; color: var(--danger);" title="Eliminar Equipo"><i class="fa-solid fa-trash"></i></button>
                                 </td>
                             </tr>
                         `;
                     });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay equipos registrados</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay equipos registrados</td></tr>';
                 }
             } catch (e) {
                 console.error(e);
@@ -279,6 +312,9 @@
                 marca: document.getElementById('equipo-marca').value,
                 modelo: document.getElementById('equipo-modelo').value,
                 numero_serie: document.getElementById('equipo-serie').value,
+                ubicacion: document.getElementById('equipo-ubicacion').value,
+                acceso_internet: document.getElementById('equipo-internet').value,
+                sensibilidad: document.getElementById('equipo-sensibilidad').value,
                 descripcion: document.getElementById('equipo-descripcion').value,
                 estado: document.getElementById('equipo-estado').value,
                 cantidad: document.getElementById('equipo-cantidad').value
@@ -310,6 +346,9 @@
                 document.getElementById('equipo-marca').value = e.marca || '';
                 document.getElementById('equipo-modelo').value = e.modelo || '';
                 document.getElementById('equipo-serie').value = e.numero_serie || '';
+                document.getElementById('equipo-ubicacion').value = e.ubicacion || '';
+                document.getElementById('equipo-internet').value = e.acceso_internet || 'Permanente';
+                document.getElementById('equipo-sensibilidad').value = e.sensibilidad || 'Publico';
                 document.getElementById('equipo-descripcion').value = e.descripcion || '';
                 document.getElementById('equipo-estado').value = e.estado;
                 document.getElementById('equipo-cantidad').value = e.cantidad || 1;
@@ -320,6 +359,8 @@
         function resetFormEquipo() {
             document.getElementById('equipo-id').value = '';
             document.getElementById('form-equipo').reset();
+            document.getElementById('equipo-internet').value = 'Permanente';
+            document.getElementById('equipo-sensibilidad').value = 'Publico';
         }
 
         async function deleteEquipo(id) {
@@ -348,31 +389,30 @@
             }
 
             if (formato === 'excel') {
-                let csvContent = "data:text/csv;charset=utf-8,";
-                csvContent += "ID,Nombre,Marca,Modelo,No_Serie,Estado,Stock_Disponible,Stock_Total,Descripcion\n";
-                
-                window.equiposData.forEach(function(e) {
-                    let row = [
-                        e.id,
-                        `"${(e.nombre||'').replace(/"/g, '""')}"`,
-                        `"${(e.marca||'').replace(/"/g, '""')}"`,
-                        `"${(e.modelo||'').replace(/"/g, '""')}"`,
-                        `"${(e.numero_serie||'').replace(/"/g, '""')}"`,
-                        e.estado,
-                        e.cantidad_disponible,
-                        e.cantidad,
-                        `"${(e.descripcion||'').replace(/"/g, '""')}"`
-                    ].join(",");
-                    csvContent += row + "\r\n";
-                });
-                
-                const encodedUri = encodeURI(csvContent);
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", "Inventario_Equipos.csv");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                try {
+                    const XLSX = await loadXlsxLibrary();
+                    const rows = window.equiposData.map(e => ({
+                        "ID": e.id,
+                        "Nombre": e.nombre || '',
+                        "Marca": e.marca || '',
+                        "Modelo": e.modelo || '',
+                        "N° Serie": e.numero_serie || '',
+                        "Ubicación": e.ubicacion || '',
+                        "Acceso a Internet": e.acceso_internet || 'Permanente',
+                        "Sensibilidad": e.sensibilidad || 'Publico',
+                        "Estado": (e.estado || '').toUpperCase().replace(/_/g, ' '),
+                        "Stock Disponible": e.cantidad_disponible,
+                        "Stock Total": e.cantidad,
+                        "Descripción": e.descripcion || ''
+                    }));
+                    
+                    const worksheet = XLSX.utils.json_to_sheet(rows);
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(workbook, worksheet, "Inventario_Equipos");
+                    XLSX.writeFile(workbook, "Inventario_Equipos.xlsx");
+                } catch (err) {
+                    alert("Error exportando a Excel: " + err.message);
+                }
             } else if (formato === 'pdf') {
                 await loadPdfLibrary();
                 const container = document.createElement('div');
@@ -387,8 +427,10 @@
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.id}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.nombre}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.marca || ''} ${e.modelo || ''}</td>
-                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.numero_serie || ''}</td>
-                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.estado.toUpperCase()}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.ubicacion || '-'}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.acceso_internet || 'Permanente'}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.sensibilidad || 'Publico'}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${(e.estado||'').toUpperCase()}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.cantidad_disponible} / ${e.cantidad}</td>
                         </tr>
                     `;
@@ -398,14 +440,16 @@
                     <div id="pdf-inv-content" style="width: 21cm; padding: 1cm; background: white; font-family: sans-serif; box-sizing: border-box;">
                         <h2 style="color: #1a365d; text-align: center;">Inventario de Equipos TI</h2>
                         <p style="text-align: center; font-size: 12px;">Fecha: ${new Date().toLocaleDateString('es-CL')}</p>
-                        <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 20px; text-align: left;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 15px; text-align: left;">
                             <tr style="background: #2b6cb0; color: white;">
                                 <th style="padding: 5px;">ID</th>
                                 <th style="padding: 5px;">Nombre</th>
                                 <th style="padding: 5px;">Marca/Modelo</th>
-                                <th style="padding: 5px;">Nº Serie</th>
+                                <th style="padding: 5px;">Ubicación</th>
+                                <th style="padding: 5px;">Internet</th>
+                                <th style="padding: 5px;">Sensibilidad</th>
                                 <th style="padding: 5px;">Estado</th>
-                                <th style="padding: 5px;">Stock (Disp/Tot)</th>
+                                <th style="padding: 5px;">Stock</th>
                             </tr>
                             ${filasHtml}
                         </table>
@@ -421,7 +465,7 @@
                     filename:     'Inventario_Equipos.pdf',
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
-                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
                 };
 
                 try {
@@ -445,17 +489,42 @@
             });
         };
 
-        function descargarPlantilla() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Nombre,Marca,Modelo,No_Serie,Cantidad,Estado,Descripcion\n";
-            csvContent += "Notebook Pro,HP,G8,SN123,5,disponible,Equipo nuevo\n";
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Plantilla_Inventario.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+        async function descargarPlantilla() {
+            try {
+                const XLSX = await loadXlsxLibrary();
+                const templateData = [
+                    {
+                        "Nombre": "Notebook Docente ProBook",
+                        "Marca": "HP",
+                        "Modelo": "440 G8",
+                        "No_Serie": "SN123456789",
+                        "Ubicacion": "Sala de Profesores",
+                        "Acceso_Internet": "Permanente",
+                        "Sensibilidad": "Confidencial",
+                        "Cantidad": 5,
+                        "Estado": "disponible",
+                        "Descripcion": "Equipo para planificación y docencia"
+                    },
+                    {
+                        "Nombre": "Proyector Multimedia",
+                        "Marca": "Epson",
+                        "Modelo": "PowerLite E20",
+                        "No_Serie": "SN987654321",
+                        "Ubicacion": "Biblioteca",
+                        "Acceso_Internet": "Ocasional",
+                        "Sensibilidad": "Publico",
+                        "Cantidad": 2,
+                        "Estado": "inventario",
+                        "Descripcion": "Proyector con cable HDMI incluido"
+                    }
+                ];
+                const worksheet = XLSX.utils.json_to_sheet(templateData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Plantilla_Inventario");
+                XLSX.writeFile(workbook, "Plantilla_Inventario.xlsx");
+            } catch (e) {
+                alert("Error generando plantilla Excel: " + e.message);
+            }
         }
 
         async function procesarExcel(input) {
@@ -484,7 +553,10 @@
                         nombre: row['Nombre'] || row['nombre'] || '',
                         marca: row['Marca'] || row['marca'] || '',
                         modelo: row['Modelo'] || row['modelo'] || '',
-                        numero_serie: row['No_Serie'] || row['no_serie'] || row['Serie'] || '',
+                        numero_serie: row['No_Serie'] || row['no_serie'] || row['Serie'] || row['serie'] || '',
+                        ubicacion: row['Ubicacion'] || row['ubicacion'] || row['Ubicación'] || '',
+                        acceso_internet: row['Acceso_Internet'] || row['acceso_internet'] || row['Acceso a Internet'] || row['Internet'] || 'Permanente',
+                        sensibilidad: row['Sensibilidad'] || row['sensibilidad'] || 'Publico',
                         cantidad: parseInt(row['Cantidad'] || row['cantidad']) || 1,
                         estado: (row['Estado'] || row['estado'] || 'inventario').toLowerCase(),
                         descripcion: row['Descripcion'] || row['descripcion'] || ''

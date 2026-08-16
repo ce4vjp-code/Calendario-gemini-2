@@ -15,26 +15,40 @@ $nombre = trim($data['nombre'] ?? '');
 $marca = trim($data['marca'] ?? '');
 $modelo = trim($data['modelo'] ?? '');
 $numero_serie = trim($data['numero_serie'] ?? '');
+$ubicacion = trim($data['ubicacion'] ?? '');
+$acceso_internet = trim($data['acceso_internet'] ?? 'Permanente');
+$sensibilidad = trim($data['sensibilidad'] ?? 'Publico');
 $descripcion = trim($data['descripcion'] ?? '');
 $estado = $data['estado'] ?? 'inventario';
 $cantidad = isset($data['cantidad']) ? (int)$data['cantidad'] : 1;
 
+// Validar opciones permitidas
+$accesosPermitidos = ['Permanente', 'Ocasional', 'Ninguno'];
+if (!in_array($acceso_internet, $accesosPermitidos)) {
+    $acceso_internet = 'Permanente';
+}
+
+$sensibilidadesPermitidas = ['Confidencial', 'Restringido', 'Publico'];
+if (!in_array($sensibilidad, $sensibilidadesPermitidas)) {
+    $sensibilidad = 'Publico';
+}
+
 try {
     if ($action === 'add') {
         if (empty($nombre)) throw new Exception('El nombre es obligatorio');
-        $stmt = $pdo->prepare("INSERT INTO inventario_equipos (nombre, marca, modelo, numero_serie, descripcion, estado, cantidad) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$nombre, $marca, $modelo, $numero_serie, $descripcion, $estado, $cantidad]);
+        $stmt = $pdo->prepare("INSERT INTO inventario_equipos (nombre, marca, modelo, numero_serie, ubicacion, acceso_internet, sensibilidad, descripcion, estado, cantidad) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$nombre, $marca, $modelo, $numero_serie, $ubicacion, $acceso_internet, $sensibilidad, $descripcion, $estado, $cantidad]);
         
         // Log auditoria
         $stmtLog = $pdo->prepare("INSERT INTO registro_actividades (usuario_rut, usuario_nombre, modulo, accion, detalles, ip_address) VALUES (?, ?, 'Inventario', 'Agregar Equipo', ?, ?)");
-        $stmtLog->execute([$_SESSION['user_rut'], $_SESSION['user_nombre'], "Equipo: $nombre (Cant: $cantidad)", $_SERVER['REMOTE_ADDR'] ?? '']);
+        $stmtLog->execute([$_SESSION['user_rut'], $_SESSION['user_nombre'], "Equipo: $nombre (Cant: $cantidad, Ubic: $ubicacion)", $_SERVER['REMOTE_ADDR'] ?? '']);
         
         echo json_encode(['success' => true]);
         
     } elseif ($action === 'edit') {
         if (!$id || empty($nombre)) throw new Exception('ID y nombre obligatorios');
-        $stmt = $pdo->prepare("UPDATE inventario_equipos SET nombre = ?, marca = ?, modelo = ?, numero_serie = ?, descripcion = ?, estado = ?, cantidad = ? WHERE id = ?");
-        $stmt->execute([$nombre, $marca, $modelo, $numero_serie, $descripcion, $estado, $cantidad, $id]);
+        $stmt = $pdo->prepare("UPDATE inventario_equipos SET nombre = ?, marca = ?, modelo = ?, numero_serie = ?, ubicacion = ?, acceso_internet = ?, sensibilidad = ?, descripcion = ?, estado = ?, cantidad = ? WHERE id = ?");
+        $stmt->execute([$nombre, $marca, $modelo, $numero_serie, $ubicacion, $acceso_internet, $sensibilidad, $descripcion, $estado, $cantidad, $id]);
         
         // Log auditoria
         $stmtLog = $pdo->prepare("INSERT INTO registro_actividades (usuario_rut, usuario_nombre, modulo, accion, detalles, ip_address) VALUES (?, ?, 'Inventario', 'Editar Equipo', ?, ?)");

@@ -19,7 +19,7 @@ if (!$id || empty($rol)) {
     exit;
 }
 
-$allowed_roles = ['admin', 'profesor', 'diplomas', 'auxiliar', 'asistente_educacion', 'externo', 'directivo', 'inventario'];
+$allowed_roles = ['admin', 'profesor', 'auxiliar', 'asistente_educacion', 'externo', 'directivo', 'inventario'];
 if (!in_array($rol, $allowed_roles)) {
     http_response_code(400);
     echo json_encode(['error' => 'Rol inválido']);

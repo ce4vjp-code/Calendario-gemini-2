@@ -27,7 +27,7 @@ if (!$id || empty($nombre) || empty($rut)) {
 
 // Función de validación de RUT
 function validaRut($rut) {
-    if (in_array(strtolower($rut), ['admin', 'diplomas', 'diploma'])) return true;
+    if (strtolower($rut) === 'admin') return true;
     $rut = preg_replace('/[^kK0-9]/i', '', $rut);
     if (strlen($rut) < 2) return false;
     $dv = substr($rut, -1);
@@ -57,7 +57,7 @@ if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit;
 }
 
-$allowed_roles = ['admin', 'profesor', 'diplomas', 'auxiliar', 'asistente_educacion', 'externo', 'directivo', 'inventario'];
+$allowed_roles = ['admin', 'profesor', 'auxiliar', 'asistente_educacion', 'externo', 'directivo', 'inventario'];
 if (!in_array($rol, $allowed_roles)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'El rol seleccionado no es válido.']);

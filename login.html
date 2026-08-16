@@ -101,7 +101,7 @@
             const btn = document.getElementById('btn-login');
             const msg = document.getElementById('auth-message');
             
-            if (rut.toLowerCase() !== 'admin' && rut.toLowerCase() !== 'diplomas' && rut.toLowerCase() !== 'diploma' && !validarRutSinGuion(rut)) {
+            if (rut.toLowerCase() !== 'admin' && !validarRutSinGuion(rut)) {
                 msg.textContent = 'El RUT ingresado no es válido.';
                 msg.className = 'form-message error';
                 msg.style.display = 'block';
@@ -137,8 +137,6 @@
                         if (data.user.rol === 'admin') {
                             const target = redirectUrl ? redirectUrl : 'admin.html';
                             setTimeout(() => window.location.href = target + '?t=' + new Date().getTime(), 1000);
-                        } else if (data.user.rol === 'diplomas') {
-                            setTimeout(() => window.location.href = 'admin_diplomas.html?t=' + new Date().getTime(), 1000);
                         } else if (data.user.rol === 'inventario') {
                             setTimeout(() => window.location.href = 'admin_inventario.html?t=' + new Date().getTime(), 1000);
                         } else {
@@ -189,8 +187,6 @@
                     if (data.user.rol === 'admin') {
                         const target = redirectUrl ? redirectUrl : 'admin.html';
                         setTimeout(() => window.location.href = target + '?t=' + new Date().getTime(), 1000);
-                    } else if (data.user.rol === 'diplomas') {
-                        setTimeout(() => window.location.href = 'admin_diplomas.html?t=' + new Date().getTime(), 1000);
                     } else if (data.user.rol === 'inventario') {
                         setTimeout(() => window.location.href = 'admin_inventario.html?t=' + new Date().getTime(), 1000);
                     } else {

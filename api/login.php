@@ -13,7 +13,7 @@ if (empty($rut) || empty($clave)) {
 }
 
 function validaRut($rut) {
-    if (in_array(strtolower($rut), ['admin', 'diplomas', 'diploma'])) return true;
+    if (strtolower($rut) === 'admin') return true;
     $rut = preg_replace('/[^kK0-9]/i', '', $rut);
     if (strlen($rut) < 2) return false;
     $dv = substr($rut, -1);

@@ -55,9 +55,13 @@ try {
                 $opcionesData = [
                     'items' => $p['opciones'],
                     'incluye_otro' => isset($p['incluye_otro']) ? filter_var($p['incluye_otro'], FILTER_VALIDATE_BOOLEAN) : false,
-                    'incluye_justificacion' => isset($p['incluye_justificacion']) ? filter_var($p['incluye_justificacion'], FILTER_VALIDATE_BOOLEAN) : false
+                    'incluye_justificacion' => isset($p['incluye_justificacion']) ? filter_var($p['incluye_justificacion'], FILTER_VALIDATE_BOOLEAN) : false,
+                    'label_otro' => isset($p['label_otro']) ? trim($p['label_otro']) : 'Otro',
+                    'label_justificacion' => isset($p['label_justificacion']) ? trim($p['label_justificacion']) : 'Justifique su respuesta'
                 ];
                 $opciones = json_encode($opcionesData);
+            } else if (($p['tipo_pregunta'] === 'escala_lineal' || $p['tipo_pregunta'] === 'cuadricula' || $p['tipo_pregunta'] === 'cuadricula_checkbox') && isset($p['opciones'])) {
+                $opciones = json_encode($p['opciones']);
             }
             
             $stmtPregunta->execute([

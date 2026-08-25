@@ -42,11 +42,17 @@ try {
                 $p['opciones'] = $parsed['items'];
                 $p['incluye_otro'] = isset($parsed['incluye_otro']) ? $parsed['incluye_otro'] : false;
                 $p['incluye_justificacion'] = isset($parsed['incluye_justificacion']) ? $parsed['incluye_justificacion'] : false;
+                $p['label_otro'] = $parsed['label_otro'] ?? 'Otro';
+                $p['label_justificacion'] = $parsed['label_justificacion'] ?? 'Justifique su respuesta';
             } else {
                 $p['opciones'] = $parsed; // Formato antiguo
                 $p['incluye_otro'] = false;
                 $p['incluye_justificacion'] = false;
             }
+        } else if ($p['tipo_pregunta'] === 'escala_lineal' || $p['tipo_pregunta'] === 'cuadricula' || $p['tipo_pregunta'] === 'cuadricula_checkbox') {
+            $p['opciones'] = json_decode($p['opciones'], true);
+            $p['incluye_otro'] = false;
+            $p['incluye_justificacion'] = false;
         } else {
             $p['opciones'] = [];
             $p['incluye_otro'] = false;
@@ -59,7 +65,9 @@ try {
             'tipo_pregunta' => $p['tipo_pregunta'],
             'opciones' => $p['opciones'],
             'incluye_otro' => $p['incluye_otro'],
-            'incluye_justificacion' => $p['incluye_justificacion']
+            'incluye_justificacion' => $p['incluye_justificacion'],
+            'label_otro' => $p['label_otro'] ?? 'Otro',
+            'label_justificacion' => $p['label_justificacion'] ?? 'Justifique su respuesta'
         ];
     }
     

@@ -50,8 +50,13 @@
 
         <!-- Pestaña: Equipos -->
         <div id="equipos" class="tab-content active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
-                <input type="text" id="buscar-admin-equipo" placeholder="Buscar por nombre, estado, marca..." style="width: 300px; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;" onkeyup="filtrarAdminEquipos()">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+                <div style="display: flex; gap: 0.5rem; flex: 1; min-width: 300px;">
+                    <input type="text" id="buscar-admin-equipo" placeholder="Buscar por nombre, estado, marca..." style="flex: 1; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;" onkeyup="filtrarAdminEquipos()">
+                    <select id="filtro-categoria" onchange="filtrarAdminEquipos()" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background: white;">
+                        <option value="">Todas las Categorías</option>
+                    </select>
+                </div>
                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                     <button onclick="abrirModalEquipo()" style="padding: 0.5rem 1rem; border: none; background: var(--primary-color); color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-plus"></i> Agregar Equipo</button>
                     <button onclick="descargarPlantilla()" style="padding: 0.5rem 1rem; border: none; background: #6b7280; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-download"></i> Plantilla Excel</button>
@@ -60,7 +65,7 @@
                     <button onclick="exportarInventario('excel')" style="padding: 0.5rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Exportar CSV</button>
                     <button onclick="exportarInventario('pdf')" style="padding: 0.5rem 1rem; border: none; background: #ef4444; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
                 </div>
-            </div>
+            </div>  </div>
 
             <!-- MODAL EQUIPO -->
             <div id="modal-equipo" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
@@ -258,7 +263,6 @@
                 window.location.href = 'login.html';
             }
         }
-        
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -270,80 +274,101 @@
             try {
                 const res = await fetch('api/inventario/get_equipos.php?t=' + new Date().getTime());
                 const data = await res.json();
-                const tbody = document.getElementById('tbody-equipos');
-                tbody.innerHTML = '';
                 
-                if (data.equipos && data.equipos.length > 0) {
+                if (data.equipos) {
                     window.equiposData = data.equipos;
-                    data.equipos.forEach(e => {
-                        let estadoDb = (e.estado || 'desconocido').toLowerCase().trim();
-                        if (estadoDb === '') estadoDb = 'desconocido';
-                        
-                        let estadoTexto = estadoDb.toUpperCase().replace(/_/g, ' ');
-                        
-                        let badgeHtml = `<span class="badge ${estadoDb}">${estadoTexto}</span>`;
-                        if (estadoDb === 'en_prestamo') {
-                            badgeHtml = `<span class="badge ${estadoDb}" style="cursor: pointer; text-decoration: underline;" onclick="verPrestamo('${e.nombre.replace(/'/g, "\\'")}')" title="Ver detalle del préstamo">${estadoTexto}</span>`;
-                        }
-                        
-                        const imgHtml = e.imagen_url ? `<img src="${e.imagen_url}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">` : `<div style="width:50px; height:50px; background:#e2e8f0; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#94a3b8;"><i class="fa-solid fa-image"></i></div>`;
-                        
-                        let qrHtml = '';
-                        if (e.codigo_qr) {
-                            qrHtml = `<div id="qr-${e.id}" style="margin-top: 5px;" title="${e.codigo_qr}"></div>`;
-                        }
-
-                        tbody.innerHTML += `
-                            <tr>
-                                <td>${imgHtml}</td>
-                                <td>
-                                    <strong>${e.nombre}</strong><br>
-                                    <small style="color:var(--text-muted)">${e.marca || ''} ${e.modelo || ''}</small>
-                                    ${qrHtml}
-                                </td>
-                                <td>
-                                    <span class="badge" style="background:#f1f5f9; color:#475569;"><i class="fa-solid fa-tag"></i> ${e.categoria || 'General'}</span><br>
-                                    <small style="color:var(--text-muted)"><i class="fa-solid fa-location-dot"></i> ${e.ubicacion || 'No asignada'}</small>
-                                </td>
-                                <td>${badgeHtml}</td>
-                                <td>${e.cantidad_disponible} / ${e.cantidad}</td>
-                                <td>
-                                    <button onclick="editEquipoById(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer;" title="Editar"><i class="fa-solid fa-edit"></i></button>
-                                    <button onclick="verMantenimiento(${e.id}, '${e.nombre.replace(/'/g, "\\'")}')" style="padding: 0.25rem 0.5rem; cursor:pointer; color: #854d0e;" title="Mantenimiento"><i class="fa-solid fa-screwdriver-wrench"></i></button>
-                                    <button onclick="deleteEquipo(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer; color: var(--danger);" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
-                                </td>
-                            </tr>
-                        `;
-                    });
+                    window.equiposFiltrados = data.equipos;
                     
-                    data.equipos.forEach(e => {
-                        if (e.codigo_qr) {
-                            new QRCode(document.getElementById(`qr-${e.id}`), {
-                                text: e.codigo_qr,
-                                width: 50,
-                                height: 50
-                            });
-                        }
+                    // Llenar select de categorias
+                    const selectCat = document.getElementById('filtro-categoria');
+                    const currentCat = selectCat.value;
+                    const categorias = [...new Set(data.equipos.map(e => e.categoria || 'General'))].sort();
+                    selectCat.innerHTML = '<option value="">Todas las Categorías</option>';
+                    categorias.forEach(c => {
+                        selectCat.innerHTML += `<option value="${c}">${c}</option>`;
                     });
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay equipos registrados</td></tr>';
+                    selectCat.value = currentCat; // restore selection
+
+                    renderEquipos(window.equiposFiltrados);
                 }
             } catch (e) {
                 console.error(e);
             }
         }
 
+        function renderEquipos(equipos) {
+            const tbody = document.getElementById('tbody-equipos');
+            tbody.innerHTML = '';
+            
+            if (equipos && equipos.length > 0) {
+                equipos.forEach(e => {
+                    let estadoDb = (e.estado || 'desconocido').toLowerCase().trim();
+                    if (estadoDb === '') estadoDb = 'desconocido';
+                    
+                    let estadoTexto = estadoDb.toUpperCase().replace(/_/g, ' ');
+                    
+                    let badgeHtml = `<span class="badge ${estadoDb}">${estadoTexto}</span>`;
+                    
+                    if (e.cantidad_disponible === 0 && (estadoDb === 'disponible' || estadoDb === 'inventario')) {
+                        badgeHtml = `<span class="badge prestado" title="Sin stock disponible">SIN STOCK</span>`;
+                    }
+
+                    const imgHtml = e.imagen_url ? `<img src="${e.imagen_url}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">` : `<div style="width:50px; height:50px; background:#e2e8f0; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#94a3b8;"><i class="fa-solid fa-image"></i></div>`;
+                    
+                    let qrHtml = '';
+                    if (e.codigo_qr) {
+                        qrHtml = `<div id="qr-${e.id}" style="margin-top: 5px;" title="${e.codigo_qr}"></div>`;
+                    }
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${imgHtml}</td>
+                            <td>
+                                <strong>${e.nombre}</strong><br>
+                                <small style="color:var(--text-muted)">${e.marca || ''} ${e.modelo || ''}</small>
+                                ${qrHtml}
+                            </td>
+                            <td>
+                                <span class="badge" style="background:#f1f5f9; color:#475569;"><i class="fa-solid fa-tag"></i> ${e.categoria || 'General'}</span><br>
+                                <small style="color:var(--text-muted)"><i class="fa-solid fa-location-dot"></i> ${e.ubicacion || 'No asignada'}</small>
+                            </td>
+                            <td>${badgeHtml}</td>
+                            <td>${e.cantidad_disponible} / ${e.cantidad}</td>
+                            <td>
+                                <button onclick="editEquipoById(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer;" title="Editar"><i class="fa-solid fa-edit"></i></button>
+                                <button onclick="verMantenimiento(${e.id}, '${e.nombre.replace(/'/g, "\\'")}')" style="padding: 0.25rem 0.5rem; cursor:pointer; color: #854d0e;" title="Mantenimiento"><i class="fa-solid fa-screwdriver-wrench"></i></button>
+                                <button onclick="deleteEquipo(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer; color: var(--danger);" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
+                equipos.forEach(e => {
+                    if (e.codigo_qr) {
+                        new QRCode(document.getElementById(`qr-${e.id}`), {
+                            text: e.codigo_qr,
+                            width: 50,
+                            height: 50
+                        });
+                    }
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay equipos registrados</td></tr>';
+            }
+        }
+
         function filtrarAdminEquipos() {
             const query = document.getElementById('buscar-admin-equipo').value.toLowerCase();
-            const rows = document.querySelectorAll('#tbody-equipos tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                if (text.includes(query)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+            const cat = document.getElementById('filtro-categoria').value;
+            
+            window.equiposFiltrados = window.equiposData.filter(e => {
+                const searchStr = (e.nombre + ' ' + (e.marca||'') + ' ' + (e.modelo||'') + ' ' + (e.estado||'') + ' ' + (e.ubicacion||'')).toLowerCase();
+                const matchQuery = searchStr.includes(query);
+                const matchCat = cat === '' || (e.categoria || 'General') === cat;
+                return matchQuery && matchCat;
             });
+            
+            renderEquipos(window.equiposFiltrados);
         }
 
         function verPrestamo(nombreEquipo) {
@@ -558,22 +583,25 @@
         }
 
         async function exportarInventario(formato) {
-            if (!window.equiposData || window.equiposData.length === 0) {
+            const dataToExport = window.equiposFiltrados || window.equiposData;
+            if (!dataToExport || dataToExport.length === 0) {
                 alert("No hay datos para exportar.");
                 return;
             }
 
             if (formato === 'excel') {
                 let csvContent = "data:text/csv;charset=utf-8,";
-                csvContent += "ID,Nombre,Marca,Modelo,No_Serie,Estado,Stock_Disponible,Stock_Total,Descripcion\n";
+                csvContent += "ID,Nombre,Marca,Modelo,No_Serie,Categoria,Ubicacion,Estado,Stock_Disponible,Stock_Total,Descripcion\n";
                 
-                window.equiposData.forEach(function(e) {
+                dataToExport.forEach(function(e) {
                     let row = [
                         e.id,
                         `"${(e.nombre||'').replace(/"/g, '""')}"`,
                         `"${(e.marca||'').replace(/"/g, '""')}"`,
                         `"${(e.modelo||'').replace(/"/g, '""')}"`,
                         `"${(e.numero_serie||'').replace(/"/g, '""')}"`,
+                        `"${(e.categoria||'General').replace(/"/g, '""')}"`,
+                        `"${(e.ubicacion||'').replace(/"/g, '""')}"`,
                         e.estado,
                         e.cantidad_disponible,
                         e.cantidad,
@@ -597,13 +625,14 @@
                 container.style.top = '0';
                 
                 let filasHtml = '';
-                window.equiposData.forEach(e => {
+                dataToExport.forEach(e => {
                     filasHtml += `
                         <tr>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.id}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.nombre}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.categoria || 'General'}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.ubicacion || ''}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.marca || ''} ${e.modelo || ''}</td>
-                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.numero_serie || ''}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.estado.toUpperCase()}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.cantidad_disponible} / ${e.cantidad}</td>
                         </tr>
@@ -618,10 +647,11 @@
                             <tr style="background: #2b6cb0; color: white;">
                                 <th style="padding: 5px;">ID</th>
                                 <th style="padding: 5px;">Nombre</th>
+                                <th style="padding: 5px;">Categoría</th>
+                                <th style="padding: 5px;">Ubicación</th>
                                 <th style="padding: 5px;">Marca/Modelo</th>
-                                <th style="padding: 5px;">Nº Serie</th>
                                 <th style="padding: 5px;">Estado</th>
-                                <th style="padding: 5px;">Stock (Disp/Tot)</th>
+                                <th style="padding: 5px;">Stock</th>
                             </tr>
                             ${filasHtml}
                         </table>
@@ -633,7 +663,6 @@
                 await new Promise(r => setTimeout(r, 200));
                 
                 const opt = {
-                    margin:       0.5,
                     filename:     'Inventario_Equipos.pdf',
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },

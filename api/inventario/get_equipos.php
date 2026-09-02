@@ -17,7 +17,7 @@ try {
                COALESCE(e.ubicacion, '') AS ubicacion,
                COALESCE(e.acceso_internet, 'Permanente') AS acceso_internet,
                COALESCE(e.sensibilidad, 'Publico') AS sensibilidad,
-               e.descripcion, e.estado, e.fecha_registro, e.cantidad,
+               e.descripcion, e.estado, e.fecha_registro, e.cantidad, e.categoria, e.imagen_url, e.codigo_qr,
                (e.cantidad - COALESCE((SELECT SUM(p.cantidad) FROM inventario_prestamos p WHERE p.equipo_id = e.id AND p.estado IN ('prestado', 'pendiente_aprobacion', 'pendiente_codigo', 'atrasado')), 0)) AS cantidad_disponible
         FROM inventario_equipos e ORDER BY e.nombre ASC
     ");

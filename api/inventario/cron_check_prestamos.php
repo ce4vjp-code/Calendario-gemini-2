@@ -10,7 +10,7 @@ try {
 
     // 1. Buscar todos los préstamos que estén en estado 'prestado' y cuya fecha límite ya pasó.
     $stmt = $pdo->prepare("
-        SELECT p.id, e.nombre AS equipo_nombre, u.nombre AS usuario_nombre, p.fecha_devolucion_esperada 
+        SELECT p.id, e.nombre AS equipo_nombre, u.nombre AS usuario_nombre, u.email AS usuario_email, p.fecha_devolucion_esperada 
         FROM inventario_prestamos p
         JOIN inventario_equipos e ON p.equipo_id = e.id
         JOIN usuarios u ON p.usuario_id = u.id
@@ -29,24 +29,33 @@ try {
 
         $pdo->commit();
 
-        // 3. Enviar correo al administrador
-        $to = 'ce4vjp@gmail.com';
-        $subject = "ALERTA: Préstamos Atrasados - Liceo TPGGM";
-        $message = "Hola Administrador,\n\n"
+        // 3. Enviar correo al administrador y usuarios
+        $to_admin = 'ce4vjp@gmail.com';
+        $subject_admin = "ALERTA: Préstamos Atrasados - Liceo TPGGM";
+        $message_admin = "Hola Administrador,\n\n"
                  . "El sistema ha detectado " . count($atrasados) . " préstamo(s) que no ha(n) sido devuelto(s) en la fecha acordada.\n\n"
                  . "Detalle de los equipos atrasados:\n";
-
-        foreach ($atrasados as $p) {
-            $message .= "- Equipo: " . $p['equipo_nombre'] . " | Usuario: " . $p['usuario_nombre'] . " | Debió entregarse: " . $p['fecha_devolucion_esperada'] . "\n";
-        }
-
-        $message .= "\nPor favor revisa el panel de inventario para gestionar las devoluciones.\n\nSaludos,\nSistema de Inventario.";
 
         $headers = "From: no-reply@liceotpggm.cl\r\n" .
                    "Reply-To: no-reply@liceotpggm.cl\r\n" .
                    "X-Mailer: PHP/" . phpversion();
 
-        @mail($to, $subject, $message, $headers);
+        foreach ($atrasados as $p) {
+            $message_admin .= "- Equipo: " . $p['equipo_nombre'] . " | Usuario: " . $p['usuario_nombre'] . " | Debió entregarse: " . $p['fecha_devolucion_esperada'] . "\n";
+            
+            // Enviar correo al usuario si tiene email
+            if (!empty($p['usuario_email'])) {
+                $subject_user = "AVISO: Préstamo Atrasado - " . $p['equipo_nombre'];
+                $message_user = "Hola " . $p['usuario_nombre'] . ",\n\n"
+                              . "Te recordamos que el plazo para devolver el equipo '" . $p['equipo_nombre'] . "' venció el " . $p['fecha_devolucion_esperada'] . ".\n\n"
+                              . "Por favor, acércate a la administración para realizar la devolución lo antes posible.\n\n"
+                              . "Saludos,\nAdministración de Inventario.";
+                @mail($p['usuario_email'], $subject_user, $message_user, $headers);
+            }
+        }
+
+        $message_admin .= "\nPor favor revisa el panel de inventario para gestionar las devoluciones.\n\nSaludos,\nSistema de Inventario.";
+        @mail($to_admin, $subject_admin, $message_admin, $headers);
         
         echo "Cron ejecutado exitosamente. Se encontraron y notificaron " . count($atrasados) . " préstamos atrasados.\n";
     } else {

@@ -127,8 +127,10 @@
                         let estadoTexto = estadoDb.toUpperCase().replace(/_/g, ' ');
 
                         const canRequest = (currentUser.puede_pedir_equipos || currentUser.rol === 'admin') && (estadoDb === 'disponible' || estadoDb === 'inventario') && e.cantidad_disponible > 0;
-                        const btn = canRequest ? `<button class="btn btn-primary" style="width:100%" onclick="solicitarPrestamo(${e.id}, '${e.nombre.replace(/'/g, "\\'")}', ${e.cantidad_disponible})">Solicitar Préstamo</button>` : 
-                                   (`<button class="btn btn-primary" style="width:100%" disabled>No Disponible</button>`);
+                        const btn = canRequest ? `<button class="btn btn-primary" style="width:100%; margin-top: 0.5rem;" onclick="solicitarPrestamo(${e.id}, '${e.nombre.replace(/'/g, "\\'")}', ${e.cantidad_disponible})">Solicitar Préstamo</button>` : 
+                                   (`<button class="btn btn-primary" style="width:100%; margin-top: 0.5rem;" disabled>No Disponible</button>`);
+                        
+                        const imgHtml = e.imagen_url ? `<img src="${e.imagen_url}" style="width:100%; height:150px; object-fit:cover; border-radius:0.5rem; margin-bottom: 0.5rem;">` : '';
                         
                         let sens = e.sensibilidad || 'Publico';
                         let sensColor = sens === 'Confidencial' ? '#fee2e2; color:#991b1b;' : (sens === 'Restringido' ? '#fef3c7; color:#92400e;' : '#f1f5f9; color:#475569;');
@@ -140,9 +142,11 @@
 
                         container.innerHTML += `
                             <div class="equipo-card">
+                                ${imgHtml}
                                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                     <div>
                                         <h3>${e.nombre}</h3>
+                                        <p style="font-size: 0.8rem;"><i class="fa-solid fa-tag"></i> ${e.categoria || 'General'}</p>
                                         ${ubicTxt}
                                     </div>
                                     <span class="badge ${estadoDb}">${estadoTexto}</span>

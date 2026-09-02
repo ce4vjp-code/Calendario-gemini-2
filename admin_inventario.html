@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         body { padding: 2rem; background-color: var(--bg-main); display: block; height: auto !important; min-height: 100vh; overflow: auto !important;}
         .admin-container { background: var(--bg-card); padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); max-width: 900px; margin: 0 auto; }
@@ -49,62 +50,20 @@
 
         <!-- Pestaña: Equipos -->
         <div id="equipos" class="tab-content active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
-                <div style="position: relative; max-width: 380px; width: 100%;">
-                    <input type="text" id="buscar-admin-equipo" placeholder="Buscar por nombre, estado, marca, ubicación..." style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;" onkeyup="filtrarAdminEquipos()">
-                    <i class="fa-solid fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                </div>
-                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                    <button type="button" onclick="abrirModalEquipo()" style="padding: 0.75rem 1.25rem; border: none; background: var(--primary-color); color: white; border-radius: 0.5rem; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <i class="fa-solid fa-plus-circle"></i> Agregar Equipo
-                    </button>
-                    <button type="button" onclick="descargarPlantilla()" style="padding: 0.75rem 1rem; border: none; background: #64748b; color: white; border-radius: 0.5rem; cursor: pointer; font-weight: 500;" title="Descargar plantilla Excel para importación"><i class="fa-solid fa-download"></i> Plantilla</button>
-                    <input type="file" id="file-excel" accept=".xlsx, .xls, .csv" style="display: none;" onchange="procesarExcel(this)">
-                    <button type="button" onclick="document.getElementById('file-excel').click()" style="padding: 0.75rem 1rem; border: none; background: #3b82f6; color: white; border-radius: 0.5rem; cursor: pointer; font-weight: 500;" title="Importar equipos desde archivo Excel"><i class="fa-solid fa-file-arrow-up"></i> Importar</button>
-                    <button type="button" onclick="exportarInventario('excel')" style="padding: 0.75rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer; font-weight: 500;" title="Exportar catálogo completo a Excel (.xlsx)"><i class="fa-solid fa-file-excel"></i> Exportar .xlsx</button>
-                    <button type="button" onclick="exportarInventario('pdf')" style="padding: 0.75rem 1rem; border: none; background: #ef4444; color: white; border-radius: 0.5rem; cursor: pointer; font-weight: 500;" title="Exportar catálogo en PDF"><i class="fa-solid fa-file-pdf"></i> PDF</button>
-                </div>
-            </div>
-
-            <div style="overflow-x: auto;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nombre</th>
-                            <th>Estado</th>
-                            <th>Stock (Disp / Total)</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody-equipos">
-                        <tr><td colspan="5" style="text-align: center;">Cargando...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    <!-- Modal para Agregar / Editar Equipo -->
-    <div id="modal-equipo" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(2px);">
-        <div style="background: white; padding: 2rem; border-radius: 1rem; width: 92%; max-width: 650px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25); position: relative;">
-            <button onclick="cerrarModalEquipo()" style="position: absolute; top: 1.2rem; right: 1.2rem; border: none; background: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
-            <h3 id="modal-equipo-titulo" style="margin: 0 0 0.25rem 0; color: var(--primary-color); display: flex; align-items: center; gap: 0.5rem;">
-                <i class="fa-solid fa-box-open"></i> Agregar Equipo al Inventario
-            </h3>
-            <p id="modal-equipo-subtitulo" style="font-size: 0.85rem; color: var(--text-muted); margin: 0 0 1.5rem 0;">
-                Ingresa los datos técnicos, ubicación física y parámetros de seguridad del equipo.
-            </p>
-
-            <form id="form-equipo" onsubmit="saveEquipo(event)">
+            <form id="form-equipo" onsubmit="saveEquipo(event)" style="background: var(--bg-main); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
                 <input type="hidden" id="equipo-id">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group" style="grid-column: 1 / -1; margin-bottom: 0;">
-                        <label for="equipo-nombre" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Nombre del Equipo</label>
-                        <input type="text" id="equipo-nombre" required placeholder="Ej: Proyector Epson L200" style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    <div class="form-group">
+                        <label>Nombre del Equipo</label>
+                        <input type="text" id="equipo-nombre" required placeholder="Ej: Proyector Epson L200">
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="equipo-estado" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Estado</label>
-                        <select id="equipo-estado" style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <input type="text" id="equipo-categoria" placeholder="Ej: Notebooks, Proyectores" value="General">
+                    </div>
+                    <div class="form-group">
+                        <label>Estado</label>
+                        <select id="equipo-estado">
                             <option value="inventario">Inventario</option>
                             <option value="disponible">Disponible</option>
                             <option value="no_disponible">No Disponible</option>
@@ -112,67 +71,81 @@
                             <option value="en_prestamo">En Préstamo</option>
                         </select>
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="equipo-cantidad" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Cantidad Total</label>
-                        <input type="number" id="equipo-cantidad" required min="1" value="1" style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    <div class="form-group">
+                        <label>Cantidad Total</label>
+                        <input type="number" id="equipo-cantidad" required min="1" value="1">
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="equipo-marca" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Marca</label>
-                        <input type="text" id="equipo-marca" placeholder="Ej: HP, Epson, Lenovo..." style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    <div class="form-group">
+                        <label>Marca</label>
+                        <input type="text" id="equipo-marca" placeholder="Ej: HP, Epson, etc.">
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="equipo-modelo" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Modelo</label>
-                        <input type="text" id="equipo-modelo" placeholder="Ej: ProBook 440 G8" style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    <div class="form-group">
+                        <label>Modelo</label>
+                        <input type="text" id="equipo-modelo" placeholder="Ej: ProBook 440 G8">
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="equipo-serie" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">N° de Serie</label>
-                        <input type="text" id="equipo-serie" placeholder="Ej: SN123456789" style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    <div class="form-group">
+                        <label>N° de Serie</label>
+                        <input type="text" id="equipo-serie" placeholder="Ej: SN123456789">
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="equipo-ubicacion" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Ubicación del Equipo</label>
-                        <input type="text" id="equipo-ubicacion" placeholder="Ej: Sala de Profesores, Laboratorio 1" style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    <div class="form-group">
+                        <label>Ubicación Física</label>
+                        <input type="text" id="equipo-ubicacion" placeholder="Ej: Sala 3, Biblioteca">
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="equipo-internet" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Acceso a Internet</label>
-                        <select id="equipo-internet" style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
-                            <option value="Permanente">Permanente</option>
-                            <option value="Ocasional">Ocasional</option>
-                            <option value="Ninguno">Ninguno</option>
-                        </select>
+                    <div class="form-group">
+                        <label>Imagen del Equipo</label>
+                        <input type="file" id="equipo-imagen" accept="image/*">
+                        <input type="hidden" id="equipo-imagen-actual">
+                        <div id="equipo-imagen-preview" style="margin-top: 0.5rem;"></div>
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="equipo-sensibilidad" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Sensibilidad</label>
-                        <select id="equipo-sensibilidad" style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
-                            <option value="Confidencial">Confidencial</option>
-                            <option value="Restringido">Restringido</option>
-                            <option value="Publico">Público</option>
-                        </select>
+                    <div class="form-group">
+                        <label>Código QR / Barras</label>
+                        <input type="text" id="equipo-qr" placeholder="Código escaneado o autogenerado">
+                        <button type="button" onclick="generarQR()" style="margin-top:0.25rem; font-size:0.8rem; padding:0.25rem; border-radius:0.25rem; border:1px solid #ccc; background:#f3f4f6; cursor:pointer;">Generar Automático</button>
                     </div>
                 </div>
-                <div class="form-group" style="margin-top: 1rem; margin-bottom: 1.5rem;">
-                    <label for="equipo-descripcion" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Descripción / Observaciones</label>
-                    <textarea id="equipo-descripcion" rows="2" placeholder="Detalles, características adicionales, etc." style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;"></textarea>
+                <div class="form-group">
+                    <label>Descripción / Observaciones</label>
+                    <textarea id="equipo-descripcion" rows="2" placeholder="Detalles adicionales..."></textarea>
                 </div>
-                <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
-                    <button type="button" onclick="cerrarModalEquipo()" style="padding: 0.6rem 1.2rem; border: 1px solid var(--border-color); background: white; border-radius: 0.5rem; cursor: pointer; font-weight: 500;">Cancelar</button>
-                    <button type="submit" id="btn-submit-equipo" style="padding: 0.6rem 1.5rem; border: none; background: var(--primary-color); color: white; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">Guardar Equipo</button>
+                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                    <button type="button" onclick="resetFormEquipo()" style="padding: 0.5rem 1rem; border: none; background: #e2e8f0; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
+                    <button type="submit" style="padding: 0.5rem 1rem; border: none; background: var(--primary-color); color: white; border-radius: 0.5rem; cursor: pointer;">Guardar Equipo</button>
                 </div>
             </form>
+
+            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <button onclick="descargarPlantilla()" style="padding: 0.5rem 1rem; border: none; background: #6b7280; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-download"></i> Plantilla Excel</button>
+                <input type="file" id="file-excel" accept=".xlsx, .xls, .csv" style="display: none;" onchange="procesarExcel(this)">
+                <button onclick="document.getElementById('file-excel').click()" style="padding: 0.5rem 1rem; border: none; background: #3b82f6; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-arrow-up"></i> Importar Excel</button>
+                <button onclick="exportarInventario('excel')" style="padding: 0.5rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Exportar CSV</button>
+                <button onclick="exportarInventario('pdf')" style="padding: 0.5rem 1rem; border: none; background: #ef4444; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
+            </div>
+
+            <div style="margin-bottom: 1rem;">
+                <input type="text" id="buscar-admin-equipo" placeholder="Buscar por nombre, estado, marca..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;" onkeyup="filtrarAdminEquipos()">
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Img</th>
+                            <th>Nombre</th>
+                            <th>Categoría/Ubicación</th>
+                            <th>Estado</th>
+                            <th>Stock</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-equipos">
+                        <tr><td colspan="6" style="text-align: center;">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
         <!-- Pestaña: Préstamos -->
         <div id="prestamos" class="tab-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
-                <div style="position: relative; max-width: 380px; width: 100%;">
-                    <input type="text" id="buscar-admin-prestamo" placeholder="Buscar por usuario, RUT, equipo o estado..." style="width: 100%; padding: 0.75rem 1rem 0.75rem 2.5rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;" onkeyup="filtrarAdminPrestamos()">
-                    <i class="fa-solid fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                </div>
-                <button type="button" onclick="abrirModalNuevoPrestamo()" style="padding: 0.75rem 1.25rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                    <i class="fa-solid fa-hand-holding-hand"></i> Nuevo Préstamo Directo
-                </button>
-            </div>
-
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
@@ -190,56 +163,53 @@
                 </table>
             </div>
         </div>
-    </div>
 
-    <!-- Modal para Nuevo Préstamo Directo (Admin) -->
-    <div id="modal-nuevo-prestamo" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(2px);">
-        <div style="background: white; padding: 2rem; border-radius: 1rem; width: 92%; max-width: 550px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.25); position: relative;">
-            <button onclick="cerrarModalNuevoPrestamo()" style="position: absolute; top: 1.2rem; right: 1.2rem; border: none; background: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
-            <h3 style="margin: 0 0 0.25rem 0; color: var(--primary-color); display: flex; align-items: center; gap: 0.5rem;">
-                <i class="fa-solid fa-hand-holding-hand"></i> Nuevo Préstamo Directo
-            </h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0 0 1.5rem 0;">
-                Asigna y entrega un equipo inmediatamente a un usuario sin requerir códigos de autorización.
-            </p>
-
-            <form id="form-nuevo-prestamo" onsubmit="guardarNuevoPrestamoDirecto(event)">
-                <div class="form-group" style="margin-bottom: 1rem;">
-                    <label for="direct-prestamo-equipo" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Seleccionar Equipo</label>
-                    <select id="direct-prestamo-equipo" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;" onchange="actualizarMaxCantidadDirect()">
-                        <option value="">-- Cargando equipos disponibles... --</option>
-                    </select>
-                    <small id="direct-equipo-info" style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-top: 0.25rem;"></small>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 1rem;">
-                    <label for="direct-prestamo-usuario" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Asignar a Usuario / Profesor</label>
-                    <select id="direct-prestamo-usuario" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
-                        <option value="">-- Cargando usuarios... --</option>
-                    </select>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="direct-prestamo-cantidad" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Cantidad</label>
-                        <input type="number" id="direct-prestamo-cantidad" min="1" value="1" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+        <!-- Modal/Sección de Mantenimiento -->
+        <div id="modal-mantenimiento" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; overflow-y: auto;">
+            <div style="background: white; padding: 2rem; border-radius: 1rem; width: 90%; max-width: 600px; margin: 2rem auto;">
+                <h3 id="mantenimiento-titulo" style="margin-top: 0;">Historial de Mantenimiento</h3>
+                
+                <form id="form-mantenimiento" onsubmit="saveMantenimiento(event)" style="background: var(--bg-main); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <input type="hidden" id="mantenimiento-equipo-id">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input type="date" id="mantenimiento-fecha" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Costo</label>
+                            <input type="number" id="mantenimiento-costo" step="0.01" value="0.00">
+                        </div>
                     </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label for="direct-prestamo-dias" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Días de Préstamo</label>
-                        <input type="number" id="direct-prestamo-dias" min="1" max="365" value="1" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;">
+                    <div class="form-group">
+                        <label>Descripción del Trabajo / Problema</label>
+                        <textarea id="mantenimiento-descripcion" rows="2" required></textarea>
                     </div>
+                    <div style="text-align: right;">
+                        <button type="submit" style="padding: 0.5rem 1rem; border: none; background: var(--primary-color); color: white; border-radius: 0.5rem; cursor: pointer;">Registrar Mantenimiento</button>
+                    </div>
+                </form>
+
+                <div style="overflow-x: auto; max-height: 300px;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                        <thead>
+                            <tr>
+                                <th style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Fecha</th>
+                                <th style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Descripción</th>
+                                <th style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Costo</th>
+                                <th style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-mantenimiento">
+                            <tr><td colspan="4" style="text-align: center; padding: 1rem;">Cargando...</td></tr>
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label for="direct-prestamo-obs" style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.3rem;">Observaciones / Motivo (opcional)</label>
-                    <textarea id="direct-prestamo-obs" rows="2" placeholder="Ej: Préstamo para clase de ciencias o acto" style="width: 100%; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 0.5rem; box-sizing: border-box;"></textarea>
+                <div style="text-align: right; margin-top: 1rem;">
+                    <button onclick="document.getElementById('modal-mantenimiento').style.display='none'" style="padding: 0.5rem 1rem; border: none; background: #e2e8f0; border-radius: 0.5rem; cursor: pointer;">Cerrar</button>
                 </div>
-
-                <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
-                    <button type="button" onclick="cerrarModalNuevoPrestamo()" style="padding: 0.6rem 1.2rem; border: 1px solid var(--border-color); background: white; border-radius: 0.5rem; cursor: pointer; font-weight: 500;">Cancelar</button>
-                    <button type="submit" id="btn-submit-direct-prestamo" style="padding: 0.6rem 1.5rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer; font-weight: 600;">Asignar y Entregar Equipo</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -307,40 +277,50 @@
                         
                         let badgeHtml = `<span class="badge ${estadoDb}">${estadoTexto}</span>`;
                         if (estadoDb === 'en_prestamo') {
-                            badgeHtml = `<span class="badge ${estadoDb}" style="cursor: pointer; text-decoration: underline;" onclick="verPrestamo('${(e.nombre||'').replace(/'/g, "\\'")}')" title="Ver detalle del préstamo">${estadoTexto}</span>`;
+                            badgeHtml = `<span class="badge ${estadoDb}" style="cursor: pointer; text-decoration: underline;" onclick="verPrestamo('${e.nombre.replace(/'/g, "\\'")}')" title="Ver detalle del préstamo">${estadoTexto}</span>`;
+                        }
+                        
+                        const imgHtml = e.imagen_url ? `<img src="${e.imagen_url}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">` : `<div style="width:50px; height:50px; background:#e2e8f0; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#94a3b8;"><i class="fa-solid fa-image"></i></div>`;
+                        
+                        let qrHtml = '';
+                        if (e.codigo_qr) {
+                            qrHtml = `<div id="qr-${e.id}" style="margin-top: 5px;" title="${e.codigo_qr}"></div>`;
                         }
 
-                        let sens = e.sensibilidad || 'Publico';
-                        let sensColor = sens === 'Confidencial' ? '#fee2e2; color:#991b1b;' : (sens === 'Restringido' ? '#fef3c7; color:#92400e;' : '#f1f5f9; color:#475569;');
-                        let sensBadge = `<span class="badge" style="background:${sensColor}"><i class="fa-solid fa-shield"></i> ${sens}</span>`;
-
-                        let net = e.acceso_internet || 'Permanente';
-                        let netBadge = `<span class="badge" style="background:#e0f2fe; color:#0369a1;"><i class="fa-solid fa-wifi"></i> ${net}</span>`;
-                        let ubicTxt = e.ubicacion ? `<div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;"><i class="fa-solid fa-location-dot"></i> ${e.ubicacion}</div>` : '';
-                        
                         tbody.innerHTML += `
                             <tr>
-                                <td>#${e.id}</td>
+                                <td>${imgHtml}</td>
                                 <td>
-                                    <strong>${e.nombre}</strong>
-                                    ${ubicTxt}
-                                    <div style="margin-top: 4px; display: flex; gap: 4px; flex-wrap: wrap;">
-                                        ${sensBadge}
-                                        ${netBadge}
-                                    </div>
-                                    <small style="color:var(--text-muted)">${e.descripcion || ''}</small>
+                                    <strong>${e.nombre}</strong><br>
+                                    <small style="color:var(--text-muted)">${e.marca || ''} ${e.modelo || ''}</small>
+                                    ${qrHtml}
+                                </td>
+                                <td>
+                                    <span class="badge" style="background:#f1f5f9; color:#475569;"><i class="fa-solid fa-tag"></i> ${e.categoria || 'General'}</span><br>
+                                    <small style="color:var(--text-muted)"><i class="fa-solid fa-location-dot"></i> ${e.ubicacion || 'No asignada'}</small>
                                 </td>
                                 <td>${badgeHtml}</td>
                                 <td>${e.cantidad_disponible} / ${e.cantidad}</td>
                                 <td>
-                                    <button onclick="editEquipoById(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer;" title="Editar Equipo"><i class="fa-solid fa-edit"></i></button>
-                                    <button onclick="deleteEquipo(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer; color: var(--danger);" title="Eliminar Equipo"><i class="fa-solid fa-trash"></i></button>
+                                    <button onclick="editEquipoById(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer;" title="Editar"><i class="fa-solid fa-edit"></i></button>
+                                    <button onclick="verMantenimiento(${e.id}, '${e.nombre.replace(/'/g, "\\'")}')" style="padding: 0.25rem 0.5rem; cursor:pointer; color: #854d0e;" title="Mantenimiento"><i class="fa-solid fa-screwdriver-wrench"></i></button>
+                                    <button onclick="deleteEquipo(${e.id})" style="padding: 0.25rem 0.5rem; cursor:pointer; color: var(--danger);" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                                 </td>
                             </tr>
                         `;
                     });
+                    
+                    data.equipos.forEach(e => {
+                        if (e.codigo_qr) {
+                            new QRCode(document.getElementById(`qr-${e.id}`), {
+                                text: e.codigo_qr,
+                                width: 50,
+                                height: 50
+                            });
+                        }
+                    });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay equipos registrados</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay equipos registrados</td></tr>';
                 }
             } catch (e) {
                 console.error(e);
@@ -379,108 +359,94 @@
             window.scrollTo(0, 0);
         }
 
-        function abrirModalEquipo(equipo = null) {
-            const titulo = document.getElementById('modal-equipo-titulo');
-            const subtitulo = document.getElementById('modal-equipo-subtitulo');
-            const btnSubmit = document.getElementById('btn-submit-equipo');
-            
-            if (equipo) {
-                titulo.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editar Equipo #${equipo.id}`;
-                subtitulo.textContent = `Modifica los datos y parámetros técnicos de "${equipo.nombre}".`;
-                btnSubmit.textContent = 'Actualizar Equipo';
-                
-                document.getElementById('equipo-id').value = equipo.id;
-                document.getElementById('equipo-nombre').value = equipo.nombre || '';
-                document.getElementById('equipo-marca').value = equipo.marca || '';
-                document.getElementById('equipo-modelo').value = equipo.modelo || '';
-                document.getElementById('equipo-serie').value = equipo.numero_serie || '';
-                document.getElementById('equipo-ubicacion').value = equipo.ubicacion || '';
-                document.getElementById('equipo-internet').value = equipo.acceso_internet || 'Permanente';
-                document.getElementById('equipo-sensibilidad').value = equipo.sensibilidad || 'Publico';
-                document.getElementById('equipo-descripcion').value = equipo.descripcion || '';
-                document.getElementById('equipo-estado').value = equipo.estado || 'inventario';
-                document.getElementById('equipo-cantidad').value = equipo.cantidad || 1;
-            } else {
-                titulo.innerHTML = `<i class="fa-solid fa-box-open"></i> Agregar Equipo al Inventario`;
-                subtitulo.textContent = 'Ingresa los datos técnicos, ubicación física y parámetros de seguridad del nuevo equipo.';
-                btnSubmit.textContent = 'Guardar Equipo';
-                resetFormEquipo();
-            }
-            
-            document.getElementById('modal-equipo').style.display = 'flex';
-        }
-
-        function cerrarModalEquipo() {
-            document.getElementById('modal-equipo').style.display = 'none';
-            resetFormEquipo();
+        function generarQR() {
+            const str = "EQ-" + Date.now().toString().slice(-6) + "-" + Math.floor(Math.random() * 1000);
+            document.getElementById('equipo-qr').value = str;
         }
 
         async function saveEquipo(e) {
             e.preventDefault();
-            const id = document.getElementById('equipo-id').value;
-            const action = id ? 'edit' : 'add';
-            const btnSubmit = document.getElementById('btn-submit-equipo');
-            btnSubmit.disabled = true;
-            btnSubmit.textContent = 'Guardando...';
+            const formData = new FormData();
             
-            const payload = {
-                action: action,
-                id: id,
-                nombre: document.getElementById('equipo-nombre').value.trim(),
-                marca: document.getElementById('equipo-marca').value.trim(),
-                modelo: document.getElementById('equipo-modelo').value.trim(),
-                numero_serie: document.getElementById('equipo-serie').value.trim(),
-                ubicacion: document.getElementById('equipo-ubicacion').value.trim(),
-                acceso_internet: document.getElementById('equipo-internet').value,
-                sensibilidad: document.getElementById('equipo-sensibilidad').value,
-                descripcion: document.getElementById('equipo-descripcion').value.trim(),
-                estado: document.getElementById('equipo-estado').value,
-                cantidad: document.getElementById('equipo-cantidad').value
-            };
+            const id = document.getElementById('equipo-id').value;
+            formData.append('action', id ? 'edit' : 'add');
+            if (id) formData.append('id', id);
+            
+            formData.append('nombre', document.getElementById('equipo-nombre').value);
+            formData.append('marca', document.getElementById('equipo-marca').value);
+            formData.append('modelo', document.getElementById('equipo-modelo').value);
+            formData.append('numero_serie', document.getElementById('equipo-serie').value);
+            formData.append('descripcion', document.getElementById('equipo-descripcion').value);
+            formData.append('estado', document.getElementById('equipo-estado').value);
+            formData.append('cantidad', document.getElementById('equipo-cantidad').value);
+            formData.append('categoria', document.getElementById('equipo-categoria').value);
+            formData.append('ubicacion', document.getElementById('equipo-ubicacion').value);
+            formData.append('codigo_qr', document.getElementById('equipo-qr').value);
+            formData.append('imagen_url_actual', document.getElementById('equipo-imagen-actual').value);
+            
+            const imgFile = document.getElementById('equipo-imagen').files[0];
+            if (imgFile) formData.append('imagen', imgFile);
 
             try {
                 const res = await fetch('api/inventario/admin_manage_equipos.php', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
+                    body: formData
                 });
                 const data = await res.json();
                 if (data.success) {
-                    cerrarModalEquipo();
+                    resetFormEquipo();
                     loadEquipos();
                 } else {
                     alert('Error: ' + data.error);
                 }
             } catch (e) {
-                alert('Error de conexión al guardar el equipo.');
-            } finally {
-                btnSubmit.disabled = false;
-                btnSubmit.textContent = id ? 'Actualizar Equipo' : 'Guardar Equipo';
+                alert('Error de conexión');
             }
         }
 
         function editEquipoById(id) {
-            const e = window.equiposData ? window.equiposData.find(eq => eq.id == id) : null;
+            const e = window.equiposData.find(eq => eq.id == id);
             if (e) {
-                abrirModalEquipo(e);
+                document.getElementById('equipo-id').value = e.id;
+                document.getElementById('equipo-nombre').value = e.nombre;
+                document.getElementById('equipo-marca').value = e.marca || '';
+                document.getElementById('equipo-modelo').value = e.modelo || '';
+                document.getElementById('equipo-serie').value = e.numero_serie || '';
+                document.getElementById('equipo-descripcion').value = e.descripcion || '';
+                document.getElementById('equipo-estado').value = e.estado;
+                document.getElementById('equipo-cantidad').value = e.cantidad || 1;
+                document.getElementById('equipo-categoria').value = e.categoria || 'General';
+                document.getElementById('equipo-ubicacion').value = e.ubicacion || '';
+                document.getElementById('equipo-qr').value = e.codigo_qr || '';
+                document.getElementById('equipo-imagen-actual').value = e.imagen_url || '';
+                
+                const preview = document.getElementById('equipo-imagen-preview');
+                if (e.imagen_url) {
+                    preview.innerHTML = `<img src="${e.imagen_url}" style="max-height:80px; border-radius:4px;">`;
+                } else {
+                    preview.innerHTML = '';
+                }
+                
+                window.scrollTo(0, 0);
             }
         }
 
         function resetFormEquipo() {
             document.getElementById('equipo-id').value = '';
             document.getElementById('form-equipo').reset();
-            document.getElementById('equipo-internet').value = 'Permanente';
-            document.getElementById('equipo-sensibilidad').value = 'Publico';
-            document.getElementById('equipo-estado').value = 'inventario';
+            document.getElementById('equipo-imagen-actual').value = '';
+            document.getElementById('equipo-imagen-preview').innerHTML = '';
         }
 
         async function deleteEquipo(id) {
             if (!confirm('¿Seguro que deseas eliminar este equipo?')) return;
             try {
+                const formData = new FormData();
+                formData.append('action', 'delete');
+                formData.append('id', id);
                 const res = await fetch('api/inventario/admin_manage_equipos.php', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({action: 'delete', id: id})
+                    body: formData
                 });
                 const data = await res.json();
                 if (data.success) {
@@ -493,6 +459,87 @@
             }
         }
 
+        // --- FUNCIONES MANTENIMIENTO ---
+        async function verMantenimiento(equipo_id, nombre) {
+            document.getElementById('mantenimiento-equipo-id').value = equipo_id;
+            document.getElementById('mantenimiento-titulo').innerText = 'Historial Mantenimiento: ' + nombre;
+            document.getElementById('modal-mantenimiento').style.display = 'flex';
+            await loadMantenimientos(equipo_id);
+        }
+
+        async function loadMantenimientos(equipo_id) {
+            try {
+                const res = await fetch('api/inventario/admin_manage_mantenimiento.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({action: 'get', equipo_id: equipo_id})
+                });
+                const data = await res.json();
+                const tbody = document.getElementById('tbody-mantenimiento');
+                tbody.innerHTML = '';
+                if (data.success && data.mantenimientos.length > 0) {
+                    data.mantenimientos.forEach(m => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">${m.fecha}</td>
+                                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">${m.descripcion}</td>
+                                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">$${m.costo}</td>
+                                <td style="padding: 0.5rem; border-bottom: 1px solid var(--border-color);">
+                                    <button onclick="borrarMantenimiento(${m.id}, ${equipo_id})" style="color:var(--danger); border:none; background:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1rem;">No hay historial de mantenimiento</td></tr>';
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function saveMantenimiento(e) {
+            e.preventDefault();
+            const equipo_id = document.getElementById('mantenimiento-equipo-id').value;
+            const fecha = document.getElementById('mantenimiento-fecha').value;
+            const costo = document.getElementById('mantenimiento-costo').value;
+            const descripcion = document.getElementById('mantenimiento-descripcion').value;
+
+            try {
+                const res = await fetch('api/inventario/admin_manage_mantenimiento.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        action: 'add', equipo_id, fecha, costo, descripcion
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('form-mantenimiento').reset();
+                    loadMantenimientos(equipo_id);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (e) {
+                alert('Error de conexión');
+            }
+        }
+
+        async function borrarMantenimiento(id, equipo_id) {
+            if(!confirm('¿Borrar registro de mantenimiento?')) return;
+            try {
+                const res = await fetch('api/inventario/admin_manage_mantenimiento.php', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({action: 'delete', id})
+                });
+                const data = await res.json();
+                if (data.success) {
+                    loadMantenimientos(equipo_id);
+                }
+            } catch (e) { alert('Error de conexión'); }
+        }
+
         async function exportarInventario(formato) {
             if (!window.equiposData || window.equiposData.length === 0) {
                 alert("No hay datos para exportar.");
@@ -500,30 +547,31 @@
             }
 
             if (formato === 'excel') {
-                try {
-                    const XLSX = await loadXlsxLibrary();
-                    const rows = window.equiposData.map(e => ({
-                        "ID": e.id,
-                        "Nombre": e.nombre || '',
-                        "Marca": e.marca || '',
-                        "Modelo": e.modelo || '',
-                        "N° Serie": e.numero_serie || '',
-                        "Ubicación": e.ubicacion || '',
-                        "Acceso a Internet": e.acceso_internet || 'Permanente',
-                        "Sensibilidad": e.sensibilidad || 'Publico',
-                        "Estado": (e.estado || '').toUpperCase().replace(/_/g, ' '),
-                        "Stock Disponible": e.cantidad_disponible,
-                        "Stock Total": e.cantidad,
-                        "Descripción": e.descripcion || ''
-                    }));
-                    
-                    const worksheet = XLSX.utils.json_to_sheet(rows);
-                    const workbook = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(workbook, worksheet, "Inventario_Equipos");
-                    XLSX.writeFile(workbook, "Inventario_Equipos.xlsx");
-                } catch (err) {
-                    alert("Error exportando a Excel: " + err.message);
-                }
+                let csvContent = "data:text/csv;charset=utf-8,";
+                csvContent += "ID,Nombre,Marca,Modelo,No_Serie,Estado,Stock_Disponible,Stock_Total,Descripcion\n";
+                
+                window.equiposData.forEach(function(e) {
+                    let row = [
+                        e.id,
+                        `"${(e.nombre||'').replace(/"/g, '""')}"`,
+                        `"${(e.marca||'').replace(/"/g, '""')}"`,
+                        `"${(e.modelo||'').replace(/"/g, '""')}"`,
+                        `"${(e.numero_serie||'').replace(/"/g, '""')}"`,
+                        e.estado,
+                        e.cantidad_disponible,
+                        e.cantidad,
+                        `"${(e.descripcion||'').replace(/"/g, '""')}"`
+                    ].join(",");
+                    csvContent += row + "\r\n";
+                });
+                
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "Inventario_Equipos.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             } else if (formato === 'pdf') {
                 await loadPdfLibrary();
                 const container = document.createElement('div');
@@ -538,10 +586,8 @@
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.id}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.nombre}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.marca || ''} ${e.modelo || ''}</td>
-                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.ubicacion || '-'}</td>
-                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.acceso_internet || 'Permanente'}</td>
-                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.sensibilidad || 'Publico'}</td>
-                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${(e.estado||'').toUpperCase()}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.numero_serie || ''}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.estado.toUpperCase()}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.cantidad_disponible} / ${e.cantidad}</td>
                         </tr>
                     `;
@@ -551,16 +597,14 @@
                     <div id="pdf-inv-content" style="width: 21cm; padding: 1cm; background: white; font-family: sans-serif; box-sizing: border-box;">
                         <h2 style="color: #1a365d; text-align: center;">Inventario de Equipos TI</h2>
                         <p style="text-align: center; font-size: 12px;">Fecha: ${new Date().toLocaleDateString('es-CL')}</p>
-                        <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-top: 15px; text-align: left;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 20px; text-align: left;">
                             <tr style="background: #2b6cb0; color: white;">
                                 <th style="padding: 5px;">ID</th>
                                 <th style="padding: 5px;">Nombre</th>
                                 <th style="padding: 5px;">Marca/Modelo</th>
-                                <th style="padding: 5px;">Ubicación</th>
-                                <th style="padding: 5px;">Internet</th>
-                                <th style="padding: 5px;">Sensibilidad</th>
+                                <th style="padding: 5px;">Nº Serie</th>
                                 <th style="padding: 5px;">Estado</th>
-                                <th style="padding: 5px;">Stock</th>
+                                <th style="padding: 5px;">Stock (Disp/Tot)</th>
                             </tr>
                             ${filasHtml}
                         </table>
@@ -576,7 +620,7 @@
                     filename:     'Inventario_Equipos.pdf',
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
-                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
                 };
 
                 try {
@@ -600,42 +644,17 @@
             });
         };
 
-        async function descargarPlantilla() {
-            try {
-                const XLSX = await loadXlsxLibrary();
-                const templateData = [
-                    {
-                        "Nombre": "Notebook Docente ProBook",
-                        "Marca": "HP",
-                        "Modelo": "440 G8",
-                        "No_Serie": "SN123456789",
-                        "Ubicacion": "Sala de Profesores",
-                        "Acceso_Internet": "Permanente",
-                        "Sensibilidad": "Confidencial",
-                        "Cantidad": 5,
-                        "Estado": "disponible",
-                        "Descripcion": "Equipo para planificación y docencia"
-                    },
-                    {
-                        "Nombre": "Proyector Multimedia",
-                        "Marca": "Epson",
-                        "Modelo": "PowerLite E20",
-                        "No_Serie": "SN987654321",
-                        "Ubicacion": "Biblioteca",
-                        "Acceso_Internet": "Ocasional",
-                        "Sensibilidad": "Publico",
-                        "Cantidad": 2,
-                        "Estado": "inventario",
-                        "Descripcion": "Proyector con cable HDMI incluido"
-                    }
-                ];
-                const worksheet = XLSX.utils.json_to_sheet(templateData);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "Plantilla_Inventario");
-                XLSX.writeFile(workbook, "Plantilla_Inventario.xlsx");
-            } catch (e) {
-                alert("Error generando plantilla Excel: " + e.message);
-            }
+        function descargarPlantilla() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Nombre,Marca,Modelo,No_Serie,Cantidad,Estado,Descripcion\n";
+            csvContent += "Notebook Pro,HP,G8,SN123,5,disponible,Equipo nuevo\n";
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Plantilla_Inventario.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         async function procesarExcel(input) {
@@ -664,10 +683,7 @@
                         nombre: row['Nombre'] || row['nombre'] || '',
                         marca: row['Marca'] || row['marca'] || '',
                         modelo: row['Modelo'] || row['modelo'] || '',
-                        numero_serie: row['No_Serie'] || row['no_serie'] || row['Serie'] || row['serie'] || '',
-                        ubicacion: row['Ubicacion'] || row['ubicacion'] || row['Ubicación'] || '',
-                        acceso_internet: row['Acceso_Internet'] || row['acceso_internet'] || row['Acceso a Internet'] || row['Internet'] || 'Permanente',
-                        sensibilidad: row['Sensibilidad'] || row['sensibilidad'] || 'Publico',
+                        numero_serie: row['No_Serie'] || row['no_serie'] || row['Serie'] || '',
                         cantidad: parseInt(row['Cantidad'] || row['cantidad']) || 1,
                         estado: (row['Estado'] || row['estado'] || 'inventario').toLowerCase(),
                         descripcion: row['Descripcion'] || row['descripcion'] || ''
@@ -716,146 +732,6 @@
             }
         }
 
-        window.prestamosData = [];
-        window.usuariosPrestamos = [];
-
-        function filtrarAdminPrestamos() {
-            const query = document.getElementById('buscar-admin-prestamo').value.toLowerCase().trim();
-            const rows = document.querySelectorAll('#tbody-prestamos tr');
-            rows.forEach(row => {
-                if (row.cells.length === 1) return; // Fila de 'No hay préstamos' o 'Cargando'
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
-            });
-        }
-
-        async function abrirModalNuevoPrestamo() {
-            const selectEquipo = document.getElementById('direct-prestamo-equipo');
-            const selectUsuario = document.getElementById('direct-prestamo-usuario');
-            const infoEquipo = document.getElementById('direct-equipo-info');
-            
-            selectEquipo.innerHTML = '<option value="">-- Cargando equipos con stock disponible... --</option>';
-            selectUsuario.innerHTML = '<option value="">-- Cargando usuarios... --</option>';
-            infoEquipo.textContent = '';
-            document.getElementById('direct-prestamo-cantidad').value = 1;
-            document.getElementById('direct-prestamo-dias').value = 1;
-            document.getElementById('direct-prestamo-obs').value = '';
-            
-            document.getElementById('modal-nuevo-prestamo').style.display = 'flex';
-
-            try {
-                // 1. Cargar equipos
-                const resEq = await fetch('api/inventario/get_equipos.php?t=' + new Date().getTime());
-                const dataEq = await resEq.json();
-                
-                selectEquipo.innerHTML = '<option value="">-- Selecciona un equipo --</option>';
-                if (dataEq.success && dataEq.equipos) {
-                    const disponibles = dataEq.equipos.filter(e => e.cantidad_disponible > 0 && e.estado !== 'mantenimiento' && e.estado !== 'no_disponible');
-                    
-                    if (disponibles.length === 0) {
-                        selectEquipo.innerHTML = '<option value="">No hay equipos disponibles en inventario</option>';
-                    } else {
-                        disponibles.forEach(e => {
-                            const opt = document.createElement('option');
-                            opt.value = e.id;
-                            opt.dataset.disponible = e.cantidad_disponible;
-                            opt.dataset.ubicacion = e.ubicacion || '';
-                            const ubic = e.ubicacion ? ` [${e.ubicacion}]` : '';
-                            opt.textContent = `${e.nombre} (${e.marca || ''} ${e.modelo || ''})${ubic} — Disp: ${e.cantidad_disponible}`;
-                            selectEquipo.appendChild(opt);
-                        });
-                    }
-                }
-                
-                // 2. Cargar usuarios
-                const resUsr = await fetch('api/inventario/get_usuarios_prestamos.php?t=' + new Date().getTime());
-                const dataUsr = await resUsr.json();
-                
-                selectUsuario.innerHTML = '<option value="">-- Selecciona un usuario / profesor --</option>';
-                if (dataUsr.success && dataUsr.usuarios) {
-                    window.usuariosPrestamos = dataUsr.usuarios;
-                    dataUsr.usuarios.forEach(u => {
-                        const opt = document.createElement('option');
-                        opt.value = u.id;
-                        opt.textContent = `${u.nombre} (RUT: ${u.rut}) [${u.rol}]`;
-                        selectUsuario.appendChild(opt);
-                    });
-                }
-            } catch (err) {
-                console.error("Error al cargar datos para préstamo directo:", err);
-                alert("Error al cargar la lista de equipos o usuarios.");
-            }
-        }
-
-        function cerrarModalNuevoPrestamo() {
-            document.getElementById('modal-nuevo-prestamo').style.display = 'none';
-        }
-
-        function actualizarMaxCantidadDirect() {
-            const select = document.getElementById('direct-prestamo-equipo');
-            const selectedOpt = select.options[select.selectedIndex];
-            const cantInput = document.getElementById('direct-prestamo-cantidad');
-            const info = document.getElementById('direct-equipo-info');
-            
-            if (selectedOpt && selectedOpt.dataset.disponible) {
-                const disp = parseInt(selectedOpt.dataset.disponible) || 1;
-                cantInput.max = disp;
-                if (parseInt(cantInput.value) > disp) cantInput.value = disp;
-                const ubic = selectedOpt.dataset.ubicacion ? ` | Ubicación física: ${selectedOpt.dataset.ubicacion}` : '';
-                info.textContent = `Stock disponible: ${disp} unidad(es)${ubic}`;
-            } else {
-                cantInput.removeAttribute('max');
-                info.textContent = '';
-            }
-        }
-
-        async function guardarNuevoPrestamoDirecto(e) {
-            e.preventDefault();
-            const equipoId = document.getElementById('direct-prestamo-equipo').value;
-            const usuarioId = document.getElementById('direct-prestamo-usuario').value;
-            const cantidad = parseInt(document.getElementById('direct-prestamo-cantidad').value) || 1;
-            const dias = parseInt(document.getElementById('direct-prestamo-dias').value) || 1;
-            const observaciones = document.getElementById('direct-prestamo-obs').value.trim();
-            const btnSubmit = document.getElementById('btn-submit-direct-prestamo');
-            
-            if (!equipoId || !usuarioId) {
-                alert('Debes seleccionar tanto el equipo como el usuario receptor.');
-                return;
-            }
-
-            btnSubmit.disabled = true;
-            btnSubmit.textContent = 'Asignando y entregando...';
-
-            try {
-                const res = await fetch('api/inventario/admin_manage_prestamos.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'direct_create',
-                        equipo_id: equipoId,
-                        usuario_id: usuarioId,
-                        cantidad: cantidad,
-                        dias: dias,
-                        observaciones: observaciones
-                    })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    alert(data.message || 'Préstamo asignado y entregado directamente con éxito.');
-                    cerrarModalNuevoPrestamo();
-                    loadPrestamosAdmin();
-                    loadEquipos();
-                } else {
-                    alert('Error: ' + (data.error || 'No se pudo crear el préstamo'));
-                }
-            } catch (err) {
-                alert('Error de conexión al procesar el préstamo directo.');
-            } finally {
-                btnSubmit.disabled = false;
-                btnSubmit.textContent = 'Asignar y Entregar Equipo';
-            }
-        }
-
         async function loadPrestamosAdmin() {
             try {
                 const res = await fetch('api/inventario/admin_get_prestamos.php?t=' + new Date().getTime());
@@ -864,49 +740,45 @@
                 tbody.innerHTML = '';
                 
                 if (data.prestamos && data.prestamos.length > 0) {
-                    window.prestamosData = data.prestamos;
                     data.prestamos.forEach(p => {
                         let btnAccion = '';
                         let btnPdf = '';
 
-                        let btnDelete = `<button onclick="borrarPrestamo(${p.id})" style="background: #ef4444; color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%; font-size: 0.8rem;"><i class="fa-solid fa-trash"></i> Borrar</button>`;
+                        let btnDelete = `<button onclick="borrarPrestamo(${p.id})" style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-trash"></i> Borrar</button>`;
 
                         if (p.estado === 'prestado' || p.estado === 'pendiente_aprobacion' || p.estado === 'atrasado' || p.estado === 'devuelto') {
-                            btnPdf += `<button onclick="generarPDF('prestamo', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #3b82f6; color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%; font-size: 0.8rem;"><i class="fa-solid fa-file-pdf"></i> Acta Préstamo</button>`;
+                            btnPdf += `<button onclick="generarPDF('prestamo', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #3b82f6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-file-pdf"></i> Acta Préstamo</button>`;
                         }
                         if (p.estado === 'devuelto') {
-                            btnPdf += `<button onclick="generarPDF('recepcion', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #10b981; color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%; font-size: 0.8rem;"><i class="fa-solid fa-file-pdf"></i> Acta Recepción</button>`;
+                            btnPdf += `<button onclick="generarPDF('recepcion', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #10b981; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-file-pdf"></i> Acta Recepción</button>`;
                         }
 
                         if (p.estado === 'pendiente_aprobacion' || p.estado === 'pendiente_codigo') {
-                            btnAccion = `<button onclick="aprobarDirectamente(${p.id})" style="background: #8b5cf6; color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 4px; cursor: pointer; margin-bottom: 0.25rem; display: block; width: 100%; font-size: 0.8rem;"><i class="fa-solid fa-check"></i> Aprobar Directamente</button>
+                            btnAccion = `<button onclick="aprobarDirectamente(${p.id})" style="background: #8b5cf6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-bottom: 0.25rem; display: block; width: 100%;">Aprobar Directamente</button>
                                          <div style="display:flex; gap:0.5rem; margin-top:0.25rem;">
-                                            <button onclick="abrirAprobacion(${p.id})" style="background: #10b981; color: white; border: none; padding: 0.35rem 0.5rem; border-radius: 4px; cursor: pointer; flex: 1; font-size: 0.8rem;">Código</button>
-                                            <button onclick="rechazarPrestamo(${p.id})" style="background: var(--danger); color: white; border: none; padding: 0.35rem 0.5rem; border-radius: 4px; cursor: pointer; flex: 1; font-size: 0.8rem;">Rechazar</button>
+                                            <button onclick="abrirAprobacion(${p.id})" style="background: #10b981; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; flex: 1;">Usar Código</button>
+                                            <button onclick="rechazarPrestamo(${p.id})" style="background: var(--danger); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; flex: 1;">Rechazar</button>
                                          </div>`;
                         } else if (p.estado === 'prestado' || p.estado === 'atrasado') {
-                            btnAccion = `<button onclick="marcarDevuelto(${p.id})" style="background: var(--primary-color); color: white; border: none; padding: 0.35rem 0.6rem; border-radius: 4px; cursor: pointer; display: block; width: 100%; font-size: 0.8rem;"><i class="fa-solid fa-rotate-left"></i> Marcar Devuelto</button>`;
+                            btnAccion = `<button onclick="marcarDevuelto(${p.id})" style="background: var(--primary-color); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; display: block; width: 100%;">Marcar Devuelto</button>`;
                         }
 
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${p.fecha_solicitud}</td>
-                            <td>
-                                <strong>${p.usuario_nombre}</strong>
-                                <div style="font-size:0.8rem; color:var(--text-muted); font-family:monospace;">${p.rut || ''}</div>
-                            </td>
-                            <td>${p.equipo_nombre} (Cant: ${p.cantidad})</td>
-                            <td><span class="badge ${p.estado}">${p.estado.toUpperCase().replace('_', ' ')}</span></td>
-                            <td style="display: flex; flex-direction: column; min-width: 140px;">
-                                ${btnAccion}
-                                ${btnPdf}
-                                ${btnDelete}
-                            </td>
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${p.fecha_solicitud}</td>
+                                <td>${p.usuario_nombre}</td>
+                                <td>${p.equipo_nombre} (Cant: ${p.cantidad})</td>
+                                <td><span class="badge ${p.estado}">${p.estado.toUpperCase().replace('_', ' ')}</span></td>
+                                <td style="display: flex; flex-direction: column;">
+                                    ${btnAccion}
+                                    ${btnPdf}
+                                    ${btnDelete}
+                                </td>
+                            </tr>
                         `;
-                        tbody.appendChild(tr);
                     });
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 1.5rem; color: var(--text-muted);">No hay préstamos registrados</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay préstamos</td></tr>';
                 }
             } catch (e) {
                 console.error(e);

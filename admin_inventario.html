@@ -50,79 +50,85 @@
 
         <!-- Pestaña: Equipos -->
         <div id="equipos" class="tab-content active">
-            <form id="form-equipo" onsubmit="saveEquipo(event)" style="background: var(--bg-main); padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 2rem;">
-                <input type="hidden" id="equipo-id">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
-                        <label>Nombre del Equipo</label>
-                        <input type="text" id="equipo-nombre" required placeholder="Ej: Proyector Epson L200">
-                    </div>
-                    <div class="form-group">
-                        <label>Categoría</label>
-                        <input type="text" id="equipo-categoria" placeholder="Ej: Notebooks, Proyectores" value="General">
-                    </div>
-                    <div class="form-group">
-                        <label>Estado</label>
-                        <select id="equipo-estado">
-                            <option value="inventario">Inventario</option>
-                            <option value="disponible">Disponible</option>
-                            <option value="no_disponible">No Disponible</option>
-                            <option value="en_mantenimiento">En Mantenimiento</option>
-                            <option value="en_prestamo">En Préstamo</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Cantidad Total</label>
-                        <input type="number" id="equipo-cantidad" required min="1" value="1">
-                    </div>
-                    <div class="form-group">
-                        <label>Marca</label>
-                        <input type="text" id="equipo-marca" placeholder="Ej: HP, Epson, etc.">
-                    </div>
-                    <div class="form-group">
-                        <label>Modelo</label>
-                        <input type="text" id="equipo-modelo" placeholder="Ej: ProBook 440 G8">
-                    </div>
-                    <div class="form-group">
-                        <label>N° de Serie</label>
-                        <input type="text" id="equipo-serie" placeholder="Ej: SN123456789">
-                    </div>
-                    <div class="form-group">
-                        <label>Ubicación Física</label>
-                        <input type="text" id="equipo-ubicacion" placeholder="Ej: Sala 3, Biblioteca">
-                    </div>
-                    <div class="form-group">
-                        <label>Imagen del Equipo</label>
-                        <input type="file" id="equipo-imagen" accept="image/*">
-                        <input type="hidden" id="equipo-imagen-actual">
-                        <div id="equipo-imagen-preview" style="margin-top: 0.5rem;"></div>
-                    </div>
-                    <div class="form-group">
-                        <label>Código QR / Barras</label>
-                        <input type="text" id="equipo-qr" placeholder="Código escaneado o autogenerado">
-                        <button type="button" onclick="generarQR()" style="margin-top:0.25rem; font-size:0.8rem; padding:0.25rem; border-radius:0.25rem; border:1px solid #ccc; background:#f3f4f6; cursor:pointer;">Generar Automático</button>
-                    </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap;">
+                <input type="text" id="buscar-admin-equipo" placeholder="Buscar por nombre, estado, marca..." style="width: 300px; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;" onkeyup="filtrarAdminEquipos()">
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button onclick="abrirModalEquipo()" style="padding: 0.5rem 1rem; border: none; background: var(--primary-color); color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-plus"></i> Agregar Equipo</button>
+                    <button onclick="descargarPlantilla()" style="padding: 0.5rem 1rem; border: none; background: #6b7280; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-download"></i> Plantilla Excel</button>
+                    <input type="file" id="file-excel" accept=".xlsx, .xls, .csv" style="display: none;" onchange="procesarExcel(this)">
+                    <button onclick="document.getElementById('file-excel').click()" style="padding: 0.5rem 1rem; border: none; background: #3b82f6; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-arrow-up"></i> Importar Excel</button>
+                    <button onclick="exportarInventario('excel')" style="padding: 0.5rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Exportar CSV</button>
+                    <button onclick="exportarInventario('pdf')" style="padding: 0.5rem 1rem; border: none; background: #ef4444; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
                 </div>
-                <div class="form-group">
-                    <label>Descripción / Observaciones</label>
-                    <textarea id="equipo-descripcion" rows="2" placeholder="Detalles adicionales..."></textarea>
-                </div>
-                <div style="display: flex; justify-content: flex-end; gap: 1rem;">
-                    <button type="button" onclick="resetFormEquipo()" style="padding: 0.5rem 1rem; border: none; background: #e2e8f0; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
-                    <button type="submit" style="padding: 0.5rem 1rem; border: none; background: var(--primary-color); color: white; border-radius: 0.5rem; cursor: pointer;">Guardar Equipo</button>
-                </div>
-            </form>
-
-            <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                <button onclick="descargarPlantilla()" style="padding: 0.5rem 1rem; border: none; background: #6b7280; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-download"></i> Plantilla Excel</button>
-                <input type="file" id="file-excel" accept=".xlsx, .xls, .csv" style="display: none;" onchange="procesarExcel(this)">
-                <button onclick="document.getElementById('file-excel').click()" style="padding: 0.5rem 1rem; border: none; background: #3b82f6; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-arrow-up"></i> Importar Excel</button>
-                <button onclick="exportarInventario('excel')" style="padding: 0.5rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Exportar CSV</button>
-                <button onclick="exportarInventario('pdf')" style="padding: 0.5rem 1rem; border: none; background: #ef4444; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
             </div>
 
-            <div style="margin-bottom: 1rem;">
-                <input type="text" id="buscar-admin-equipo" placeholder="Buscar por nombre, estado, marca..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem;" onkeyup="filtrarAdminEquipos()">
+            <!-- MODAL EQUIPO -->
+            <div id="modal-equipo" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000;">
+                <div style="background: white; padding: 2rem; border-radius: 0.5rem; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+                    <h3 id="modal-equipo-titulo" style="margin-top: 0;">Agregar Equipo</h3>
+                    <form id="form-equipo" onsubmit="saveEquipo(event)">
+                        <input type="hidden" id="equipo-id">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                                <label>Nombre del Equipo</label>
+                                <input type="text" id="equipo-nombre" required placeholder="Ej: Proyector Epson L200">
+                            </div>
+                            <div class="form-group">
+                                <label>Categoría</label>
+                                <input type="text" id="equipo-categoria" placeholder="Ej: Notebooks, Proyectores" value="General">
+                            </div>
+                            <div class="form-group">
+                                <label>Estado</label>
+                                <select id="equipo-estado">
+                                    <option value="inventario">Inventario</option>
+                                    <option value="disponible">Disponible</option>
+                                    <option value="no_disponible">No Disponible</option>
+                                    <option value="en_mantenimiento">En Mantenimiento</option>
+                                    <option value="en_prestamo">En Préstamo</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Cantidad Total</label>
+                                <input type="number" id="equipo-cantidad" required min="1" value="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Marca</label>
+                                <input type="text" id="equipo-marca" placeholder="Ej: HP, Epson, etc.">
+                            </div>
+                            <div class="form-group">
+                                <label>Modelo</label>
+                                <input type="text" id="equipo-modelo" placeholder="Ej: ProBook 440 G8">
+                            </div>
+                            <div class="form-group">
+                                <label>Nº de Serie</label>
+                                <input type="text" id="equipo-serie" placeholder="Ej: SN123456789">
+                            </div>
+                            <div class="form-group">
+                                <label>Ubicación Física</label>
+                                <input type="text" id="equipo-ubicacion" placeholder="Ej: Sala 3, Biblioteca">
+                            </div>
+                            <div class="form-group">
+                                <label>Imagen del Equipo</label>
+                                <input type="file" id="equipo-imagen" accept="image/*">
+                                <input type="hidden" id="equipo-imagen-actual">
+                                <div id="equipo-imagen-preview" style="margin-top: 0.5rem;"></div>
+                            </div>
+                            <div class="form-group">
+                                <label>Código QR / Barras</label>
+                                <input type="text" id="equipo-qr" placeholder="Código escaneado o autogenerado">
+                                <button type="button" onclick="generarQR()" style="margin-top:0.25rem; font-size:0.8rem; padding:0.25rem; border-radius:0.25rem; border:1px solid #ccc; background:#f3f4f6; cursor:pointer;">Generar Automático</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción / Observaciones</label>
+                            <textarea id="equipo-descripcion" rows="2" placeholder="Detalles adicionales..."></textarea>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                            <button type="button" onclick="cerrarModalEquipo()" style="padding: 0.5rem 1rem; border: none; background: #e2e8f0; border-radius: 0.5rem; cursor: pointer;">Cancelar</button>
+                            <button type="submit" id="btn-submit-equipo" style="padding: 0.5rem 1rem; border: none; background: var(--primary-color); color: white; border-radius: 0.5rem; cursor: pointer;">Guardar Equipo</button>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <div style="overflow-x: auto;">
@@ -359,6 +365,17 @@
             window.scrollTo(0, 0);
         }
 
+        function abrirModalEquipo() {
+            document.getElementById('modal-equipo-titulo').innerText = document.getElementById('equipo-id').value ? 'Editar Equipo' : 'Agregar Equipo';
+            document.getElementById('btn-submit-equipo').innerText = document.getElementById('equipo-id').value ? 'Actualizar' : 'Guardar Equipo';
+            document.getElementById('modal-equipo').style.display = 'flex';
+        }
+
+        function cerrarModalEquipo() {
+            document.getElementById('modal-equipo').style.display = 'none';
+            resetFormEquipo();
+        }
+
         function generarQR() {
             const str = "EQ-" + Date.now().toString().slice(-6) + "-" + Math.floor(Math.random() * 1000);
             document.getElementById('equipo-qr').value = str;
@@ -394,7 +411,7 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    resetFormEquipo();
+                    cerrarModalEquipo();
                     loadEquipos();
                 } else {
                     alert('Error: ' + data.error);
@@ -427,7 +444,7 @@
                     preview.innerHTML = '';
                 }
                 
-                window.scrollTo(0, 0);
+                abrirModalEquipo();
             }
         }
 

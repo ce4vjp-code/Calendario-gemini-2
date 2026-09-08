@@ -62,7 +62,7 @@
                     <button onclick="descargarPlantilla()" style="padding: 0.5rem 1rem; border: none; background: #6b7280; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-download"></i> Plantilla Excel</button>
                     <input type="file" id="file-excel" accept=".xlsx, .xls, .csv" style="display: none;" onchange="procesarExcel(this)">
                     <button onclick="document.getElementById('file-excel').click()" style="padding: 0.5rem 1rem; border: none; background: #3b82f6; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-arrow-up"></i> Importar Excel</button>
-                    <button onclick="exportarInventario('excel')" style="padding: 0.5rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Exportar CSV</button>
+                    <button onclick="exportarInventario('excel')" style="padding: 0.5rem 1rem; border: none; background: #10b981; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-excel"></i> Exportar Excel</button>
                     <button onclick="exportarInventario('pdf')" style="padding: 0.5rem 1rem; border: none; background: #ef4444; color: white; border-radius: 0.5rem; cursor: pointer;"><i class="fa-solid fa-file-pdf"></i> Exportar PDF</button>
                 </div>
             </div>
@@ -651,34 +651,95 @@
                 return;
             }
 
+            // Calcular estadísticas
+            const totalEquipos = dataToExport.length;
+            let totalFisico = 0;
+            let totalDisponible = 0;
+            let totalPrestados = 0;
+            let totalMantenimiento = 0;
+            const categoriasStats = {};
+            const ubicacionesStats = {};
+
+            dataToExport.forEach(e => {
+                const cant = parseInt(e.cantidad) || 0;
+                const disp = parseInt(e.cantidad_disponible) || 0;
+                const prestados = cant - disp;
+
+                totalFisico += cant;
+                totalDisponible += disp;
+                totalPrestados += prestados;
+                
+                if (e.estado === 'en_mantenimiento') {
+                    totalMantenimiento += cant;
+                }
+
+                const cat = e.categoria || 'General';
+                if (!categoriasStats[cat]) categoriasStats[cat] = { total: 0, prestados: 0, disponibles: 0 };
+                categoriasStats[cat].total += cant;
+                categoriasStats[cat].prestados += prestados;
+                categoriasStats[cat].disponibles += disp;
+
+                const ubi = e.ubicacion || 'No asignada';
+                if (!ubicacionesStats[ubi]) ubicacionesStats[ubi] = { total: 0, prestados: 0, disponibles: 0 };
+                ubicacionesStats[ubi].total += cant;
+                ubicacionesStats[ubi].prestados += prestados;
+                ubicacionesStats[ubi].disponibles += disp;
+            });
+
             if (formato === 'excel') {
-                let csvContent = "data:text/csv;charset=utf-8,";
-                csvContent += "ID,Nombre,Marca,Modelo,No_Serie,Categoria,Ubicacion,Estado,Stock_Disponible,Stock_Total,Descripcion\n";
-                
-                dataToExport.forEach(function(e) {
-                    let row = [
-                        e.id,
-                        `"${(e.nombre||'').replace(/"/g, '""')}"`,
-                        `"${(e.marca||'').replace(/"/g, '""')}"`,
-                        `"${(e.modelo||'').replace(/"/g, '""')}"`,
-                        `"${(e.numero_serie||'').replace(/"/g, '""')}"`,
-                        `"${(e.categoria||'General').replace(/"/g, '""')}"`,
-                        `"${(e.ubicacion||'').replace(/"/g, '""')}"`,
-                        e.estado,
-                        e.cantidad_disponible,
-                        e.cantidad,
-                        `"${(e.descripcion||'').replace(/"/g, '""')}"`
-                    ].join(",");
-                    csvContent += row + "\r\n";
-                });
-                
-                const encodedUri = encodeURI(csvContent);
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", "Inventario_Equipos.csv");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                try {
+                    const XLSX = await loadXlsxLibrary();
+                    const wb = XLSX.utils.book_new();
+
+                    // Hoja 1: Resumen
+                    const resumenData = [
+                        ["RESUMEN GENERAL", ""],
+                        ["Fecha de reporte", new Date().toLocaleDateString('es-CL')],
+                        ["Total de Registros (Modelos/Lotes)", totalEquipos],
+                        ["Total Unidades Físicas (Equipos)", totalFisico],
+                        ["Unidades Disponibles en Laboratorio", totalDisponible],
+                        ["Unidades en Préstamo", totalPrestados],
+                        ["Unidades en Mantenimiento", totalMantenimiento],
+                        ["", ""],
+                        ["RESUMEN POR CATEGORÍA", "Total Unidades", "En Préstamo", "Disponibles"]
+                    ];
+                    
+                    Object.keys(categoriasStats).forEach(c => {
+                        resumenData.push([c, categoriasStats[c].total, categoriasStats[c].prestados, categoriasStats[c].disponibles]);
+                    });
+
+                    resumenData.push(["", ""]);
+                    resumenData.push(["RESUMEN POR UBICACIÓN", "Total Unidades", "En Préstamo", "Disponibles"]);
+                    Object.keys(ubicacionesStats).forEach(u => {
+                        resumenData.push([u, ubicacionesStats[u].total, ubicacionesStats[u].prestados, ubicacionesStats[u].disponibles]);
+                    });
+
+                    const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
+                    wsResumen['!cols'] = [{wch: 35}, {wch: 15}, {wch: 15}, {wch: 15}];
+                    XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen");
+
+                    // Hoja 2: Detalle
+                    const detalleData = dataToExport.map(e => ({
+                        "ID": e.id,
+                        "Nombre": e.nombre,
+                        "Categoría": e.categoria || 'General',
+                        "Ubicación": e.ubicacion || 'No asignada',
+                        "Marca": e.marca || '',
+                        "Modelo": e.modelo || '',
+                        "No. Serie": e.numero_serie || '',
+                        "Estado": String(e.estado).toUpperCase().replace('_', ' '),
+                        "Stock Disp.": e.cantidad_disponible,
+                        "Stock Total": e.cantidad,
+                        "Descripción": e.descripcion || ''
+                    }));
+
+                    const wsDetalle = XLSX.utils.json_to_sheet(detalleData);
+                    XLSX.utils.book_append_sheet(wb, wsDetalle, "Detalle Equipos");
+
+                    XLSX.writeFile(wb, "Reporte_Inventario.xlsx");
+                } catch (err) {
+                    alert("Error al generar Excel: " + err.message);
+                }
             } else if (formato === 'pdf') {
                 await loadPdfLibrary();
                 const container = document.createElement('div');
@@ -695,17 +756,57 @@
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.categoria || 'General'}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.ubicacion || ''}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.marca || ''} ${e.modelo || ''}</td>
-                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.estado.toUpperCase()}</td>
+                            <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.estado.toUpperCase().replace('_', ' ')}</td>
                             <td style="padding: 5px; border-bottom: 1px solid #e2e8f0;">${e.cantidad_disponible} / ${e.cantidad}</td>
+                        </tr>
+                    `;
+                });
+
+                let categoriasHtml = '';
+                Object.keys(categoriasStats).forEach(c => {
+                    categoriasHtml += `
+                        <tr>
+                            <td style="padding: 3px 0; border-bottom: 1px solid #f1f5f9;">${c}</td>
+                            <td style="text-align: right; border-bottom: 1px solid #f1f5f9;">${categoriasStats[c].total}</td>
+                            <td style="text-align: right; border-bottom: 1px solid #f1f5f9;">${categoriasStats[c].prestados}</td>
+                            <td style="text-align: right; border-bottom: 1px solid #f1f5f9;">${categoriasStats[c].disponibles}</td>
                         </tr>
                     `;
                 });
 
                 container.innerHTML = `
                     <div id="pdf-inv-content" style="width: 21cm; padding: 1cm; background: white; font-family: sans-serif; box-sizing: border-box;">
-                        <h2 style="color: #1a365d; text-align: center;">Inventario de Equipos TI</h2>
-                        <p style="text-align: center; font-size: 12px;">Fecha: ${new Date().toLocaleDateString('es-CL')}</p>
-                        <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 20px; text-align: left;">
+                        <h2 style="color: #1a365d; text-align: center; margin-bottom: 5px;">Reporte de Inventario de Equipos</h2>
+                        <p style="text-align: center; font-size: 12px; margin-top: 0; color: #64748b;">Fecha de emisión: ${new Date().toLocaleDateString('es-CL')} ${new Date().toLocaleTimeString('es-CL')}</p>
+                        
+                        <!-- Panel de Resumen -->
+                        <div style="display: flex; justify-content: space-between; margin: 20px 0; gap: 15px;">
+                            <div style="flex: 1; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; font-size: 11px;">
+                                <h4 style="margin: 0 0 10px 0; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;">Resumen General</h4>
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr><td style="padding: 3px 0;"><strong>Total Equipos (Lotes)</strong></td><td style="text-align:right;">${totalEquipos}</td></tr>
+                                    <tr><td style="padding: 3px 0;"><strong>Total Unidades Físicas</strong></td><td style="text-align:right;">${totalFisico}</td></tr>
+                                    <tr><td style="padding: 3px 0;"><strong>Disp. en Laboratorio</strong></td><td style="text-align:right; color: #10b981;">${totalDisponible}</td></tr>
+                                    <tr><td style="padding: 3px 0;"><strong>En Préstamo</strong></td><td style="text-align:right; color: #f59e0b;">${totalPrestados}</td></tr>
+                                    <tr><td style="padding: 3px 0;"><strong>En Mantenimiento</strong></td><td style="text-align:right; color: #ef4444;">${totalMantenimiento}</td></tr>
+                                </table>
+                            </div>
+                            <div style="flex: 1.5; padding: 10px 15px; border: 1px solid #e2e8f0; border-radius: 6px; background: #f8fafc; font-size: 11px;">
+                                <h4 style="margin: 0 0 10px 0; color: #0f172a; border-bottom: 1px solid #cbd5e1; padding-bottom: 5px;">Unidades por Categoría</h4>
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr style="color: #475569;">
+                                        <th style="text-align: left; font-weight: normal; padding-bottom: 3px;">Categoría</th>
+                                        <th style="text-align: right; font-weight: normal; padding-bottom: 3px;">Total</th>
+                                        <th style="text-align: right; font-weight: normal; padding-bottom: 3px;">Prest.</th>
+                                        <th style="text-align: right; font-weight: normal; padding-bottom: 3px;">Disp.</th>
+                                    </tr>
+                                    ${categoriasHtml}
+                                </table>
+                            </div>
+                        </div>
+
+                        <h4 style="margin: 15px 0 5px 0; color: #1a365d;">Detalle de Equipos</h4>
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10px; text-align: left;">
                             <tr style="background: #f1f5f9; color: #0f172a; border-bottom: 2px solid #94a3b8;">
                                 <th style="padding: 8px 5px; font-weight: bold;">ID</th>
                                 <th style="padding: 8px 5px; font-weight: bold;">Nombre</th>
@@ -725,7 +826,7 @@
                 await new Promise(r => setTimeout(r, 200));
                 
                 const opt = {
-                    filename:     'Inventario_Equipos.pdf',
+                    filename:     'Reporte_Inventario.pdf',
                     image:        { type: 'jpeg', quality: 0.98 },
                     html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
                     jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }

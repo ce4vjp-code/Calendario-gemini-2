@@ -379,7 +379,13 @@
                     
                     let qrHtml = '';
                     if (e.codigo_qr) {
-                        qrHtml = `<div id="qr-${e.id}" style="margin-top: 5px;" title="${e.codigo_qr}"></div>`;
+                        qrHtml = `
+                        <div style="display:flex; align-items:center; gap: 10px; margin-top: 5px;">
+                            <div id="qr-${e.id}" title="${e.codigo_qr}"></div>
+                            <button onclick="descargarQRAltaResolucion('${e.codigo_qr}', '${e.nombre.replace(/'/g, "\\'")}')" style="background:none; border:none; color:var(--primary-color); cursor:pointer; font-size:1.2rem; padding:0;" title="Descargar QR Alta Resolución para Imprimir">
+                                <i class="fa-solid fa-qrcode"></i><i class="fa-solid fa-download" style="font-size:0.7rem; position:relative; top:-5px; left:2px;"></i>
+                            </button>
+                        </div>`;
                     }
 
                     tbody.innerHTML += `
@@ -466,6 +472,44 @@
         function generarQR() {
             const str = "EQ-" + Date.now().toString().slice(-6) + "-" + Math.floor(Math.random() * 1000);
             document.getElementById('equipo-qr').value = str;
+        }
+
+        function descargarQRAltaResolucion(codigo, nombre) {
+            const tempDiv = document.createElement('div');
+            document.body.appendChild(tempDiv);
+            
+            new QRCode(tempDiv, {
+                text: codigo,
+                width: 512,
+                height: 512,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+            
+            setTimeout(() => {
+                const canvas = tempDiv.querySelector('canvas');
+                if (canvas) {
+                    const url = canvas.toDataURL("image/png");
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `QR_${nombre.replace(/[^a-zA-Z0-9_-]/g, '_')}_${codigo}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                } else {
+                    const img = tempDiv.querySelector('img');
+                    if(img && img.src) {
+                        const a = document.createElement('a');
+                        a.href = img.src;
+                        a.download = `QR_${nombre.replace(/[^a-zA-Z0-9_-]/g, '_')}_${codigo}.png`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    }
+                }
+                document.body.removeChild(tempDiv);
+            }, 300);
         }
 
         async function saveEquipo(e) {

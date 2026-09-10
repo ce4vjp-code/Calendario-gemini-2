@@ -10,10 +10,12 @@ if (!isset($_SESSION['user_id'])) {
 
 try {
     $stmt = $pdo->prepare("
-        SELECT p.*, e.nombre as equipo_nombre,
+        SELECT p.*, e.nombre as equipo_nombre, e.marca, e.modelo, e.numero_serie,
+               u.nombre as usuario_nombre, u.rut as usuario_rut, u.email as usuario_email,
                DATE_FORMAT(p.fecha_solicitud, '%d/%m/%Y %H:%i') as fecha_solicitud_fmt
         FROM inventario_prestamos p
         JOIN inventario_equipos e ON p.equipo_id = e.id
+        JOIN usuarios u ON p.usuario_id = u.id
         WHERE p.usuario_id = ?
         ORDER BY p.fecha_solicitud DESC
     ");

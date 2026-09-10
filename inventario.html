@@ -222,6 +222,7 @@
                 container.innerHTML = '';
                 
                 if (data.prestamos && data.prestamos.length > 0) {
+                    window.misPrestamosData = data.prestamos;
                     data.prestamos.forEach(p => {
                         container.innerHTML += `
                             <div class="equipo-card">
@@ -231,23 +232,39 @@
                                 </div>
                                 <div style="display:flex; justify-content:space-between; margin-top:0.5rem; align-items:center;">
                                     <div>
-                                        <p style="font-size:0.8rem; margin:0;"><i class="fa-regular fa-clock"></i> Solicitado el: ${p.fecha_solicitud_fmt}</p>
+                                        <p style="margin:0; font-size:0.85rem; color:var(--text-muted);"><i class="fa-regular fa-calendar"></i> ${p.fecha_solicitud_fmt}</p>
                                         ${p.codigo_aprobacion && p.estado === 'pendiente_aprobacion' ? `<p style="font-size:0.8rem; color:#10b981; margin:0;"><i class="fa-solid fa-check"></i> Código generado, esperando administrador.</p>` : ''}
                                     </div>
                                     <div>
-                                        ${(p.estado === 'prestado' || p.estado === 'pendiente_aprobacion' || p.estado === 'atrasado' || p.estado === 'devuelto') ? `<button onclick="generarPDF('prestamo', ${p.id}, '${currentUser.nombre}', '${p.equipo_nombre}')" class="btn btn-primary" style="font-size:0.8rem; padding: 0.3rem 0.6rem; margin-bottom: 0.2rem;"><i class="fa-solid fa-file-pdf"></i> Acta de Préstamo</button><br>` : ''}
-                                        ${(p.estado === 'devuelto') ? `<button onclick="generarPDF('recepcion', ${p.id}, '${currentUser.nombre}', '${p.equipo_nombre}')" class="btn btn-success" style="font-size:0.8rem; padding: 0.3rem 0.6rem;"><i class="fa-solid fa-file-pdf"></i> Acta de Recepción</button>` : ''}
+                                        ${(p.estado === 'prestado' || p.estado === 'pendiente_aprobacion' || p.estado === 'atrasado' || p.estado === 'devuelto') ? `<button onclick="generarActaUser('prestamo', ${p.id})" class="btn btn-primary" style="font-size:0.8rem; padding: 0.3rem 0.6rem; margin-bottom: 0.2rem;"><i class="fa-solid fa-file-pdf"></i> Acta de Préstamo</button><br>` : ''}
+                                        ${(p.estado === 'devuelto') ? `<button onclick="generarActaUser('recepcion', ${p.id})" class="btn btn-success" style="font-size:0.8rem; padding: 0.3rem 0.6rem;"><i class="fa-solid fa-file-pdf"></i> Acta de Recepción</button>` : ''}
                                     </div>
                                 </div>
                             </div>
                         `;
                     });
                 } else {
-                    container.innerHTML = '<p style="text-align:center;">No tienes préstamos solicitados.</p>';
+                    container.innerHTML = '<p style="text-align:center; color:var(--text-muted);">No tienes préstamos solicitados ni activos.</p>';
                 }
             } catch (e) {
                 console.error(e);
             }
+        }
+
+        function generarActaUser(tipo, id) {
+            const p = window.misPrestamosData.find(x => x.id === id);
+            if (!p) return;
+            generarPDF(
+                tipo, 
+                p.id, 
+                p.usuario_nombre, 
+                p.usuario_rut || '', 
+                p.usuario_email || '', 
+                p.equipo_nombre, 
+                p.marca || '', 
+                p.modelo || '', 
+                p.numero_serie || ''
+            );
         }
 
         async function loadPendientesDirectivo() {

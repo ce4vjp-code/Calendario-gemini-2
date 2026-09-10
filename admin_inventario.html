@@ -1141,10 +1141,10 @@
                         let btnDelete = `<button onclick="borrarPrestamo(${p.id})" style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-trash"></i> Borrar</button>`;
 
                         if (p.estado === 'prestado' || p.estado === 'pendiente_aprobacion' || p.estado === 'atrasado' || p.estado === 'devuelto') {
-                            btnPdf += `<button onclick="generarPDF('prestamo', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #3b82f6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-file-pdf"></i> Acta Préstamo</button>`;
+                            btnPdf += `<button onclick="generarActaAdmin('prestamo', ${p.id})" style="background: #3b82f6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-file-pdf"></i> Acta Préstamo</button>`;
                         }
                         if (p.estado === 'devuelto') {
-                            btnPdf += `<button onclick="generarPDF('recepcion', ${p.id}, '${p.usuario_nombre}', '${p.rut || ''}', '${p.usuario_email || ''}', '${p.equipo_nombre}', '${p.marca || ''}', '${p.modelo || ''}', '${p.numero_serie || ''}')" style="background: #10b981; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-file-pdf"></i> Acta Recepción</button>`;
+                            btnPdf += `<button onclick="generarActaAdmin('recepcion', ${p.id})" style="background: #10b981; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; margin-top: 0.25rem; display: block; width: 100%;"><i class="fa-solid fa-file-pdf"></i> Acta Recepción</button>`;
                         }
 
                         if (p.estado === 'pendiente_aprobacion' || p.estado === 'pendiente_codigo') {
@@ -1180,6 +1180,22 @@
             } catch (e) {
                 console.error(e);
             }
+        }
+
+        function generarActaAdmin(tipo, id) {
+            const p = window.prestamosData.find(x => x.id === id);
+            if (!p) return;
+            generarPDF(
+                tipo, 
+                p.id, 
+                p.usuario_nombre, 
+                p.rut || '', 
+                p.usuario_email || '', 
+                p.equipo_nombre, 
+                p.marca || '', 
+                p.modelo || '', 
+                p.numero_serie || ''
+            );
         }
 
         async function aprobarDirectamente(id) {
